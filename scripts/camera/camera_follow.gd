@@ -8,7 +8,7 @@ class_name CameraFollow
 
 ## Normal gameplay camera settings
 @export_group("Normal Mode")
-@export var normal_offset: Vector3 = Vector3(0, 14, 8)
+@export var normal_offset: Vector3 = Vector3(0, 7, 4)
 
 ## Dialog mode camera settings (AC style zoom)
 @export_group("Dialog Mode")
@@ -20,6 +20,7 @@ var _dialog_target: Node3D = null
 var _is_dialog_mode: bool = false
 var _current_offset: Vector3
 var _focus_position: Vector3
+var _tracking_target: Node3D = null  # For tracking items like gifts
 
 
 func _ready() -> void:
@@ -46,7 +47,11 @@ func _physics_process(delta: float) -> void:
 	var target_focus: Vector3
 	var look_height: float = 1.0
 	
-	if _is_dialog_mode and _dialog_target:
+	if _tracking_target:
+		# Follow a specific object (like a gift being transferred)
+		target_focus = _tracking_target.global_position
+		look_height = 0.5
+	elif _is_dialog_mode and _dialog_target:
 		# Focus between player and NPC, slightly closer to NPC
 		var midpoint: Vector3 = (target.global_position + _dialog_target.global_position) / 2.0
 		midpoint.y = target.global_position.y
@@ -83,3 +88,11 @@ func _on_dialog_started() -> void:
 func _on_dialog_ended() -> void:
 	_is_dialog_mode = false
 	_dialog_target = null
+
+
+func track_object(obj: Node3D) -> void:
+	_tracking_target = obj
+
+
+func stop_tracking() -> void:
+	_tracking_target = null

@@ -11,13 +11,16 @@ config_version=5
 [application]
 
 config/name="talktown"
-run/main_scene="res://scenes/main/town.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
+run/main_scene="res://scenes/main/town.tscn"
 config/icon="res://icon.svg"
 
 [autoload]
 
 DialogManager="*res://scripts/dialog/dialog_manager.gd"
+InventoryManager="*res://scripts/systems/inventory_manager.gd"
+QuestManager="*res://scripts/systems/quest_manager.gd"
+GameManager="*res://scripts/systems/game_manager.gd"
 
 [display]
 

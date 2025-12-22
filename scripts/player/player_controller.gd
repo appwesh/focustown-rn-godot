@@ -9,7 +9,8 @@ class_name Player
 @export var gravity: float = 20.0
 
 var _target_rotation: float = 0.0
-var _nearby_interactable: Interactable = null
+var _nearby_interactable: Area3D = null
+var _nearby_npc: Node3D = null
 var _interaction_prompt: Control = null
 
 # Idle bobbing
@@ -73,27 +74,33 @@ func _unhandled_input(event: InputEvent) -> void:
 	if DialogManager.is_dialog_active:
 		return
 	
-	if event.is_action_pressed("interact") and _nearby_interactable:
-		_nearby_interactable.interact()
-		_hide_prompt()
-		get_viewport().set_input_as_handled()
+	if event.is_action_pressed("interact"):
+		if _nearby_npc and _nearby_npc.has_method("interact"):
+			_nearby_npc.interact()
+			_hide_prompt()
+			get_viewport().set_input_as_handled()
+		elif _nearby_interactable and _nearby_interactable.has_method("interact"):
+			_nearby_interactable.interact()
+			_hide_prompt()
+			get_viewport().set_input_as_handled()
 
 
-func set_nearby_interactable(interactable: Interactable) -> void:
+func set_nearby_interactable(interactable: Area3D) -> void:
 	_nearby_interactable = interactable
-	_show_prompt(interactable)
+	_nearby_npc = interactable.get_parent()
+	_show_prompt(_nearby_npc if _nearby_npc else interactable)
 
 
-func clear_nearby_interactable(interactable: Interactable) -> void:
+func clear_nearby_interactable(interactable: Area3D) -> void:
 	if _nearby_interactable == interactable:
 		_nearby_interactable = null
+		_nearby_npc = null
 		_hide_prompt()
 
 
-func _show_prompt(interactable: Interactable) -> void:
+func _show_prompt(target: Node3D) -> void:
 	if _interaction_prompt and _interaction_prompt.has_method("show_prompt"):
-		var target_node: Node3D = interactable.get_parent()
-		_interaction_prompt.show_prompt(target_node, "Press E")
+		_interaction_prompt.show_prompt(target, "Press E")
 
 
 func _hide_prompt() -> void:

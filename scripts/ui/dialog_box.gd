@@ -38,6 +38,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not panel.visible:
 		return
 	
+	# Don't handle input when waiting for choice selection
+	if DialogManager._waiting_for_choice:
+		return
+	
 	if event.is_action_pressed("interact"):
 		if _is_typing:
 			# Skip to full text
