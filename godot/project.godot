@@ -17,10 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-DialogManager="*res://scripts/dialog/dialog_manager.gd"
-InventoryManager="*res://scripts/systems/inventory_manager.gd"
-QuestManager="*res://scripts/systems/quest_manager.gd"
-GameManager="*res://scripts/systems/game_manager.gd"
+RNBridge="*res://autoload/RNBridge.gd"
+FocusSessionManager="*res://scripts/systems/focus_session_manager.gd"
 
 [display]
 
@@ -73,3 +71,4 @@ pointing/emulate_touch_from_mouse=true
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

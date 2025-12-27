@@ -1,0 +1,94 @@
+name: Export Godot Game
+
+on:
+  push:
+    paths:
+      - 'godot/**'
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.0)'
+        required: true
+        type: string
+
+env:
+  GODOT_VERSION: "4.4"
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+
+      - name: Import Godot project
+        run: |
+          cd godot
+          godot --headless --import
+
+      - name: Export PCK for iOS
+        run: |
+          cd godot
+          mkdir -p export
+          godot --headless --export-pack "iOS" export/main.pck
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            # Auto-increment patch version or use commit SHA
+            echo "version=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload to Cloudflare R2
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          CLOUDFLARE_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: apptowns
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          
+          # Install AWS CLI (R2 is S3-compatible)
+          pip install awscli
+          
+          # Configure AWS CLI for R2
+          aws configure set aws_access_key_id $CLOUDFLARE_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $CLOUDFLARE_SECRET_ACCESS_KEY
+          aws configure set region auto
+          
+          # Upload versioned file
+          aws s3 cp godot/export/main.pck \
+            s3://$R2_BUCKET/v$VERSION/main.pck \
+            --endpoint-url https://$CLOUDFLARE_ACCOUNT_ID.r2.cloudflarestorage.com
+          
+          # Also upload as 'latest' for development
+          aws s3 cp godot/export/main.pck \
+            s3://$R2_BUCKET/latest/main.pck \
+            --endpoint-url https://$CLOUDFLARE_ACCOUNT_ID.r2.cloudflarestorage.com
+          
+          # Update manifest
+          echo "{\"version\":\"$VERSION\",\"url\":\"https://pub-00e39c5ed81d4d70bfdb1f3408768872.r2.dev/v$VERSION/main.pck\",\"updated\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > manifest.json
+          
+          aws s3 cp manifest.json \
+            s3://$R2_BUCKET/manifest.json \
+            --endpoint-url https://$CLOUDFLARE_ACCOUNT_ID.r2.cloudflarestorage.com \
+            --content-type application/json
+
+      - name: Summary
+        run: |
+          echo "## 🎮 Godot Export Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**PCK URL:** https://pub-00e39c5ed81d4d70bfdb1f3408768872.r2.dev/v${{ steps.version.outputs.version }}/main.pck" >> $GITHUB_STEP_SUMMARY
+
