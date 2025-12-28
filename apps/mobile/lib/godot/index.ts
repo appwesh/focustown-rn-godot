@@ -8,7 +8,9 @@
  *
  *   const { onMove } = useJoystick();
  *   const { onInteract } = useInteract();
- *   useGodotSession(); // Registers callback for session events
+ *   useGodotSession((focusTime, coins) => {
+ *     // Called when session completes - write to Firebase here
+ *   });
  */
 
 // Types

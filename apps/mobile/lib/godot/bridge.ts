@@ -3,12 +3,37 @@
  *
  * @see https://github.com/borndotcom/react-native-godot
  *
- * NOTE: Cross-thread state updates from Godot callbacks to React are not
- * supported by react-native-godot. When DB is added, the callback will
- * write to DB and React will subscribe to changes.
+ * Session callbacks use worklets-core runOnJS to cross from Godot thread
+ * back to JS, where Firebase writes can be executed.
  */
 
 import { RTNGodot, runOnGodotThread } from '@borndotcom/react-native-godot';
+import { Worklets } from 'react-native-worklets-core';
+
+// Module-level callback stored for worklet access
+let sessionHandler: ((duration: number, coins: number) => void) | null = null;
+
+/**
+ * Set the session handler (called from JS thread when session completes)
+ */
+export function setSessionHandler(
+  handler: ((duration: number, coins: number) => void) | null
+): void {
+  sessionHandler = handler;
+}
+
+/**
+ * Called from worklet - bridges to JS thread
+ */
+function handleSessionComplete(duration: number, coins: number): void {
+  console.log('[Bridge] Session complete:', duration, 's,', coins, 'coins');
+  if (sessionHandler) {
+    sessionHandler(duration, coins);
+  }
+}
+
+// Create a worklet-compatible function that can be called from Godot thread
+const handleSessionCompleteWorklet = Worklets.createRunOnJS(handleSessionComplete);
 
 /**
  * Check if Godot instance is ready
@@ -19,7 +44,7 @@ export function isGodotReady(): boolean {
 
 /**
  * Register session callback with Godot
- * Currently just logs - will write to DB when added
+ * When session completes, fires callback that writes to Firebase
  */
 export function registerSessionCallback(): void {
   runOnGodotThread(() => {
@@ -41,9 +66,8 @@ export function registerSessionCallback(): void {
         coins: number
       ) {
         'worklet';
-        console.log('[Bridge] Session complete:', duration, 's,', coins, 'coins');
-        // TODO: When DB is added, write session here:
-        // writeSessionToDatabase(userId, duration, coins);
+        // Use worklets-core to cross back to JS thread for Firebase write
+        handleSessionCompleteWorklet(duration, coins);
       });
       console.log('[Bridge] Session callback registered');
     }

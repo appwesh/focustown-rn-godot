@@ -1,10 +1,33 @@
-import { StyleSheet, View, Text, Switch, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Switch, Pressable, Alert } from 'react-native';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useAuth } from '@/lib/firebase';
 
 export default function SettingsScreen() {
+  const router = useRouter();
+  const { signOut, isAuthenticated, userDoc } = useAuth();
+  
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out? Your progress is saved to the cloud.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: async () => {
+            await signOut();
+            router.replace('/onboarding');
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -72,12 +95,35 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      <View style={styles.placeholder}>
-        <Text style={styles.placeholderEmoji}>🏗️</Text>
-        <Text style={styles.placeholderText}>
-          More options coming soon!
-        </Text>
-      </View>
+      {isAuthenticated && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionEmoji}>👤</Text>
+            <Text style={styles.sectionTitle}>Account</Text>
+          </View>
+          <View style={styles.card}>
+            {userDoc && (
+              <>
+                <View style={styles.infoRow}>
+                  <Text style={styles.settingLabel}>Signed in as</Text>
+                  <Text style={styles.infoValue}>{userDoc.displayName || 'Villager'}</Text>
+                </View>
+                <View style={styles.rowDivider} />
+              </>
+            )}
+            <Pressable 
+              style={({ pressed }) => [
+                styles.logoutRow,
+                pressed && styles.logoutRowPressed,
+              ]} 
+              onPress={handleLogout}
+            >
+              <Text style={styles.logoutText}>Sign Out</Text>
+              <Text style={styles.logoutArrow}>→</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -144,18 +190,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDD5C7',
     marginHorizontal: 16,
   },
-  placeholder: {
-    flex: 1,
-    justifyContent: 'center',
+  logoutRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
   },
-  placeholderEmoji: {
-    fontSize: 40,
-    marginBottom: 12,
+  logoutRowPressed: {
+    backgroundColor: '#FFF0E0',
   },
-  placeholderText: {
+  logoutText: {
     fontSize: 16,
-    color: '#8D6E63',
-    fontWeight: '500',
+    color: '#C62828',
+    fontWeight: '600',
+  },
+  logoutArrow: {
+    fontSize: 16,
+    color: '#C62828',
   },
 });

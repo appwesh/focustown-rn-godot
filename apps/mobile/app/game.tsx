@@ -6,6 +6,7 @@ import { GodotGame } from '@/components/godot-view';
 import { Joystick } from '@/components/joystick';
 import { DebugModal } from '@/components/debug-modal';
 import { useJoystick, useInteract, useGodotSession } from '@/lib/godot';
+import { useAuth } from '@/lib/firebase';
 import { PCK_URL } from '@/constants/game';
 
 const TAP_TIMEOUT = 500; // ms between taps
@@ -18,11 +19,21 @@ export default function GameScreen() {
   const tapCountRef = useRef(0);
   const lastTapRef = useRef(0);
 
+  const { recordSession } = useAuth();
   const { onMove } = useJoystick();
   const { onInteract } = useInteract();
 
-  // Register session callback with Godot (will log for now, write to DB later)
-  useGodotSession();
+  // Handle session completion - write to Firebase
+  const handleSessionComplete = useCallback(
+    (focusTime: number, coinsEarned: number) => {
+      console.log('[Game] Recording session:', focusTime, 's,', coinsEarned, 'coins');
+      recordSession(focusTime, coinsEarned);
+    },
+    [recordSession]
+  );
+
+  // Register session callback with Godot - fires handleSessionComplete on completion
+  useGodotSession(handleSessionComplete);
 
   // Triple-tap handler for debug menu (dev only, works on entire screen)
   const handleScreenTap = useCallback(() => {

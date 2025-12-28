@@ -57,12 +57,28 @@ export function useGameControls() {
 
 /**
  * Hook to register session callback with Godot
- * Currently the callback just logs - will write to DB when added
- * React will then subscribe to DB for real-time updates
+ * When a session completes in Godot, the onSessionComplete callback fires
+ * to write the session to Firebase
+ *
+ * @param onSessionComplete - Callback to handle session completion (e.g., write to Firebase)
  */
-export function useGodotSession() {
+export function useGodotSession(
+  onSessionComplete?: (focusTime: number, coinsEarned: number) => void
+) {
   const callbackRegistered = useRef(false);
 
+  // Set up the session handler that will be called from the worklet
+  useEffect(() => {
+    if (onSessionComplete) {
+      Bridge.setSessionHandler(onSessionComplete);
+    }
+
+    return () => {
+      Bridge.setSessionHandler(null);
+    };
+  }, [onSessionComplete]);
+
+  // Register the Godot callback once ready
   useEffect(() => {
     const checkAndRegister = () => {
       if (Bridge.isGodotReady() && !callbackRegistered.current) {

@@ -10,8 +10,19 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.edgarhnd.talktown",
-      "appleTeamId": "MN89DN9SX5"
+      "bundleIdentifier": "apps.wesh.focustown",
+      "appleTeamId": "MN89DN9SX5",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "apps.wesh.focustown",
+              "app-1-437937185673-ios-2f5373fc5a91ab6f7e7758"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +42,15 @@
     "plugins": [
       "expo-router",
       [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
@@ -41,7 +61,10 @@
             "backgroundColor": "#2C3639"
           }
         }
-      ]
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "./plugins/with-firebase-godot-fix.js"
     ],
     "experiments": {
       "typedRoutes": true,
