@@ -19,8 +19,8 @@ export default function RootScreen() {
     if (!navigationState?.key || isLoading) return;
 
     if (isAuthenticated) {
-      // User is signed in, go to game
-      router.replace('/game');
+      // User is signed in, go to home
+      router.replace('/home');
     } else {
       // User not signed in, go to onboarding
       router.replace('/onboarding');

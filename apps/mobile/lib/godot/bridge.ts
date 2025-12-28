@@ -10,8 +10,12 @@
 import { RTNGodot, runOnGodotThread } from '@borndotcom/react-native-godot';
 import { Worklets } from 'react-native-worklets-core';
 
-// Module-level callback stored for worklet access
+// ============================================================================
+// Module-level callbacks stored for worklet access
+// ============================================================================
+
 let sessionHandler: ((duration: number, coins: number) => void) | null = null;
+let playerSeatedHandler: (() => void) | null = null;
 
 /**
  * Set the session handler (called from JS thread when session completes)
@@ -23,7 +27,14 @@ export function setSessionHandler(
 }
 
 /**
- * Called from worklet - bridges to JS thread
+ * Set the player seated handler (called when player sits at a study spot)
+ */
+export function setPlayerSeatedHandler(handler: (() => void) | null): void {
+  playerSeatedHandler = handler;
+}
+
+/**
+ * Called from worklet - bridges session complete to JS thread
  */
 function handleSessionComplete(duration: number, coins: number): void {
   console.log('[Bridge] Session complete:', duration, 's,', coins, 'coins');
@@ -32,8 +43,19 @@ function handleSessionComplete(duration: number, coins: number): void {
   }
 }
 
-// Create a worklet-compatible function that can be called from Godot thread
+/**
+ * Called from worklet - bridges player seated to JS thread
+ */
+function handlePlayerSeated(): void {
+  console.log('[Bridge] Player seated at study spot');
+  if (playerSeatedHandler) {
+    playerSeatedHandler();
+  }
+}
+
+// Create worklet-compatible functions that can be called from Godot thread
 const handleSessionCompleteWorklet = Worklets.createRunOnJS(handleSessionComplete);
+const handlePlayerSeatedWorklet = Worklets.createRunOnJS(handlePlayerSeated);
 
 /**
  * Check if Godot instance is ready
@@ -70,6 +92,103 @@ export function registerSessionCallback(): void {
         handleSessionCompleteWorklet(duration, coins);
       });
       console.log('[Bridge] Session callback registered');
+    }
+  });
+}
+
+/**
+ * Register player seated callback with Godot
+ * Fires when player sits at a study spot (to show session setup modal)
+ */
+export function registerPlayerSeatedCallback(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).set_player_seated_callback(function () {
+        'worklet';
+        handlePlayerSeatedWorklet();
+      });
+      console.log('[Bridge] Player seated callback registered');
+    }
+  });
+}
+
+/**
+ * Tell Godot to start the session (called after user confirms setup)
+ */
+export function startGodotSession(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).start_session_from_rn();
+      console.log('[Bridge] Started session in Godot');
+    }
+  });
+}
+
+/**
+ * Tell Godot to end the session (called when RN timer completes or user stops)
+ */
+export function endGodotSession(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).end_session();
+      console.log('[Bridge] Ended session in Godot');
+    }
+  });
+}
+
+/**
+ * Tell Godot to cancel session setup (player stands up, no session started)
+ */
+export function cancelGodotSessionSetup(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).cancel_session_setup();
+      console.log('[Bridge] Cancelled session setup in Godot');
     }
   });
 }

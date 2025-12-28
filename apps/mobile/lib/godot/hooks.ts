@@ -101,3 +101,71 @@ export function useGodotSession(
     return () => clearInterval(interval);
   }, []);
 }
+
+/**
+ * Hook to register player seated callback with Godot
+ * Fires when player sits at a study spot to show session setup modal
+ *
+ * @param onPlayerSeated - Callback when player sits at a study spot
+ */
+export function usePlayerSeated(onPlayerSeated?: () => void) {
+  const callbackRegistered = useRef(false);
+
+  // Set up the handler
+  useEffect(() => {
+    if (onPlayerSeated) {
+      Bridge.setPlayerSeatedHandler(onPlayerSeated);
+    }
+
+    return () => {
+      Bridge.setPlayerSeatedHandler(null);
+    };
+  }, [onPlayerSeated]);
+
+  // Register the Godot callback once ready
+  useEffect(() => {
+    const checkAndRegister = () => {
+      if (Bridge.isGodotReady() && !callbackRegistered.current) {
+        console.log('[usePlayerSeated] Registering callback...');
+        Bridge.registerPlayerSeatedCallback();
+        callbackRegistered.current = true;
+      }
+    };
+
+    checkAndRegister();
+
+    const interval = setInterval(() => {
+      if (!callbackRegistered.current) {
+        checkAndRegister();
+      } else {
+        clearInterval(interval);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+}
+
+/**
+ * Hook for session controls (start, end, cancel)
+ * Used by session context to control Godot session state
+ */
+export function useSessionControls() {
+  const startSession = useCallback(() => {
+    Bridge.startGodotSession();
+  }, []);
+
+  const endSession = useCallback(() => {
+    Bridge.endGodotSession();
+  }, []);
+
+  const cancelSetup = useCallback(() => {
+    Bridge.cancelGodotSessionSetup();
+  }, []);
+
+  return {
+    startSession,
+    endSession,
+    cancelSetup,
+  };
+}

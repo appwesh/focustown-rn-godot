@@ -25,7 +25,8 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="onboarding" />
-          <Stack.Screen name="game" />
+          <Stack.Screen name="home" />
+          <Stack.Screen name="game" options={{ gestureEnabled: false }} />
           <Stack.Screen
             name="profile"
             options={{

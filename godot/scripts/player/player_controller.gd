@@ -7,13 +7,16 @@ class_name Player
 @export var rotation_speed: float = 10.0
 ## Gravity strength
 @export var gravity: float = 20.0
+## Distance threshold to consider "arrived" at target
+@export var arrival_threshold: float = 0.5
 
-enum State { MOVING, SITTING }
+enum State { IDLE, WALKING_TO_SPOT, SITTING }
 
-var _state: State = State.MOVING
+var _state: State = State.IDLE
 var _target_rotation: float = 0.0
 var _nearby_study_spot: StudySpot = null
 var _current_spot: StudySpot = null
+var _target_spot: StudySpot = null  # Spot we're walking towards
 
 # Idle bobbing
 var _bob_time: float = 0.0
@@ -27,6 +30,9 @@ func _ready() -> void:
 	if _model:
 		_base_y = _model.position.y
 	
+	# Add player to group for easy lookup
+	add_to_group("player")
+	
 	# Connect to RNBridge interact signal
 	RNBridge.interact_triggered.connect(_on_interact)
 	
@@ -35,17 +41,26 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _state == State.SITTING:
-		# Don't move while sitting
-		velocity = Vector3.ZERO
-		return
-	
+	match _state:
+		State.SITTING:
+			# Don't move while sitting
+			velocity = Vector3.ZERO
+			return
+		
+		State.WALKING_TO_SPOT:
+			_process_walk_to_spot(delta)
+		
+		State.IDLE:
+			_process_idle(delta)
+
+
+func _process_idle(delta: float) -> void:
 	# Idle bobbing animation
 	_bob_time += delta * bob_speed
 	if _model:
 		_model.position.y = _base_y + sin(_bob_time) * bob_amount
 	
-	# Get input direction
+	# Get input direction (joystick or keyboard)
 	var input_dir := _get_input_direction()
 	
 	# Convert to 3D movement (XZ plane)
@@ -73,6 +88,75 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
+func _process_walk_to_spot(delta: float) -> void:
+	if not _target_spot:
+		_state = State.IDLE
+		return
+	
+	# Idle bobbing while walking
+	_bob_time += delta * bob_speed * 1.5  # Faster bob when walking
+	if _model:
+		_model.position.y = _base_y + sin(_bob_time) * bob_amount
+	
+	# Calculate direction to target
+	var target_pos := _target_spot.get_sit_position()
+	var to_target := target_pos - global_position
+	to_target.y = 0  # Ignore vertical difference
+	
+	var distance := to_target.length()
+	
+	# Check if arrived
+	if distance < arrival_threshold:
+		_on_arrived_at_spot()
+		return
+	
+	# Move towards target
+	var direction := to_target.normalized()
+	velocity.x = direction.x * move_speed
+	velocity.z = direction.z * move_speed
+	
+	# Apply gravity
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+	
+	# Face movement direction
+	_target_rotation = atan2(direction.x, direction.z)
+	rotation.y = lerp_angle(rotation.y, _target_rotation, rotation_speed * delta)
+	
+	move_and_slide()
+
+
+func _on_arrived_at_spot() -> void:
+	print("[Player] Arrived at study spot")
+	velocity = Vector3.ZERO
+	
+	var spot := _target_spot
+	_target_spot = null
+	
+	# Notify the spot we've arrived
+	if spot:
+		spot.on_player_arrived(self)
+
+
+## Start walking to a study spot (called when spot is tapped)
+func walk_to_spot(spot: StudySpot) -> void:
+	if _state == State.SITTING:
+		print("[Player] Can't walk while sitting")
+		return
+	
+	print("[Player] Walking to spot: ", spot.name)
+	_target_spot = spot
+	_state = State.WALKING_TO_SPOT
+
+
+## Cancel walking to spot (e.g., if user taps elsewhere)
+func cancel_walk() -> void:
+	if _state == State.WALKING_TO_SPOT:
+		_target_spot = null
+		_state = State.IDLE
+		velocity = Vector3.ZERO
+
+
 func _get_input_direction() -> Vector2:
 	var input_dir := Vector2.ZERO
 	
@@ -80,10 +164,16 @@ func _get_input_direction() -> Vector2:
 	var rn_input := RNBridge.get_joystick_input()
 	if rn_input.length() > 0.05:
 		input_dir = rn_input
+		# Cancel auto-walk if user uses joystick
+		if _state == State.WALKING_TO_SPOT:
+			cancel_walk()
 	else:
 		# Fallback to keyboard input
 		input_dir.x = Input.get_axis("move_left", "move_right")
 		input_dir.y = Input.get_axis("move_up", "move_down")
+		# Cancel auto-walk if user uses keyboard
+		if input_dir.length() > 0.1 and _state == State.WALKING_TO_SPOT:
+			cancel_walk()
 	
 	if input_dir.length() > 1.0:
 		input_dir = input_dir.normalized()
@@ -98,9 +188,9 @@ func _on_interact() -> void:
 		print("[Player] Standing up...")
 		stand_up()
 	elif _nearby_study_spot:
-		# Start session at nearby spot
-		print("[Player] Interacting with study spot...")
-		_nearby_study_spot.interact()
+		# Walk to nearby spot (legacy interact behavior)
+		print("[Player] Walking to nearby study spot...")
+		walk_to_spot(_nearby_study_spot)
 	else:
 		print("[Player] No study spot nearby")
 
@@ -123,6 +213,7 @@ func clear_nearby_study_spot(spot: StudySpot) -> void:
 func sit_at_spot(spot: StudySpot) -> void:
 	_state = State.SITTING
 	_current_spot = spot
+	_target_spot = null
 	
 	# Move to sit position
 	global_position = spot.get_sit_position()
@@ -137,14 +228,12 @@ func stand_up() -> void:
 	if _state != State.SITTING:
 		return
 	
-	_state = State.MOVING
+	_state = State.IDLE
 	_current_spot = null
-	
-	# End the session
-	FocusSessionManager.end_session()
 
 
 func _on_session_ended(_duration: int, _coins: int) -> void:
 	# Make sure we stand up when session ends
-	_state = State.MOVING
-	_current_spot = null
+	if _state == State.SITTING:
+		_state = State.IDLE
+		_current_spot = null
