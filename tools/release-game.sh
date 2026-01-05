@@ -2,9 +2,14 @@
 set -e
 
 # Release script for Godot game to Cloudflare R2
-# Usage: ./tools/release-game.sh 1.0.0
+# Usage: ./tools/release-game.sh 1.0.0 [--remote]
 
 VERSION=$1
+REMOTE_FLAG=""
+if [ "$2" = "--remote" ]; then
+    REMOTE_FLAG="--remote"
+fi
+
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GODOT_DIR="$PROJECT_ROOT/godot"
 MOBILE_DIR="$PROJECT_ROOT/apps/mobile"
@@ -18,7 +23,7 @@ NC='\033[0m' # No Color
 
 if [ -z "$VERSION" ]; then
     echo -e "${RED}Error: Version required${NC}"
-    echo "Usage: ./tools/release-game.sh 1.0.0"
+    echo "Usage: ./tools/release-game.sh 1.0.0 [--remote]"
     exit 1
 fi
 
@@ -59,8 +64,8 @@ echo -e "${GREEN}Step 2: Upload to Cloudflare R2${NC}"
 
 if command -v wrangler &> /dev/null; then
     # Using Wrangler
-    wrangler r2 object put "apptowns/v$VERSION/main.pck" --file "$EXPORT_DIR/main.pck"
-    wrangler r2 object put "apptowns/latest/main.pck" --file "$EXPORT_DIR/main.pck"
+    wrangler r2 object put "apptowns/v$VERSION/main.pck" --file "$EXPORT_DIR/main.pck" $REMOTE_FLAG
+    wrangler r2 object put "apptowns/latest/main.pck" --file "$EXPORT_DIR/main.pck" $REMOTE_FLAG
     
     # Update manifest
     MANIFEST=$(cat <<EOF
@@ -72,7 +77,7 @@ if command -v wrangler &> /dev/null; then
 EOF
 )
     echo "$MANIFEST" > "$EXPORT_DIR/manifest.json"
-    wrangler r2 object put "apptowns/manifest.json" --file "$EXPORT_DIR/manifest.json"
+    wrangler r2 object put "apptowns/manifest.json" --file "$EXPORT_DIR/manifest.json" $REMOTE_FLAG
     
     echo -e "${GREEN}✓ Uploaded to R2${NC}"
 else

@@ -40,15 +40,22 @@ export const userService = {
       return docSnap.data() as UserDoc;
     }
 
-    // Create new user
+    // Create new user with all fields
     const newUser: UserDoc = {
       uid,
       phoneNumber,
       createdAt: Date.now(),
       displayName: null,
+      username: null,
+      avatarUrl: null,
       totalCoins: 0,
       totalFocusTime: 0,
       sessionsCompleted: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      friendCount: 0,
+      expoPushToken: null,
+      tokenUpdatedAt: null,
       lastActiveAt: Date.now(),
     };
 
@@ -70,13 +77,82 @@ export const userService = {
    */
   async updateProfile(
     uid: string,
-    updates: Pick<Partial<UserDoc>, "displayName">
+    updates: Pick<Partial<UserDoc>, "displayName" | "username" | "avatarUrl">
   ): Promise<void> {
     const docRef = doc(usersCollection, uid);
     await updateDoc(docRef, {
       ...updates,
       lastActiveAt: Date.now(),
     });
+  },
+
+  /**
+   * Search for a user by exact username (for friend request)
+   */
+  async findByUsername(username: string): Promise<UserDoc | null> {
+    const { query: firestoreQuery, where, getDocs } = await import("firebase/firestore");
+    const q = firestoreQuery(
+      usersCollection, 
+      where("username", "==", username.toLowerCase())
+    );
+    const snap = await getDocs(q);
+    return snap.empty ? null : (snap.docs[0].data() as UserDoc);
+  },
+
+  /**
+   * Search users by username prefix (for live search)
+   * Returns up to 10 results
+   */
+  async searchUsers(query: string, currentUserId: string): Promise<UserDoc[]> {
+    if (!query.trim()) return [];
+    
+    const { query: firestoreQuery, where, getDocs, orderBy, limit } = await import("firebase/firestore");
+    const searchTerm = query.toLowerCase().trim();
+    
+    // Search by username prefix
+    const q = firestoreQuery(
+      usersCollection,
+      where("username", ">=", searchTerm),
+      where("username", "<=", searchTerm + "\uf8ff"),
+      orderBy("username"),
+      limit(10)
+    );
+    
+    const snap = await getDocs(q);
+    
+    // Filter out current user
+    return snap.docs
+      .map(doc => doc.data() as UserDoc)
+      .filter(user => user.uid !== currentUserId);
+  },
+
+  /**
+   * Find users by phone numbers (for contact book matching)
+   * Returns users who have registered with these phone numbers
+   */
+  async findByPhoneNumbers(phoneNumbers: string[], currentUserId: string): Promise<UserDoc[]> {
+    if (phoneNumbers.length === 0) return [];
+    
+    const { query: firestoreQuery, where, getDocs } = await import("firebase/firestore");
+    
+    // Firestore 'in' queries are limited to 30 items
+    const results: UserDoc[] = [];
+    const chunks = [];
+    for (let i = 0; i < phoneNumbers.length; i += 30) {
+      chunks.push(phoneNumbers.slice(i, i + 30));
+    }
+    
+    for (const chunk of chunks) {
+      const q = firestoreQuery(
+        usersCollection,
+        where("phoneNumber", "in", chunk)
+      );
+      const snap = await getDocs(q);
+      results.push(...snap.docs.map(doc => doc.data() as UserDoc));
+    }
+    
+    // Filter out current user
+    return results.filter(user => user.uid !== currentUserId);
   },
 
   /**

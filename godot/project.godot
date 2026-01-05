@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 RNBridge="*res://autoload/RNBridge.gd"
 FocusSessionManager="*res://scripts/systems/focus_session_manager.gd"
+MultiplayerManager="*res://scripts/systems/multiplayer_manager.gd"
 
 [display]
 

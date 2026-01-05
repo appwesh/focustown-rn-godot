@@ -106,9 +106,11 @@ export function useGodotSession(
  * Hook to register player seated callback with Godot
  * Fires when player sits at a study spot to show session setup modal
  *
- * @param onPlayerSeated - Callback when player sits at a study spot
+ * @param onPlayerSeated - Callback when player sits at a study spot, receives location info
  */
-export function usePlayerSeated(onPlayerSeated?: () => void) {
+export function usePlayerSeated(
+  onPlayerSeated?: (location: Bridge.SpotLocation) => void
+) {
   const callbackRegistered = useRef(false);
 
   // Set up the handler
@@ -168,4 +170,69 @@ export function useSessionControls() {
     endSession,
     cancelSetup,
   };
+}
+
+/**
+ * Hook to enable position sync for multiplayer sessions
+ * Waits for Godot to be ready, then registers position callback and starts sync
+ *
+ * @param onPositionUpdate - Callback fired with local player position (x, y, z)
+ * @param enabled - Whether position sync should be active
+ */
+export function usePositionSync(
+  onPositionUpdate: ((x: number, y: number, z: number) => void) | null,
+  enabled: boolean = true
+) {
+  const syncStarted = useRef(false);
+
+  // Set up the position handler
+  useEffect(() => {
+    if (onPositionUpdate && enabled) {
+      Bridge.setPlayerPositionHandler(onPositionUpdate);
+    }
+
+    return () => {
+      Bridge.setPlayerPositionHandler(null);
+    };
+  }, [onPositionUpdate, enabled]);
+
+  // Register and start position sync once Godot is ready
+  useEffect(() => {
+    if (!enabled) {
+      if (syncStarted.current) {
+        console.log('[usePositionSync] Stopping position sync');
+        Bridge.stopPositionSync();
+        syncStarted.current = false;
+      }
+      return;
+    }
+
+    const checkAndStart = () => {
+      if (Bridge.isGodotReady() && !syncStarted.current) {
+        console.log('[usePositionSync] Starting position sync...');
+        Bridge.registerPlayerPositionCallback();
+        Bridge.startPositionSync();
+        syncStarted.current = true;
+      }
+    };
+
+    checkAndStart();
+
+    const interval = setInterval(() => {
+      if (!syncStarted.current) {
+        checkAndStart();
+      } else {
+        clearInterval(interval);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+      if (syncStarted.current) {
+        console.log('[usePositionSync] Cleanup - stopping position sync');
+        Bridge.stopPositionSync();
+        syncStarted.current = false;
+      }
+    };
+  }, [enabled]);
 }

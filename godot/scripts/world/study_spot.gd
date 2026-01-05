@@ -15,6 +15,9 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	
+	# Add to study_spots group for multiplayer manager
+	add_to_group("study_spots")
+	
 	# Enable input events for tap detection
 	# Must be on a collision layer for ray picking to work
 	input_ray_pickable = true

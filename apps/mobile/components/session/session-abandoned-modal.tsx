@@ -14,7 +14,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSession } from '@/lib/session';
+import { useSessionStore } from '@/lib/session';
 
 interface SessionAbandonedModalProps {
   visible: boolean;
@@ -22,7 +22,8 @@ interface SessionAbandonedModalProps {
 
 export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
   const router = useRouter();
-  const { goHomeFromAbandoned, continueFromAbandoned } = useSession();
+  const goHomeFromAbandoned = useSessionStore((s) => s.goHomeFromAbandoned);
+  const continueFromAbandoned = useSessionStore((s) => s.continueFromAbandoned);
 
   const handleGoHome = useCallback(() => {
     goHomeFromAbandoned();

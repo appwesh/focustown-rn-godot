@@ -13,3 +13,10 @@ export interface SessionResult {
   durationSeconds: number;
   coinsEarned: number;
 }
+
+// Location info from Godot when player sits at a study spot
+export interface SpotLocation {
+  buildingId: string;
+  buildingName: string;
+  spotId: string;
+}

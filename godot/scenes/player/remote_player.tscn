@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://cxvnrp8jg2dqm"]
+
+[ext_resource type="Script" path="res://scripts/player/remote_player.gd" id="1_script"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
+radius = 0.3
+height = 1.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.6, 0.4, 0.8, 1.0)
+roughness = 0.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.3
+height = 1.2
+
+[node name="RemotePlayer" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+mesh = SubResource("CapsuleMesh_1")
+surface_material_override/0 = SubResource("StandardMaterial3D_1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="NameLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+pixel_size = 0.005
+billboard = 1
+text = "Friend"
+font_size = 48
+outline_size = 8
+modulate = Color(1, 1, 1, 1)
+outline_modulate = Color(0.2, 0.2, 0.2, 1)
+

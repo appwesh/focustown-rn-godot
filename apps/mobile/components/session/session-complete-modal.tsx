@@ -16,7 +16,7 @@ import {
   Easing,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSession, formatDuration } from '@/lib/session';
+import { useSessionStore, formatDuration } from '@/lib/session';
 
 interface SessionCompleteModalProps {
   visible: boolean;
@@ -95,7 +95,9 @@ function ConfettiPiece({ delay, startX }: { delay: number; startX: number }) {
 
 export function SessionCompleteModal({ visible }: SessionCompleteModalProps) {
   const router = useRouter();
-  const { completedSession, goHome, showBreakSetup } = useSession();
+  const completedSession = useSessionStore((s) => s.completedSession);
+  const goHome = useSessionStore((s) => s.goHome);
+  const showBreakSetup = useSessionStore((s) => s.showBreakSetup);
 
   const handleGoHome = useCallback(() => {
     goHome();

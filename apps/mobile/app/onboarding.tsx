@@ -43,6 +43,7 @@ export default function OnboardingScreen() {
     confirmCode,
     phoneAuthState,
     resetPhoneAuth,
+    clearPhoneAuthError,
     isAuthenticated,
     user,
   } = useAuth();
@@ -96,8 +97,8 @@ export default function OnboardingScreen() {
           }
         }
 
-        // Go directly to game
-        router.replace('/game');
+        // Go to home
+        router.replace('/home');
       }
     };
 
@@ -106,14 +107,19 @@ export default function OnboardingScreen() {
 
   // Auto-advance to verify step when code is sent
   useEffect(() => {
-    if (phoneAuthState.step === 'verifying' && currentStep === 'phone') {
+    // Advance when we have a verificationId and we're on the phone step
+    if (
+      phoneAuthState.verificationId &&
+      phoneAuthState.step === 'verifying' &&
+      currentStep === 'phone'
+    ) {
       setCurrentStep('verify');
       // Focus verification input
       setTimeout(() => {
         verificationInputRef.current?.focus();
       }, 400);
     }
-  }, [phoneAuthState.step, currentStep]);
+  }, [phoneAuthState.step, phoneAuthState.verificationId, currentStep]);
 
   // ============================================================================
   // Validation
@@ -147,6 +153,11 @@ export default function OnboardingScreen() {
 
   const handlePhoneChange = (value: string) => {
     setPhoneNumber(value);
+
+    // Clear any previous error when user edits the phone number
+    if (phoneAuthState.error) {
+      clearPhoneAuthError();
+    }
 
     // Reset auto-submit tracking if user is deleting
     if (value.length < phoneNumber.length) {
@@ -196,6 +207,11 @@ export default function OnboardingScreen() {
   const handleCodeChange = (text: string) => {
     const cleaned = cleanVerificationCode(text);
     setVerificationCode(cleaned);
+
+    // Clear any previous error when user starts typing a new code
+    if (phoneAuthState.error && cleaned.length > 0) {
+      clearPhoneAuthError();
+    }
 
     // Reset auto-submit tracking if user is deleting
     if (cleaned.length < verificationCode.length) {
@@ -378,9 +394,9 @@ export default function OnboardingScreen() {
             caret: styles.phoneInputCaret,
           }}
           modalStyles={{
-            modal: styles.countryModal,
+            container: styles.countryModal,
             searchInput: styles.countrySearchInput,
-            countryButton: styles.countryButton,
+            countryItem: styles.countryButton,
             callingCode: styles.countryCallingCode,
             countryName: styles.countryName,
           }}
@@ -431,7 +447,7 @@ export default function OnboardingScreen() {
         <Text style={styles.stepEmoji}>✉️</Text>
         <Text style={styles.stepTitle}>Enter verification code</Text>
         <Text style={styles.stepSubtitle}>
-          Sent to {selectedCountry?.callingCode} {phoneNumber}
+          Sent to {selectedCountry?.idd?.root}{selectedCountry?.idd?.suffixes?.[0]} {phoneNumber}
         </Text>
       </View>
 
@@ -444,6 +460,8 @@ export default function OnboardingScreen() {
           value={verificationCode}
           onChangeText={handleCodeChange}
           keyboardType="number-pad"
+          textContentType="oneTimeCode"
+          autoComplete="sms-otp"
           maxLength={6}
           autoFocus
         />

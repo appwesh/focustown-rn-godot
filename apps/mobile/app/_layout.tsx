@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { AuthProvider } from '@/lib/firebase';
+import { useNotifications } from '@/lib/notifications';
 
 // Animal Crossing style theme
 const FocusTownTheme = {
@@ -18,39 +19,52 @@ const FocusTownTheme = {
   },
 };
 
+// Wrapper component to use hooks
+function AppContent() {
+  // Initialize push notifications
+  useNotifications();
+
+  return (
+    <>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="onboarding" />
+        <Stack.Screen name="home" />
+        <Stack.Screen name="social" />
+        <Stack.Screen name="game" options={{ gestureEnabled: false }} />
+        <Stack.Screen
+          name="profile"
+          options={{
+            presentation: 'modal',
+            headerShown: true,
+            title: 'My Profile',
+            headerStyle: { backgroundColor: '#FFF8E7' },
+            headerTintColor: '#5D4037',
+            headerTitleStyle: { fontWeight: '600' },
+          }}
+        />
+        <Stack.Screen
+          name="settings"
+          options={{
+            presentation: 'modal',
+            headerShown: true,
+            title: 'Settings',
+            headerStyle: { backgroundColor: '#FFF8E7' },
+            headerTintColor: '#5D4037',
+            headerTitleStyle: { fontWeight: '600' },
+          }}
+        />
+      </Stack>
+      <StatusBar style="dark" />
+    </>
+  );
+}
+
 export default function RootLayout() {
   return (
     <AuthProvider>
       <ThemeProvider value={FocusTownTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="home" />
-          <Stack.Screen name="game" options={{ gestureEnabled: false }} />
-          <Stack.Screen
-            name="profile"
-            options={{
-              presentation: 'modal',
-              headerShown: true,
-              title: 'My Profile',
-              headerStyle: { backgroundColor: '#FFF8E7' },
-              headerTintColor: '#5D4037',
-              headerTitleStyle: { fontWeight: '600' },
-            }}
-          />
-          <Stack.Screen
-            name="settings"
-            options={{
-              presentation: 'modal',
-              headerShown: true,
-              title: 'Settings',
-              headerStyle: { backgroundColor: '#FFF8E7' },
-              headerTintColor: '#5D4037',
-              headerTitleStyle: { fontWeight: '600' },
-            }}
-          />
-        </Stack>
-        <StatusBar style="dark" />
+        <AppContent />
       </ThemeProvider>
     </AuthProvider>
   );

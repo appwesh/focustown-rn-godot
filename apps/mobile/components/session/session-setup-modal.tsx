@@ -15,7 +15,7 @@ import {
   Switch,
   ScrollView,
 } from 'react-native';
-import { useSession } from '@/lib/session';
+import { useSessionStore } from '@/lib/session';
 import { DURATION_OPTIONS } from '@/lib/session/types';
 
 interface SessionSetupModalProps {
@@ -23,7 +23,10 @@ interface SessionSetupModalProps {
 }
 
 export function SessionSetupModal({ visible }: SessionSetupModalProps) {
-  const { config, updateConfig, startSession, cancelSetup } = useSession();
+  const config = useSessionStore((s) => s.config);
+  const updateConfig = useSessionStore((s) => s.updateConfig);
+  const startSession = useSessionStore((s) => s.startSession);
+  const cancelSetup = useSessionStore((s) => s.cancelSetup);
 
   const handleSelectDuration = (minutes: number) => {
     updateConfig({ durationMinutes: minutes });

@@ -3,5 +3,22 @@
  */
 
 export * from './types';
-export { SessionProvider, useSession, formatTime, formatDuration } from './context';
 
+// Zustand store
+export {
+  useSessionStore,
+  setGodotCallbacks,
+  clearGodotCallbacks,
+  formatTime,
+  formatDuration,
+  // Selectors
+  selectPhase,
+  selectConfig,
+  selectActiveSession,
+  selectCompletedSession,
+  selectBreakSession,
+  selectBreakDurationMinutes,
+  selectShowingAbandonConfirm,
+  selectGroupSessionId,
+  selectIsGroupSession,
+} from './store';

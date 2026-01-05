@@ -11,13 +11,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "apps.wesh.focustown",
-      "appleTeamId": "MN89DN9SX5",
+      "appleTeamId": "VY92D2R4AT",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
-              "apps.wesh.focustown",
               "app-1-437937185673-ios-2f5373fc5a91ab6f7e7758"
             ]
           }
@@ -62,6 +62,12 @@
           }
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "mode": "development"
+        }
+      ],
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "./plugins/with-firebase-godot-fix.js"
@@ -69,6 +75,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "940ef7e3-e856-46bd-8fcf-39c65583a5ed"
+      }
     }
   }
 }

@@ -17,7 +17,7 @@
  */
 
 // Types
-export type { JoystickInput, SessionResult } from './types';
+export type { JoystickInput, SessionResult, SpotLocation } from './types';
 
 // Bridge functions (for direct use)
 export {
@@ -32,6 +32,16 @@ export {
   startGodotSession,
   endGodotSession,
   cancelGodotSessionSetup,
+  // Multiplayer
+  spawnRemotePlayer,
+  updateRemotePlayerState,
+  updateRemotePlayerPosition,
+  removeRemotePlayer,
+  // Position sync
+  setPlayerPositionHandler,
+  registerPlayerPositionCallback,
+  startPositionSync,
+  stopPositionSync,
 } from './bridge';
 
 // React hooks (recommended)
@@ -42,4 +52,5 @@ export {
   useGodotSession,
   usePlayerSeated,
   useSessionControls,
+  usePositionSync,
 } from './hooks';

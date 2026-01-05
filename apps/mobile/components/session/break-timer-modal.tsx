@@ -16,7 +16,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSession, formatTime } from '@/lib/session';
+import { useSessionStore, formatTime } from '@/lib/session';
 
 // Break duration options in minutes
 const BREAK_DURATIONS = [1, 3, 5, 10, 15] as const;
@@ -27,14 +27,12 @@ interface BreakTimerModalProps {
 
 export function BreakTimerModal({ visible }: BreakTimerModalProps) {
   const insets = useSafeAreaInsets();
-  const {
-    breakSession,
-    breakDurationMinutes,
-    setBreakDuration,
-    startBreak,
-    endBreak,
-    startAnotherSession,
-  } = useSession();
+  const breakSession = useSessionStore((s) => s.breakSession);
+  const breakDurationMinutes = useSessionStore((s) => s.breakDurationMinutes);
+  const setBreakDuration = useSessionStore((s) => s.setBreakDuration);
+  const startBreak = useSessionStore((s) => s.startBreak);
+  const endBreak = useSessionStore((s) => s.endBreak);
+  const startAnotherSession = useSessionStore((s) => s.startAnotherSession);
 
   // Break not started yet - show duration picker modal
   if (!breakSession) {

@@ -6,18 +6,26 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithPhoneNumber,
+  signOut as firebaseSignOut,
+} from "@react-native-firebase/auth";
+import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { userService } from "./user";
+import { cleanupSocialStore } from "../social";
 import type { AuthState, UserDoc, PhoneAuthState } from "./types";
 
+// Get auth instance
+const auth = getAuth();
+
 // ============================================================================
-// Enable test mode for phone auth in development
-// This MUST be set before any auth calls to work properly
+// Note: appVerificationDisabledForTesting is NOT used here because it 
+// interferes with reCAPTCHA verification on real devices. Only use it
+// on simulator with test phone numbers configured in Firebase Console.
 // ============================================================================
-if (__DEV__) {
-  console.log("[Auth] Enabling test mode for phone auth");
-  auth().settings.appVerificationDisabledForTesting = true;
-}
+
 
 // ============================================================================
 // Context
@@ -29,6 +37,7 @@ interface AuthContextValue extends AuthState {
   confirmCode: (code: string) => Promise<void>;
   phoneAuthState: PhoneAuthState;
   resetPhoneAuth: () => void;
+  clearPhoneAuthError: () => void;
 
   // Session tracking
   signOut: () => Promise<void>;
@@ -67,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Firebase caches auth state, so user stays logged in across app restarts
   // --------------------------------------------------------------------------
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log(
         "[Auth] State changed:",
         firebaseUser ? firebaseUser.uid : "null"
@@ -116,27 +125,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       console.log("[Auth] Sending verification code to:", phoneNumber);
-      console.log("[Auth] Test mode enabled:", auth().settings.appVerificationDisabledForTesting);
       
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+      const confirmation = await signInWithPhoneNumber(auth, phoneNumber);
       console.log("[Auth] Confirmation received:", confirmation.verificationId ? "YES" : "NO");
       
       confirmationRef.current = confirmation;
 
-      console.log("[Auth] Setting state to 'verifying'...");
       setPhoneAuthState({
         step: "verifying",
         verificationId: confirmation.verificationId,
         error: null,
       });
-      console.log("[Auth] State set to 'verifying' - UI should update now");
     } catch (error) {
       console.error("[Auth] Send code error:", error);
+      
       setPhoneAuthState({
         step: "error",
         verificationId: null,
-        error:
-          error instanceof Error ? error.message : "Failed to send code",
+        error: error instanceof Error ? error.message : "Failed to send code",
       });
     }
   }, []);
@@ -198,11 +204,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // --------------------------------------------------------------------------
+  // Clear error but keep verification state (for retrying code entry)
+  // --------------------------------------------------------------------------
+  const clearPhoneAuthError = useCallback(() => {
+    setPhoneAuthState((prev) => ({
+      ...prev,
+      step: prev.verificationId ? "verifying" : "idle",
+      error: null,
+    }));
+  }, []);
+
+  // --------------------------------------------------------------------------
   // Sign out
   // --------------------------------------------------------------------------
   const signOut = useCallback(async () => {
     try {
-      await auth().signOut();
+      // Cleanup social store subscriptions first
+      cleanupSocialStore();
+      
+      await firebaseSignOut(auth);
       setUserDoc(null);
     } catch (error) {
       console.error("[Auth] Sign out error:", error);
@@ -232,6 +252,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     sendVerificationCode,
     confirmCode,
     resetPhoneAuth,
+    clearPhoneAuthError,
     signOut,
     recordSession,
   };

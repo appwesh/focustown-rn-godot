@@ -3,6 +3,7 @@
  * 
  * Shown when user tries to end a session early.
  * Warns them they won't earn any coins.
+ * For group sessions, warns that it will FAIL for everyone (no rewards).
  */
 
 import React from 'react';
@@ -13,14 +14,16 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import { useSession } from '@/lib/session';
+import { useSessionStore } from '@/lib/session';
 
 interface AbandonConfirmModalProps {
   visible: boolean;
 }
 
 export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
-  const { confirmAbandonSession, cancelAbandonSession } = useSession();
+  const confirmAbandonSession = useSessionStore((s) => s.confirmAbandonSession);
+  const cancelAbandonSession = useSessionStore((s) => s.cancelAbandonSession);
+  const isGroupSession = useSessionStore((s) => s.isGroupSession);
 
   return (
     <Modal
@@ -32,7 +35,7 @@ export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
         <View style={styles.container}>
           {/* Warning Icon */}
           <View style={styles.iconContainer}>
-            <Text style={styles.icon}>⚠️</Text>
+            <Text style={styles.icon}>{isGroupSession ? '👥' : '⚠️'}</Text>
           </View>
 
           {/* Title */}
@@ -40,8 +43,9 @@ export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
 
           {/* Message */}
           <Text style={styles.message}>
-            You won't earn any coins if you quit now.{'\n'}
-            Your progress will be lost.
+            {isGroupSession
+              ? "This will fail the session for everyone.\nNo one in your group will earn any coins!"
+              : "You won't earn any coins if you quit now.\nYour progress will be lost."}
           </Text>
 
           {/* Buttons */}
@@ -65,7 +69,9 @@ export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
               ]}
               onPress={confirmAbandonSession}
             >
-              <Text style={styles.confirmButtonText}>End Session</Text>
+              <Text style={styles.confirmButtonText}>
+                {isGroupSession ? 'End for All' : 'End Session'}
+              </Text>
             </Pressable>
           </View>
         </View>

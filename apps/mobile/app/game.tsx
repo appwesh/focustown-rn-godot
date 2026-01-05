@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, View, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,9 +17,19 @@ import {
   useGodotSession,
   usePlayerSeated,
   useSessionControls,
+  spawnRemotePlayer,
+  updateRemotePlayerState,
+  removeRemotePlayer,
+  isGodotReady,
+  type SpotLocation,
 } from '@/lib/godot';
-import { SessionProvider, useSession } from '@/lib/session';
-import { useAuth } from '@/lib/firebase';
+import {
+  useSessionStore,
+  setGodotCallbacks,
+  clearGodotCallbacks,
+} from '@/lib/session';
+import { useAuth, groupsService } from '@/lib/firebase';
+import { useSocialStore } from '@/lib/social';
 import { PCK_URL } from '@/constants/game';
 
 // Assets
@@ -27,25 +37,276 @@ const homeIcon = require('@/assets/ui/home.png');
 const settingsIcon = require('@/assets/ui/settings.png');
 
 /**
- * Inner game content that has access to session context
+ * Main game screen with focus session management
  */
-function GameContent() {
+export default function GameScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [debugVisible, setDebugVisible] = useState(false);
 
-  const { recordSession } = useAuth();
+  const { recordSession, userDoc, user } = useAuth();
 
-  // Session state from context
+  // Social store (for group session)
+  const lobbyGroupId = useSocialStore((s) => s.lobbyGroupId);
+  const lobbyHostId = useSocialStore((s) => s.lobbyHostId);
+  const resetLobbyState = useSocialStore((s) => s.resetLobbyState);
+
+  // Godot controls
   const {
-    phase,
-    showingAbandonConfirm,
-    onPlayerSeated,
-    endSession,
-    requestAbandonSession,
-  } = useSession();
+    startSession: startGodotSession,
+    endSession: endGodotSession,
+    cancelSetup: cancelGodotSetup,
+  } = useSessionControls();
 
-  // Handle session completion from Godot - write to Firebase and update RN state
+  // Session state from Zustand store
+  const phase = useSessionStore((s) => s.phase);
+  const showingAbandonConfirm = useSessionStore((s) => s.showingAbandonConfirm);
+  const isGroupSession = useSessionStore((s) => s.isGroupSession);
+  const groupSessionId = useSessionStore((s) => s.groupSessionId);
+  const onPlayerSeated = useSessionStore((s) => s.onPlayerSeated);
+  const endSession = useSessionStore((s) => s.endSession);
+  const requestAbandonSession = useSessionStore((s) => s.requestAbandonSession);
+  const setUser = useSessionStore((s) => s.setUser);
+  const setGroupSession = useSessionStore((s) => s.setGroupSession);
+  const updateConfig = useSessionStore((s) => s.updateConfig);
+  const startSession = useSessionStore((s) => s.startSession);
+  const initialize = useSessionStore((s) => s._initialize);
+
+  // Initialize store lifecycle (AppState listener, notifications, etc.)
+  useEffect(() => {
+    const cleanup = initialize();
+    return cleanup;
+  }, [initialize]);
+
+  // Set user in store when auth changes
+  useEffect(() => {
+    if (user && userDoc) {
+      setUser({
+        odId: user.uid,
+        displayName: userDoc.displayName || 'Anonymous',
+      });
+    } else {
+      setUser(null);
+    }
+  }, [user, userDoc, setUser]);
+
+  // Set group session from lobby state on mount
+  useEffect(() => {
+    if (lobbyGroupId) {
+      console.log('[Game] Setting group session:', lobbyGroupId);
+      setGroupSession(lobbyGroupId);
+    }
+    
+    return () => {
+      // Clear group session on unmount
+      setGroupSession(null);
+      // Reset lobby state if this was a group session
+      if (lobbyGroupId) {
+        resetLobbyState();
+      }
+    };
+  }, [lobbyGroupId, setGroupSession, resetLobbyState]);
+
+  // Subscribe to group session status and auto-end when completed/cancelled/failed
+  useEffect(() => {
+    if (!groupSessionId || !isGroupSession) return;
+    
+    console.log('[Game] Subscribing to group session status:', groupSessionId);
+    
+    const unsubscribe = groupsService.subscribeToGroupSession(groupSessionId, (group) => {
+      if (!group) {
+        console.log('[Game] Group session deleted/not found');
+        return;
+      }
+      
+      // If group session ended, handle it
+      if (group.status === 'completed' || group.status === 'cancelled' || group.status === 'failed') {
+        console.log('[Game] Group session ended:', group.status, 'current phase:', phase);
+        
+        if (group.status === 'failed') {
+          // Someone abandoned - trigger abandon flow (shows "failed" modal)
+          // Only if we have an active session, otherwise just go home
+          if (phase === 'active') {
+            console.log('[Game] Group session FAILED during active - triggering abandon');
+            useSessionStore.getState().confirmAbandonSession(true);
+          } else {
+            // Not in active session yet - just show abandoned modal
+            console.log('[Game] Group session FAILED before active - showing abandoned');
+            useSessionStore.getState().confirmAbandonSession(true);
+          }
+        } else if (phase === 'active') {
+          // Completed normally - calculate rewards
+          const activeSession = useSessionStore.getState().activeSession;
+          if (activeSession) {
+            const elapsed = Math.floor((Date.now() - activeSession.startedAt) / 1000);
+            const coinsPerMinute = 10;
+            const coins = Math.floor((elapsed / 60) * coinsPerMinute);
+            endSession(elapsed, coins);
+          }
+        }
+        // Reset lobby state since group session is done
+        resetLobbyState();
+      }
+    });
+    
+    return () => {
+      console.log('[Game] Unsubscribing from group session status');
+      unsubscribe();
+    };
+  }, [groupSessionId, isGroupSession, phase, endSession, resetLobbyState]);
+
+  // Simple state-based multiplayer sync (no position tracking)
+  // Also handles auto-start when all participants are seated
+  useEffect(() => {
+    if (!groupSessionId || !isGroupSession || !user || !userDoc) return;
+
+    console.log('[Game] Setting up multiplayer state sync for group:', groupSessionId);
+
+    const myDisplayName = userDoc.displayName || 'Anonymous';
+    const myUserId = user.uid;
+
+    // Set our initial state to 'entrance'
+    groupsService.updateParticipantState(
+      groupSessionId,
+      myUserId,
+      myDisplayName,
+      'entrance',
+      null
+    ).catch(console.error);
+
+    // Track remote players
+    const knownPlayers = new Set<string>();
+    const lastKnownStates = new Map<string, string>();
+    let hasAutoStarted = false;
+    
+    // Buffer for pending spawns (when Godot isn't ready yet)
+    const pendingSpawns = new Map<string, { displayName: string; state: 'entrance' | 'seated'; spotId: string | null }>();
+    let godotReadyInterval: ReturnType<typeof setInterval> | null = null;
+
+    // Process pending spawns when Godot is ready
+    const processPendingSpawns = () => {
+      if (!isGodotReady()) return;
+      
+      console.log('[Game] Godot ready, processing', pendingSpawns.size, 'pending spawns');
+      for (const [odId, playerState] of pendingSpawns) {
+        spawnRemotePlayer(odId, playerState.displayName, playerState.state, playerState.spotId);
+        knownPlayers.add(odId);
+        lastKnownStates.set(odId, playerState.state);
+      }
+      pendingSpawns.clear();
+      
+      if (godotReadyInterval) {
+        clearInterval(godotReadyInterval);
+        godotReadyInterval = null;
+      }
+    };
+
+    // Subscribe to group session updates for participant states
+    const unsubscribe = groupsService.subscribeToGroupSession(groupSessionId, (group) => {
+      if (!group || !group.participantStates) return;
+
+      const currentUserIds = Object.keys(group.participantStates);
+      
+      // Spawn/update remote players (excluding self)
+      for (const [odId, state] of Object.entries(group.participantStates)) {
+        if (odId === myUserId) continue; // Skip self
+        
+        const playerState = state as { 
+          displayName: string; 
+          state: 'entrance' | 'seated'; 
+          spotId: string | null;
+        };
+        
+        const isInPending = pendingSpawns.has(odId);
+        const isKnown = knownPlayers.has(odId);
+        const isNewPlayer = !isKnown && !isInPending;
+        const lastState = lastKnownStates.get(odId);
+        const stateChanged = lastState !== playerState.state;
+        
+        if (isNewPlayer) {
+          // Check if Godot is ready
+          if (isGodotReady()) {
+            console.log('[Game] Spawning remote player:', odId, playerState.displayName, playerState.state);
+            spawnRemotePlayer(odId, playerState.displayName, playerState.state, playerState.spotId);
+            knownPlayers.add(odId);
+            lastKnownStates.set(odId, playerState.state);
+          } else {
+            // Buffer for later
+            console.log('[Game] Godot not ready, buffering spawn for:', odId);
+            pendingSpawns.set(odId, playerState);
+            
+            // Start polling for Godot ready
+            if (!godotReadyInterval) {
+              godotReadyInterval = setInterval(processPendingSpawns, 500);
+            }
+          }
+        } else if (isInPending && stateChanged) {
+          // Player is pending spawn but state changed - update the pending entry
+          console.log('[Game] Updating pending player state:', odId, playerState.state);
+          pendingSpawns.set(odId, playerState);
+        } else if (isKnown && stateChanged) {
+          // State changed - update (teleport to seat or back to entrance)
+          console.log('[Game] Player state changed:', odId, playerState.state, playerState.spotId);
+          updateRemotePlayerState(odId, playerState.state, playerState.spotId);
+          lastKnownStates.set(odId, playerState.state);
+        }
+      }
+      
+      // Remove players that left
+      for (const odId of knownPlayers) {
+        if (!currentUserIds.includes(odId)) {
+          removeRemotePlayer(odId);
+          knownPlayers.delete(odId);
+          lastKnownStates.delete(odId);
+        }
+      }
+
+      // Check if all participants are seated for auto-start
+      if (!hasAutoStarted && group.participantIds && group.participantStates) {
+        const allSeated = group.participantIds.every(
+          id => group.participantStates?.[id]?.state === 'seated'
+        );
+        
+        if (allSeated && group.participantIds.length > 0) {
+          console.log('[Game] All participants seated, auto-starting session');
+          hasAutoStarted = true;
+          
+          // Update config with group's duration and start
+          const durationMinutes = Math.floor(group.plannedDuration / 60);
+          updateConfig({ durationMinutes });
+          startSession();
+        }
+      }
+    });
+
+    return () => {
+      console.log('[Game] Cleaning up multiplayer state');
+      if (godotReadyInterval) clearInterval(godotReadyInterval);
+      groupsService.removeParticipantState(groupSessionId, myUserId).catch(console.error);
+      for (const odId of knownPlayers) {
+        removeRemotePlayer(odId);
+      }
+      knownPlayers.clear();
+      lastKnownStates.clear();
+      pendingSpawns.clear();
+      unsubscribe();
+    };
+  }, [groupSessionId, isGroupSession, user, userDoc, updateConfig, startSession]);
+
+  // Connect Godot callbacks to store
+  useEffect(() => {
+    setGodotCallbacks({
+      onStartSession: startGodotSession,
+      onEndSession: endGodotSession,
+      onCancelSetup: cancelGodotSetup,
+    });
+
+    return () => {
+      clearGodotCallbacks();
+    };
+  }, [startGodotSession, endGodotSession, cancelGodotSetup]);
+
+  // Handle session completion from Godot - write to Firebase and update store
   const handleSessionComplete = useCallback(
     (focusTime: number, coinsEarned: number) => {
       console.log('[Game] Session complete:', focusTime, 's,', coinsEarned, 'coins');
@@ -55,9 +316,30 @@ function GameContent() {
     [recordSession, endSession]
   );
 
+  // Handle player seated - receives location from Godot
+  const handlePlayerSeated = useCallback(
+    (location: SpotLocation) => {
+      console.log('[Game] Player seated at:', location.buildingId, location.spotId);
+      onPlayerSeated(location);
+      
+      // Update our state in Firestore for multiplayer sync
+      if (groupSessionId && isGroupSession && user && userDoc) {
+        const myDisplayName = userDoc.displayName || 'Anonymous';
+        groupsService.updateParticipantState(
+          groupSessionId,
+          user.uid,
+          myDisplayName,
+          'seated',
+          location.spotId
+        ).catch(console.error);
+      }
+    },
+    [onPlayerSeated, groupSessionId, isGroupSession, user, userDoc]
+  );
+
   // Register Godot callbacks
   useGodotSession(handleSessionComplete);
-  usePlayerSeated(onPlayerSeated);
+  usePlayerSeated(handlePlayerSeated);
 
   // Hide top bar during modals
   const showTopBar = (phase === 'idle' || phase === 'active') && !showingAbandonConfirm;
@@ -107,7 +389,8 @@ function GameContent() {
       )}
 
       {/* Session Modals */}
-      <SessionSetupModal visible={phase === 'setup'} />
+      {/* Setup modal only for solo sessions - group sessions auto-start when all seated */}
+      <SessionSetupModal visible={phase === 'setup' && !isGroupSession} />
       <SessionCompleteModal visible={phase === 'complete'} />
       <SessionAbandonedModal visible={phase === 'abandoned'} />
       <BreakTimerModal visible={phase === 'break'} />
@@ -121,28 +404,6 @@ function GameContent() {
         />
       )}
     </View>
-  );
-}
-
-/**
- * Main game screen wrapped with SessionProvider
- * Godot callbacks are passed to provider to sync RN state with Godot
- */
-export default function GameScreen() {
-  const {
-    startSession: startGodotSession,
-    endSession: endGodotSession,
-    cancelSetup: cancelGodotSetup,
-  } = useSessionControls();
-
-  return (
-    <SessionProvider
-      onStartSession={startGodotSession}
-      onCancelSetup={cancelGodotSetup}
-      onEndSession={endGodotSession}
-    >
-      <GameContent />
-    </SessionProvider>
   );
 }
 

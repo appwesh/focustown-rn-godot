@@ -13,7 +13,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSession, formatTime } from '@/lib/session';
+import { useSessionStore, formatTime } from '@/lib/session';
 
 interface ActiveSessionOverlayProps {
   visible: boolean;
@@ -22,7 +22,8 @@ interface ActiveSessionOverlayProps {
 
 export function ActiveSessionOverlay({ visible, onEndEarly }: ActiveSessionOverlayProps) {
   const insets = useSafeAreaInsets();
-  const { activeSession, config } = useSession();
+  const activeSession = useSessionStore((s) => s.activeSession);
+  const config = useSessionStore((s) => s.config);
 
   if (!visible || !activeSession) return null;
 
