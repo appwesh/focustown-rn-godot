@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m2jrlxigopuh"]
+
+[resource]
+resource_name = "Cushion"
+cull_mode = 2
+albedo_color = Color(0.76580316, 0.5364334, 0.38392028, 1)

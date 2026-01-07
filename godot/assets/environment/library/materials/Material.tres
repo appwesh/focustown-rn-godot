@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bxmwik5aj3nwm"]
+
+[ext_resource type="Texture2D" uid="uid://btyndnbskgmsg" path="res://3D Models/Environment/Library4/Library4_WoodenFloor-new.png" id="1_lj6ra"]
+
+[resource]
+resource_name = "Material"
+cull_mode = 2
+albedo_texture = ExtResource("1_lj6ra")
+roughness = 0.5
+uv1_scale = Vector3(3, 12, 1)
+uv1_offset = Vector3(0, -11, 0)

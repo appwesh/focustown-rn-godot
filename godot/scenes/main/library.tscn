@@ -1,0 +1,248 @@
+[gd_scene load_steps=11 format=3 uid="uid://j8owswk83ead"]
+
+[ext_resource type="PackedScene" uid="uid://d2lbt1eq6si73" path="res://assets/environment/library/Library4.glb" id="1_library"]
+[ext_resource type="Shader" uid="uid://ddpygkxlk7hau" path="res://shaders/ac-nh-camera-1.gdshader" id="2_shader"]
+[ext_resource type="PackedScene" uid="uid://player001" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="Script" uid="uid://dxftxcnnaxhub" path="res://scripts/camera/camera_follow.gd" id="4_camera"]
+[ext_resource type="PackedScene" path="res://scenes/ui/session_timer.tscn" id="5_timer"]
+[ext_resource type="PackedScene" path="res://scenes/ui/session_complete_popup.tscn" id="6_popup"]
+[ext_resource type="PackedScene" path="res://scenes/world/study_spot.tscn" id="7_studyspot"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(6, 0.2, 16)
+
+[sub_resource type="Environment" id="Environment_1qg5g"]
+background_mode = 2
+ambient_light_source = 2
+ambient_light_color = Color(0.7490196, 0.68235296, 0.6392157, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xjjcb"]
+shader = ExtResource("2_shader")
+shader_parameter/brightness = 1.0000000475
+shader_parameter/saturation = 2.0
+shader_parameter/tint_color = Color(0.95, 0.92, 0.85, 1)
+shader_parameter/tint_strength = 0.50000002375
+shader_parameter/contrast = 0.8
+shader_parameter/grain_amount = 0.03
+shader_parameter/animate_grain = false
+
+[node name="Library" type="Node3D"]
+
+[node name="Environment" parent="." instance=ExtResource("1_library")]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Player" parent="." groups=["player"] instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 6)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.86602545, 0.49999994, 0, -0.49999994, 0.86602545, 0, 8, 12)
+current = true
+fov = 35.0
+near = 0.1
+far = 1000.0
+script = ExtResource("4_camera")
+target_path = NodePath("../Player")
+normal_offset = Vector3(0, 6, 4)
+
+[node name="Lamp_Light_1" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.280896, 0.8542972, 2.528687)
+light_color = Color(1, 0.7529412, 0.45882353, 1)
+light_energy = 0.3
+light_specular = 0.2
+shadow_bias = 7.44
+shadow_blur = 7.7
+omni_range = 1.0
+omni_attenuation = 2.0
+
+[node name="Lamp_Light_2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -1.066462, 0.8542972, 2.5318916)
+light_color = Color(1, 0.7529412, 0.45882353, 1)
+light_energy = 0.3
+light_specular = 0.2
+omni_range = 1.0
+omni_attenuation = 2.0
+
+[node name="Lamp_Light_3" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.2873352, 0.8542972, 6.3070807)
+light_color = Color(1, 0.7529412, 0.45882353, 1)
+light_energy = 0.3
+light_specular = 0.2
+omni_range = 1.0
+omni_attenuation = 2.0
+
+[node name="Lamp_Light_4" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -1.0600228, 0.8542972, 6.3102856)
+light_color = Color(1, 0.7529412, 0.45882353, 1)
+light_energy = 0.3
+light_specular = 0.2
+omni_range = 1.0
+omni_attenuation = 2.0
+
+[node name="Lamp_Light_5" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.2860713, 0.8542972, 10.078499)
+light_color = Color(1, 0.7529412, 0.45882353, 1)
+light_energy = 0.3
+light_specular = 0.2
+omni_range = 1.0
+omni_attenuation = 2.0
+
+[node name="Lamp_Light_6" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -1.0612867, 0.8542972, 10.081703)
+light_color = Color(1, 0.7529412, 0.45882353, 1)
+light_energy = 0.3
+light_specular = 0.2
+distance_fade_enabled = true
+omni_range = 1.0
+omni_attenuation = 2.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1qg5g")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5347653, 0.8450007, 0, -0.8450007, 0.5347653, 0, 5.8717766, 13.015926)
+light_color = Color(1, 0.99215686, 0.8156863, 1)
+light_energy = 0.8
+shadow_enabled = true
+shadow_opacity = 0.8
+shadow_blur = 3.5
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.02843225, -0.73309785, 0.6795288, 0.0052676196, 0.6796842, 0.733486, -0.9995819, 0.024434153, -0.015463265, 4.1795697, 5.8717766, 6.462247)
+light_color = Color(1, 0.99215686, 0.8156863, 1)
+light_energy = 0.1
+light_specular = 0.0
+shadow_enabled = true
+shadow_opacity = 0.5
+sky_mode = 1
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.25560606, 2.6624734, 0.45293474)
+light_specular = 1.357
+spot_range = 0.9507018
+spot_angle = 60.898804
+
+[node name="SpotLight3D2" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.7713345, 2.6624734, -0.1635189)
+light_energy = 3.5
+light_specular = 0.12
+spot_range = 3.6502874
+spot_angle = 30.336704
+
+[node name="SpotLight3D3" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.697242, 2.6624734, -0.1635189)
+light_energy = 3.5
+light_specular = 0.12
+spot_range = 3.6502874
+spot_angle = 29.198357
+
+[node name="SpotLight3D4" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.04670155, 2.6624734, 3.3766813)
+light_energy = 4.0
+light_specular = 0.12
+spot_range = 3.6502874
+spot_angle = 35.147945
+
+[node name="SpotLight3D5" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.04670155, 2.6624734, 6.105555)
+light_energy = 4.0
+light_specular = 0.12
+spot_range = 3.6502874
+spot_angle = 35.147945
+
+[node name="SpotLight3D6" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.04670155, 2.6624734, 8.620541)
+light_energy = 4.0
+light_specular = 0.12
+spot_range = 3.6502874
+spot_angle = 35.147945
+
+[node name="SpotLight3D7" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.04670155, 2.6624734, 11.316816)
+light_energy = 4.0
+light_specular = 0.12
+spot_range = 3.6502874
+spot_angle = 35.147945
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7252347, 3.5149508)
+light_size = 0.566
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7252347, 6.7041345)
+light_size = 0.566
+
+[node name="OmniLight3D4" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7252347, 10.035877)
+light_size = 0.566
+
+[node name="OmniLight3D5" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7252347, 12.298862)
+light_size = 0.566
+
+[node name="StudySpots" type="Node3D" parent="."]
+
+[node name="Spot1" parent="StudySpots" instance=ExtResource("7_studyspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, 2)
+sit_offset = Vector3(0, 0.4, 0)
+sit_rotation = 90.0
+
+[node name="Spot2" parent="StudySpots" instance=ExtResource("7_studyspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 2)
+sit_offset = Vector3(0, 0.4, 0)
+sit_rotation = -90.0
+
+[node name="Spot3" parent="StudySpots" instance=ExtResource("7_studyspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.24980342, 5)
+sit_offset = Vector3(0, 0.4, 0)
+sit_rotation = 90.0
+
+[node name="Spot4" parent="StudySpots" instance=ExtResource("7_studyspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04542458, 0.36704457, 6.7093315)
+sit_offset = Vector3(0, 0.4, 0)
+sit_rotation = -90.0
+
+[node name="Spot5" parent="StudySpots" instance=ExtResource("7_studyspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, 8)
+sit_offset = Vector3(0, 0.4, 0)
+sit_rotation = 90.0
+
+[node name="Spot6" parent="StudySpots" instance=ExtResource("7_studyspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 8)
+sit_offset = Vector3(0, 0.4, 0)
+sit_rotation = -90.0
+
+[node name="Spot7" parent="StudySpots" instance=ExtResource("7_studyspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, 11)
+sit_offset = Vector3(0, 0.4, 0)
+sit_rotation = 90.0
+
+[node name="Spot8" parent="StudySpots" instance=ExtResource("7_studyspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 11)
+sit_offset = Vector3(0, 0.4, 0)
+sit_rotation = -90.0
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="SessionTimer" parent="UI" instance=ExtResource("5_timer")]
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SessionCompletePopup" parent="UI" instance=ExtResource("6_popup")]
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PostProcessing" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="ColorRect" type="ColorRect" parent="PostProcessing"]
+material = SubResource("ShaderMaterial_xjjcb")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

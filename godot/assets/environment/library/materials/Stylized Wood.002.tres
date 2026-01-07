@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://d35sw8qhmhvel"]
+
+[ext_resource type="Texture2D" uid="uid://btbtjai4qtoff" path="res://3D Models/Environment/Library4/Library4_old_wood-roughness.png" id="1_8l5pw"]
+
+[resource]
+resource_name = "Stylized Wood.002"
+cull_mode = 2
+albedo_color = Color(0.36708254, 0.2237638, 0.13970603, 1)
+metallic_texture = ExtResource("1_8l5pw")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("1_8l5pw")
+roughness_texture_channel = 1

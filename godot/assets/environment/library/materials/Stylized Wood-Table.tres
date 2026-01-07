@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://ns81wanr26qb"]
+
+[ext_resource type="Texture2D" uid="uid://de38uudrug1vr" path="res://3D Models/Environment/Library4/Library4_Wood_1.jpg" id="1_8f1t1"]
+
+[resource]
+resource_name = "Stylized Wood-Table"
+cull_mode = 2
+albedo_texture = ExtResource("1_8f1t1")
+metallic = 0.13181818
+roughness = 0.6181818
