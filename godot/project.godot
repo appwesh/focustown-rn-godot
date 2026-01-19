@@ -31,6 +31,10 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/unidot_importer/plugin.cfg")
+
 [input]
 
 move_up={
