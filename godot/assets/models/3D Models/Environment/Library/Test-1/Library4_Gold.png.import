@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dc8bx0gqnmusk"
-path="res://.godot/imported/Library4_Gold.png-15dedaae95cf4e55d1aecbf3cc5b33e9.ctex"
+path.s3tc="res://.godot/imported/Library4_Gold.png-15dedaae95cf4e55d1aecbf3cc5b33e9.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_Gold.png-15dedaae95cf4e55d1aecbf3cc5b33e9.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "c89602b6cb820de428467fde24d6eaa5"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Environment/Library/Test-1/Library4_Gold.png"
-dest_files=["res://.godot/imported/Library4_Gold.png-15dedaae95cf4e55d1aecbf3cc5b33e9.ctex"]
+dest_files=["res://.godot/imported/Library4_Gold.png-15dedaae95cf4e55d1aecbf3cc5b33e9.s3tc.ctex", "res://.godot/imported/Library4_Gold.png-15dedaae95cf4e55d1aecbf3cc5b33e9.etc2.ctex"]
 
 [params]
 

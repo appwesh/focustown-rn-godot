@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://uto4ibu4ofbl"
-path="res://.godot/imported/Library4_WoodenFloor-new.png-c1c187d868b81b70e6c70d75ff6acbf0.ctex"
+path.s3tc="res://.godot/imported/Library4_WoodenFloor-new.png-c1c187d868b81b70e6c70d75ff6acbf0.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_WoodenFloor-new.png-c1c187d868b81b70e6c70d75ff6acbf0.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "1e6bec8f6bdfd2615953f4df7cdcf077"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Environment/Library/Test-1/Library4_WoodenFloor-new.png"
-dest_files=["res://.godot/imported/Library4_WoodenFloor-new.png-c1c187d868b81b70e6c70d75ff6acbf0.ctex"]
+dest_files=["res://.godot/imported/Library4_WoodenFloor-new.png-c1c187d868b81b70e6c70d75ff6acbf0.s3tc.ctex", "res://.godot/imported/Library4_WoodenFloor-new.png-c1c187d868b81b70e6c70d75ff6acbf0.etc2.ctex"]
 
 [params]
 

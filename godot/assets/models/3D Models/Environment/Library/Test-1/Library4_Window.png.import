@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dkoobiqjyqvsw"
-path="res://.godot/imported/Library4_Window.png-8c9e3b2475fe1dd00b26ce9760703749.ctex"
+path.s3tc="res://.godot/imported/Library4_Window.png-8c9e3b2475fe1dd00b26ce9760703749.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_Window.png-8c9e3b2475fe1dd00b26ce9760703749.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "52ea0039a9af8869f602f294f74d742f"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Environment/Library/Test-1/Library4_Window.png"
-dest_files=["res://.godot/imported/Library4_Window.png-8c9e3b2475fe1dd00b26ce9760703749.ctex"]
+dest_files=["res://.godot/imported/Library4_Window.png-8c9e3b2475fe1dd00b26ce9760703749.s3tc.ctex", "res://.godot/imported/Library4_Window.png-8c9e3b2475fe1dd00b26ce9760703749.etc2.ctex"]
 
 [params]
 

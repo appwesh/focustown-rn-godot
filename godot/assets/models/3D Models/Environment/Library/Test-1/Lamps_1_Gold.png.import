@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://2abwqmxcjglt"
-path="res://.godot/imported/Lamps_1_Gold.png-f90296e519cd9cf18e93b621c5b7c6d0.ctex"
+path.s3tc="res://.godot/imported/Lamps_1_Gold.png-f90296e519cd9cf18e93b621c5b7c6d0.s3tc.ctex"
+path.etc2="res://.godot/imported/Lamps_1_Gold.png-f90296e519cd9cf18e93b621c5b7c6d0.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "c89602b6cb820de428467fde24d6eaa5"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Environment/Library/Test-1/Lamps_1_Gold.png"
-dest_files=["res://.godot/imported/Lamps_1_Gold.png-f90296e519cd9cf18e93b621c5b7c6d0.ctex"]
+dest_files=["res://.godot/imported/Lamps_1_Gold.png-f90296e519cd9cf18e93b621c5b7c6d0.s3tc.ctex", "res://.godot/imported/Lamps_1_Gold.png-f90296e519cd9cf18e93b621c5b7c6d0.etc2.ctex"]
 
 [params]
 

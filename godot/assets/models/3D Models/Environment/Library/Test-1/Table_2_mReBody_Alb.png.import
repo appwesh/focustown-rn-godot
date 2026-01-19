@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://pucccp54wuth"
-path="res://.godot/imported/Table_2_mReBody_Alb.png-4a9fa5b229e23f13a388878bc40e4d55.ctex"
+path.s3tc="res://.godot/imported/Table_2_mReBody_Alb.png-4a9fa5b229e23f13a388878bc40e4d55.s3tc.ctex"
+path.etc2="res://.godot/imported/Table_2_mReBody_Alb.png-4a9fa5b229e23f13a388878bc40e4d55.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "bd5c7523b8591b783c1571c213d9807c"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Environment/Library/Test-1/Table_2_mReBody_Alb.png"
-dest_files=["res://.godot/imported/Table_2_mReBody_Alb.png-4a9fa5b229e23f13a388878bc40e4d55.ctex"]
+dest_files=["res://.godot/imported/Table_2_mReBody_Alb.png-4a9fa5b229e23f13a388878bc40e4d55.s3tc.ctex", "res://.godot/imported/Table_2_mReBody_Alb.png-4a9fa5b229e23f13a388878bc40e4d55.etc2.ctex"]
 
 [params]
 

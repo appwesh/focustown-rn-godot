@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bcx5bu6vkcctm"
-path="res://.godot/imported/Library-10personTest-2_spritesheet_Mouth.png-0d914e41fd4fb735e217da35c09bd030.ctex"
+path.s3tc="res://.godot/imported/Library-10personTest-2_spritesheet_Mouth.png-0d914e41fd4fb735e217da35c09bd030.s3tc.ctex"
+path.etc2="res://.godot/imported/Library-10personTest-2_spritesheet_Mouth.png-0d914e41fd4fb735e217da35c09bd030.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "24fea64cccb03576dec7bf1af3a24bb8"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Character/Library-10personTest-2_spritesheet_Mouth.png"
-dest_files=["res://.godot/imported/Library-10personTest-2_spritesheet_Mouth.png-0d914e41fd4fb735e217da35c09bd030.ctex"]
+dest_files=["res://.godot/imported/Library-10personTest-2_spritesheet_Mouth.png-0d914e41fd4fb735e217da35c09bd030.s3tc.ctex", "res://.godot/imported/Library-10personTest-2_spritesheet_Mouth.png-0d914e41fd4fb735e217da35c09bd030.etc2.ctex"]
 
 [params]
 

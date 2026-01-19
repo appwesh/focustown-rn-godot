@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cwn4qhlb8qdag"
-path="res://.godot/imported/Library-10personTest-2_spritesheet_Eyes-Blue.png-e5c13427df507fcf64819bbaea05eadb.ctex"
+path.s3tc="res://.godot/imported/Library-10personTest-2_spritesheet_Eyes-Blue.png-e5c13427df507fcf64819bbaea05eadb.s3tc.ctex"
+path.etc2="res://.godot/imported/Library-10personTest-2_spritesheet_Eyes-Blue.png-e5c13427df507fcf64819bbaea05eadb.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "afe020f1d68a420122b4885ca5f6e812"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Character/Library-10personTest-2_spritesheet_Eyes-Blue.png"
-dest_files=["res://.godot/imported/Library-10personTest-2_spritesheet_Eyes-Blue.png-e5c13427df507fcf64819bbaea05eadb.ctex"]
+dest_files=["res://.godot/imported/Library-10personTest-2_spritesheet_Eyes-Blue.png-e5c13427df507fcf64819bbaea05eadb.s3tc.ctex", "res://.godot/imported/Library-10personTest-2_spritesheet_Eyes-Blue.png-e5c13427df507fcf64819bbaea05eadb.etc2.ctex"]
 
 [params]
 

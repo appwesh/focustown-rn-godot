@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bxx0r3mq6vf1q"
-path="res://.godot/imported/Library4_BookSplines.png-fc011378371e49702cdc05cc3a9bc8b0.ctex"
+path.s3tc="res://.godot/imported/Library4_BookSplines.png-fc011378371e49702cdc05cc3a9bc8b0.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_BookSplines.png-fc011378371e49702cdc05cc3a9bc8b0.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "f5ca385c341ca532c0597b978899cd48"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Environment/Library/Test-1/Library4_BookSplines.png"
-dest_files=["res://.godot/imported/Library4_BookSplines.png-fc011378371e49702cdc05cc3a9bc8b0.ctex"]
+dest_files=["res://.godot/imported/Library4_BookSplines.png-fc011378371e49702cdc05cc3a9bc8b0.s3tc.ctex", "res://.godot/imported/Library4_BookSplines.png-fc011378371e49702cdc05cc3a9bc8b0.etc2.ctex"]
 
 [params]
 

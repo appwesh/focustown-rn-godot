@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bgh01gxwsye0f"
-path="res://.godot/imported/Library4_old_wood-roughness.png-e2b1186a3e3e4a4eb73f8bad0cf36a86.ctex"
+path.s3tc="res://.godot/imported/Library4_old_wood-roughness.png-e2b1186a3e3e4a4eb73f8bad0cf36a86.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_old_wood-roughness.png-e2b1186a3e3e4a4eb73f8bad0cf36a86.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "ee9d3a32ec9b2d25b6a0dd9e1541bc54"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Environment/Library/Test-1/Library4_old_wood-roughness.png"
-dest_files=["res://.godot/imported/Library4_old_wood-roughness.png-e2b1186a3e3e4a4eb73f8bad0cf36a86.ctex"]
+dest_files=["res://.godot/imported/Library4_old_wood-roughness.png-e2b1186a3e3e4a4eb73f8bad0cf36a86.s3tc.ctex", "res://.godot/imported/Library4_old_wood-roughness.png-e2b1186a3e3e4a4eb73f8bad0cf36a86.etc2.ctex"]
 
 [params]
 

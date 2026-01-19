@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cojww26jv7um1"
-path="res://.godot/imported/Library-10personTest-2_Casual_Character.png-b4ba7e9368a0baa4233723a7de84903c.ctex"
+path.s3tc="res://.godot/imported/Library-10personTest-2_Casual_Character.png-b4ba7e9368a0baa4233723a7de84903c.s3tc.ctex"
+path.etc2="res://.godot/imported/Library-10personTest-2_Casual_Character.png-b4ba7e9368a0baa4233723a7de84903c.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "487f3c24f35ab7d1bc4111a59b915894"
@@ -14,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/3D Models/Character/Library-10personTest-2_Casual_Character.png"
-dest_files=["res://.godot/imported/Library-10personTest-2_Casual_Character.png-b4ba7e9368a0baa4233723a7de84903c.ctex"]
+dest_files=["res://.godot/imported/Library-10personTest-2_Casual_Character.png-b4ba7e9368a0baa4233723a7de84903c.s3tc.ctex", "res://.godot/imported/Library-10personTest-2_Casual_Character.png-b4ba7e9368a0baa4233723a7de84903c.etc2.ctex"]
 
 [params]
 
