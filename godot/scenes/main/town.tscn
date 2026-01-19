@@ -1,15 +1,15 @@
-[gd_scene load_steps=19 format=3 uid="uid://town001"]
+[gd_scene load_steps=18 format=3 uid="uid://town001"]
 
 [ext_resource type="PackedScene" uid="uid://player001" path="res://scenes/player/player.tscn" id="1_player"]
-[ext_resource type="Script" path="res://scripts/camera/camera_follow.gd" id="2_camera"]
+[ext_resource type="Script" uid="uid://dxftxcnnaxhub" path="res://scripts/camera/camera_follow.gd" id="2_camera"]
 [ext_resource type="PackedScene" uid="uid://house001" path="res://scenes/buildings/house.tscn" id="3_house"]
-[ext_resource type="PackedScene" path="res://assets/models/tree-snow-a.glb" id="7_tree_a"]
-[ext_resource type="PackedScene" path="res://assets/models/tree-snow-b.glb" id="8_tree_b"]
-[ext_resource type="PackedScene" path="res://assets/models/tree-decorated.glb" id="9_tree_decorated"]
-[ext_resource type="PackedScene" path="res://assets/models/lantern.glb" id="10_lantern"]
-[ext_resource type="PackedScene" path="res://assets/models/bench.glb" id="11_bench"]
-[ext_resource type="PackedScene" path="res://assets/models/snowman.glb" id="12_snowman"]
-[ext_resource type="PackedScene" path="res://assets/models/rocks-medium.glb" id="14_rocks"]
+[ext_resource type="PackedScene" uid="uid://c8qgwlsd5cv1s" path="res://assets/models/tree-snow-a.glb" id="7_tree_a"]
+[ext_resource type="PackedScene" uid="uid://bey5243pl8vlu" path="res://assets/models/tree-snow-b.glb" id="8_tree_b"]
+[ext_resource type="PackedScene" uid="uid://j2bfuj000jyi" path="res://assets/models/tree-decorated.glb" id="9_tree_decorated"]
+[ext_resource type="PackedScene" uid="uid://cfidheg021me1" path="res://assets/models/lantern.glb" id="10_lantern"]
+[ext_resource type="PackedScene" uid="uid://dxwbiarjbgm8b" path="res://assets/models/bench.glb" id="11_bench"]
+[ext_resource type="PackedScene" uid="uid://kav3rgjulvah" path="res://assets/models/snowman.glb" id="12_snowman"]
+[ext_resource type="PackedScene" uid="uid://b0y2g8or271ty" path="res://assets/models/rocks-medium.glb" id="14_rocks"]
 [ext_resource type="PackedScene" uid="uid://studyspot001" path="res://scenes/world/study_spot.tscn" id="15_studyspot"]
 [ext_resource type="PackedScene" uid="uid://c763nptjm6nj1" path="res://scenes/ui/session_timer.tscn" id="16_timer"]
 [ext_resource type="PackedScene" uid="uid://dymr6v2ahsp8c" path="res://scenes/ui/session_complete_popup.tscn" id="17_popup"]
@@ -29,7 +29,6 @@ background_color = Color(0.6, 0.75, 0.88, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.7, 0.75, 0.85, 1)
 ambient_light_energy = 0.2
-tonemap_mode = 0
 fog_enabled = true
 fog_light_color = Color(0.85, 0.88, 0.92, 1)
 fog_density = 0.002
@@ -126,7 +125,6 @@ transform = Transform3D(-2, 0, 0, 0, 2, 0, 0, 0, -2, 0, 0, 4)
 [node name="StudySpot" parent="StudySpots/Bench4" instance=ExtResource("15_studyspot")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 sit_offset = Vector3(0, 0.5, 0)
-sit_rotation = 0.0
 
 [node name="Player" parent="." groups=["player"] instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.5, -2)
@@ -135,8 +133,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.5, -2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14, 8)
 script = ExtResource("2_camera")
 target_path = NodePath("../Player")
-follow_speed = 5.0
-normal_offset = Vector3(0, 14, 8)
 
 [node name="Lighting" type="Node3D" parent="."]
 
@@ -149,5 +145,9 @@ shadow_enabled = true
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="SessionTimer" parent="UI" instance=ExtResource("16_timer")]
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="SessionCompletePopup" parent="UI" instance=ExtResource("17_popup")]
+grow_horizontal = 2
+grow_vertical = 2
