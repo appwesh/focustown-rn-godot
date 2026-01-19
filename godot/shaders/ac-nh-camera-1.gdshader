@@ -53,7 +53,7 @@ void fragment() {
     
     // 5. VIGNETTE (Darker corners for cozy feel)
     float dist = distance(uv, vec2(0.5));
-    col *= 1.0 - (dist * 0.4);
+    col *= 1.0 - (dist * 0.6);
 
     COLOR = vec4(col, 1.0);
 }

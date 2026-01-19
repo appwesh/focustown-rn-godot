@@ -4,9 +4,9 @@
 [ext_resource type="Shader" uid="uid://ddpygkxlk7hau" path="res://shaders/ac-nh-camera-1.gdshader" id="2_shader"]
 [ext_resource type="PackedScene" uid="uid://player001" path="res://scenes/player/player.tscn" id="3_player"]
 [ext_resource type="Script" uid="uid://dxftxcnnaxhub" path="res://scripts/camera/camera_follow.gd" id="4_camera"]
-[ext_resource type="PackedScene" path="res://scenes/ui/session_timer.tscn" id="5_timer"]
-[ext_resource type="PackedScene" path="res://scenes/ui/session_complete_popup.tscn" id="6_popup"]
-[ext_resource type="PackedScene" path="res://scenes/world/study_spot.tscn" id="7_studyspot"]
+[ext_resource type="PackedScene" uid="uid://c763nptjm6nj1" path="res://scenes/ui/session_timer.tscn" id="5_timer"]
+[ext_resource type="PackedScene" uid="uid://dymr6v2ahsp8c" path="res://scenes/ui/session_complete_popup.tscn" id="6_popup"]
+[ext_resource type="PackedScene" uid="uid://studyspot001" path="res://scenes/world/study_spot.tscn" id="7_studyspot"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(6, 0.2, 16)
@@ -14,7 +14,9 @@ size = Vector3(6, 0.2, 16)
 [sub_resource type="Environment" id="Environment_1qg5g"]
 background_mode = 2
 ambient_light_source = 2
-ambient_light_color = Color(0.7490196, 0.68235296, 0.6392157, 1)
+ambient_light_color = Color(0.65, 0.65, 0.7, 1)
+ambient_light_energy = 0.1
+tonemap_exposure = 0.66
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xjjcb"]
 shader = ExtResource("2_shader")
@@ -29,6 +31,7 @@ shader_parameter/animate_grain = false
 [node name="Library" type="Node3D"]
 
 [node name="Environment" parent="." instance=ExtResource("1_library")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.10218647, -0.06783509, 1.1308384)
 
 [node name="Floor" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 6)
@@ -42,12 +45,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 6)
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.86602545, 0.49999994, 0, -0.49999994, 0.86602545, 0, 8, 12)
 current = true
-fov = 35.0
+fov = 45.0
 near = 0.1
 far = 1000.0
 script = ExtResource("4_camera")
 target_path = NodePath("../Player")
-normal_offset = Vector3(0, 6, 4)
+normal_offset = Vector3(0, 12, 8)
 
 [node name="Lamp_Light_1" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.280896, 0.8542972, 2.528687)
@@ -107,6 +110,7 @@ environment = SubResource("Environment_1qg5g")
 transform = Transform3D(1, 0, 0, 0, 0.5347653, 0.8450007, 0, -0.8450007, 0.5347653, 0, 5.8717766, 13.015926)
 light_color = Color(1, 0.99215686, 0.8156863, 1)
 light_energy = 0.8
+light_specular = 0.3
 shadow_enabled = true
 shadow_opacity = 0.8
 shadow_blur = 3.5
@@ -122,7 +126,8 @@ sky_mode = 1
 
 [node name="SpotLight3D" type="SpotLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.25560606, 2.6624734, 0.45293474)
-light_specular = 1.357
+shadow_enabled = true
+shadow_blur = 2.0
 spot_range = 0.9507018
 spot_angle = 60.898804
 
@@ -130,6 +135,8 @@ spot_angle = 60.898804
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.7713345, 2.6624734, -0.1635189)
 light_energy = 3.5
 light_specular = 0.12
+shadow_enabled = true
+shadow_blur = 2.0
 spot_range = 3.6502874
 spot_angle = 30.336704
 
@@ -137,6 +144,8 @@ spot_angle = 30.336704
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.697242, 2.6624734, -0.1635189)
 light_energy = 3.5
 light_specular = 0.12
+shadow_enabled = true
+shadow_blur = 2.0
 spot_range = 3.6502874
 spot_angle = 29.198357
 
@@ -144,6 +153,8 @@ spot_angle = 29.198357
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.04670155, 2.6624734, 3.3766813)
 light_energy = 4.0
 light_specular = 0.12
+shadow_enabled = true
+shadow_blur = 2.0
 spot_range = 3.6502874
 spot_angle = 35.147945
 
@@ -151,6 +162,8 @@ spot_angle = 35.147945
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.04670155, 2.6624734, 6.105555)
 light_energy = 4.0
 light_specular = 0.12
+shadow_enabled = true
+shadow_blur = 2.0
 spot_range = 3.6502874
 spot_angle = 35.147945
 
@@ -158,6 +171,8 @@ spot_angle = 35.147945
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.04670155, 2.6624734, 8.620541)
 light_energy = 4.0
 light_specular = 0.12
+shadow_enabled = true
+shadow_blur = 2.0
 spot_range = 3.6502874
 spot_angle = 35.147945
 
@@ -165,6 +180,8 @@ spot_angle = 35.147945
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.04670155, 2.6624734, 11.316816)
 light_energy = 4.0
 light_specular = 0.12
+shadow_enabled = true
+shadow_blur = 2.0
 spot_range = 3.6502874
 spot_angle = 35.147945
 

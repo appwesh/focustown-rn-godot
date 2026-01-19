@@ -8,6 +8,8 @@
 resource_name = "Simple wood"
 cull_mode = 2
 albedo_texture = ExtResource("1_6epr2")
+metallic_specular = 0.18
+roughness = 0.85
 metallic_texture = ExtResource("2_tfmj7")
 metallic_texture_channel = 2
 roughness_texture = ExtResource("2_tfmj7")
