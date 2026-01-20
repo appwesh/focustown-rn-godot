@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="talktown"
-run/main_scene="res://scenes/main/town.tscn"
+run/main_scene="res://assets/Scenes/LibraryScene_Chase_1.scn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -30,6 +30,10 @@ window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/unidot_importer/plugin.cfg")
 
 [input]
 
