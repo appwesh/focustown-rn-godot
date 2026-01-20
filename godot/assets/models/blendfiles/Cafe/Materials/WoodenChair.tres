@@ -8,7 +8,6 @@
 
 [resource]
 resource_name = "WoodenChair"
-transparency = 4
 albedo_texture = ExtResource("1_618ot")
 metallic = 1.0
 metallic_texture = ExtResource("3_sp2v1")
