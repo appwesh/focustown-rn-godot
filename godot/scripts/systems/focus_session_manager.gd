@@ -79,4 +79,3 @@ func get_formatted_time() -> String:
 	var mins := elapsed_seconds / 60
 	var secs := elapsed_seconds % 60
 	return "%02d:%02d" % [mins, secs]
-
