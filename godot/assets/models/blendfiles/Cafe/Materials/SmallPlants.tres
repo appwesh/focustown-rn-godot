@@ -1,0 +1,22 @@
+[gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://rsw4sj08gwnw"]
+
+[ext_resource type="Texture2D" uid="uid://bfgak7n78hgc5" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_BaseColor.png" id="1_hn3pe"]
+[ext_resource type="Texture2D" uid="uid://bw4ujuxi5ojqk" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Emission.png" id="2_eqgb1"]
+[ext_resource type="Texture2D" uid="uid://ddqc0a8sg6whh" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Metallic.png" id="3_2hj6o"]
+[ext_resource type="Texture2D" uid="uid://cyfym47jqy43t" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Normal.png" id="4_71nsi"]
+[ext_resource type="Texture2D" uid="uid://p2pn5iww6wos" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Roughness.png" id="5_h7f3d"]
+
+[resource]
+resource_name = "SmallPlants"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_hn3pe")
+metallic = 1.0
+metallic_texture = ExtResource("3_2hj6o")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("5_h7f3d")
+roughness_texture_channel = 1
+emission_enabled = true
+emission_texture = ExtResource("2_eqgb1")
+normal_enabled = true
+normal_texture = ExtResource("4_71nsi")

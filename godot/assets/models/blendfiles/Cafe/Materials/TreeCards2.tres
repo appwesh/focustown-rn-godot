@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://dtsx3fn6ono0p"]
+
+[ext_resource type="Texture2D" uid="uid://jw4yeg7q8fa4" path="res://assets/models/blendfiles/Cafe/textures/SkyboxDome/Trees/base color000.png" id="1_o4e8p"]
+[ext_resource type="Texture2D" uid="uid://budpmn2h1ubxl" path="res://assets/models/blendfiles/Cafe/textures/SkyboxDome/Trees/normal 000.png" id="2_nf2pw"]
+
+[resource]
+resource_name = "TreeCards2"
+transparency = 1
+cull_mode = 2
+albedo_texture = ExtResource("1_o4e8p")
+normal_enabled = true
+normal_texture = ExtResource("2_nf2pw")

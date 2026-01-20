@@ -1,0 +1,24 @@
+[gd_resource type="StandardMaterial3D" load_steps=7 format=3 uid="uid://hxgkbjditnx7"]
+
+[ext_resource type="Texture2D" uid="uid://k4fve77r1mnf" path="res://assets/models/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_BaseColor.png" id="1_cjr83"]
+[ext_resource type="Texture2D" uid="uid://bw31er0kpeg4a" path="res://assets/models/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Alpha.png" id="2_f0loc"]
+[ext_resource type="Texture2D" uid="uid://boppqjfyjtm0u" path="res://assets/models/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Normal.png" id="3_qk5x3"]
+[ext_resource type="Texture2D" uid="uid://d4hd2oaaj4pdy" path="res://assets/models/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Emission.png" id="4_d5h4a"]
+[ext_resource type="Texture2D" uid="uid://bangij7hy68m8" path="res://assets/models/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Metallic.png" id="5_sgsbg"]
+[ext_resource type="Texture2D" uid="uid://dpahfjtf5id8h" path="res://assets/models/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Roughness.png" id="6_b1da0"]
+
+[resource]
+resource_name = "ChairsAndOther"
+albedo_texture = ExtResource("1_cjr83")
+metallic = 1.0
+metallic_texture = ExtResource("5_sgsbg")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("6_b1da0")
+roughness_texture_channel = 1
+emission_enabled = true
+emission_texture = ExtResource("4_d5h4a")
+normal_enabled = true
+normal_texture = ExtResource("3_qk5x3")
+detail_mask = ExtResource("2_f0loc")
+detail_albedo = ExtResource("1_cjr83")
+detail_normal = ExtResource("3_qk5x3")

@@ -1,0 +1,21 @@
+[gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://b8fbxpb1mjs35"]
+
+[ext_resource type="Texture2D" uid="uid://hm6a6thnsd4h" path="res://assets/models/blendfiles/Cafe/textures/Furniture_5/DefaultMaterial_BaseColor.png" id="1_618ot"]
+[ext_resource type="Texture2D" uid="uid://byo823345y62o" path="res://assets/models/blendfiles/Cafe/textures/Furniture_5/DefaultMaterial_Emission.png" id="2_2gqwe"]
+[ext_resource type="Texture2D" uid="uid://cn7mesmrfgb10" path="res://assets/models/blendfiles/Cafe/textures/Furniture_5/DefaultMaterial_Metallic.png" id="3_sp2v1"]
+[ext_resource type="Texture2D" uid="uid://df14xal5x6btu" path="res://assets/models/blendfiles/Cafe/textures/Furniture_5/DefaultMaterial_Normal.png" id="4_kytnp"]
+[ext_resource type="Texture2D" uid="uid://dbraxuuvkql1d" path="res://assets/models/blendfiles/Cafe/textures/Furniture_5/DefaultMaterial_Roughness.png" id="5_q13q0"]
+
+[resource]
+resource_name = "WoodenChair"
+transparency = 4
+albedo_texture = ExtResource("1_618ot")
+metallic = 1.0
+metallic_texture = ExtResource("3_sp2v1")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("5_q13q0")
+roughness_texture_channel = 1
+emission_enabled = true
+emission_texture = ExtResource("2_2gqwe")
+normal_enabled = true
+normal_texture = ExtResource("4_kytnp")

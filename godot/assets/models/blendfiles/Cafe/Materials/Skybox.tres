@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://ih0v56to5mnp"]
+
+[ext_resource type="Texture2D" uid="uid://by4wgxy6p4xxc" path="res://assets/models/blendfiles/Cafe/textures/SkyboxDome/FS003_Day.png" id="1_ql3h6"]
+
+[resource]
+resource_name = "Skybox"
+shading_mode = 0
+albedo_color = Color(0.86, 0.86, 0.86, 1)
+albedo_texture = ExtResource("1_ql3h6")

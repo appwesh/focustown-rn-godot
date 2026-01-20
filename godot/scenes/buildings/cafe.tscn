@@ -1,0 +1,159 @@
+[gd_scene load_steps=4 format=3 uid="uid://clexbd78x14ah"]
+
+[ext_resource type="PackedScene" uid="uid://cey1ja8kg6h6" path="res://assets/models/blendfiles/Cafe/Phase 2 CafeteriaSet.blend" id="1_eat8h"]
+
+[sub_resource type="Sky" id="Sky_eat8h"]
+
+[sub_resource type="Environment" id="Environment_peehc"]
+background_energy_multiplier = 0.0
+sky = SubResource("Sky_eat8h")
+ambient_light_source = 2
+ambient_light_color = Color(0.5495961, 0.42998666, 0.46748686, 1)
+ambient_light_energy = 1.58
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.5
+glow_hdr_threshold = 1.09
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.22201309, 0.4295015, 0.5577728, 1)
+fog_light_energy = 0.29
+fog_density = 1.0
+fog_height = 2.0
+fog_height_density = -0.2827
+fog_depth_curve = 1.109572
+fog_depth_end = 25.0
+volumetric_fog_density = 0.4064
+adjustment_enabled = true
+adjustment_brightness = 1.05
+adjustment_contrast = 0.9
+adjustment_saturation = 1.12
+
+[node name="Cafe" type="Node3D"]
+
+[node name="Phase 2 CafeteriaSet" parent="." instance=ExtResource("1_eat8h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013583183, -0.008878231, -0.007125616)
+
+[node name="Tree" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="0"]
+transform = Transform3D(-1.7881393e-07, -17.255995, -1.0658141e-14, 1.0285378e-06, -6.130563e-14, -17.256, 17.255995, -1.7881393e-07, 1.0285374e-06, -8.386301, -8.193684, 161.7554)
+
+[node name="Tree_001" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="1"]
+transform = Transform3D(-2.3841858e-07, -14.75545, -8.7949326e-07, 4.3974683e-07, 8.7949365e-07, -14.755455, 14.75545, -2.3841858e-07, 4.3974666e-07, -22.689049, -4.4997206, 129.63283)
+
+[node name="Tree_002" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="2"]
+transform = Transform3D(8.811093, -15.273835, -1.5581899e-06, 5.2550683e-07, 2.1020273e-06, -17.633064, 15.273835, 8.811093, 1.5055582e-06, -27.954048, -10.267713, 90.777756)
+
+[node name="Tree_003" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="3"]
+transform = Transform3D(14.394403, -0.7912244, -1.1467037e-07, 2.685217e-08, 2.577808e-06, -14.41615, 0.7912244, 14.394403, 2.5753948e-06, -34.1477, -10.153012, 44.99423)
+
+[node name="Tree_004" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="4"]
+transform = Transform3D(13.819655, -4.103926, -4.505419e-07, -2.1481738e-07, 8.592695e-07, -14.41615, 4.103926, 13.819655, 7.6256214e-07, -85.648964, -15.117912, 48.77341)
+
+[node name="Tree_005" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="5"]
+transform = Transform3D(14.415741, 0.10510594, 9.173164e-09, -3.3565213e-09, 1.7185389e-06, -14.41615, -0.10510594, 14.415741, 1.7185155e-06, -173.01538, -15.213175, 20.235611)
+
+[node name="Tree_006" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="6"]
+transform = Transform3D(11.467818, -8.758115, -3.4176747e-07, -4.3003823e-07, 1.2816138e-14, -14.429674, 8.758115, 11.467821, -2.6101188e-07, -60.990665, -15.264664, 36.166725)
+
+[node name="Tree_010" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="10"]
+transform = Transform3D(14.394403, -0.7912244, -1.1467037e-07, 2.685217e-08, 2.577808e-06, -14.41615, 0.7912244, 14.394403, 2.5753948e-06, -120.464005, -14.0871105, 16.192818)
+
+[node name="Tree_011" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="11"]
+transform = Transform3D(14.008596, 3.4035554, 2.954867e-07, -3.22226e-07, 2.577808e-06, -14.41615, -3.4035554, 14.008596, 2.5810064e-06, -136.72165, -13.829215, 42.48591)
+
+[node name="Tree_012" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="12"]
+transform = Transform3D(14.008599, 3.4035566, 2.9548679e-07, -3.22226e-07, 2.577808e-06, -14.41615, -3.4035566, 14.008599, 2.5810075e-06, -11.803634, -11.89667, 46.995567)
+
+[node name="Tree_014" parent="Phase 2 CafeteriaSet/Fake Trees_003" index="14"]
+transform = Transform3D(19.439919, 4.7231593, 5.630445e-07, 0, 2.384838e-06, -20.00547, -4.7231593, 19.439919, 2.3174184e-06, -186.17162, -20.284954, 31.705456)
+
+[node name="SkyBox" parent="Phase 2 CafeteriaSet" index="2"]
+transform = Transform3D(17.232714, 0, 0, 0, 17.232714, 0, 0, 0, 17.232714, -6.6628723, -3.6169367, -7.92859)
+
+[node name="Camera3D" type="Camera3D" parent="Phase 2 CafeteriaSet/SkyBox" index="0"]
+transform = Transform3D(-0.058029164, 5.9154393e-16, -1.5564641e-08, -1.0929339e-08, 0.041316148, 0.040747523, 1.1081858e-08, 0.040747523, -0.041316148, -0.001, 0.444, -0.231)
+current = true
+fov = 76.6
+
+[node name="Sun" parent="Phase 2 CafeteriaSet" index="109"]
+light_energy = 0.197
+shadow_enabled = true
+shadow_bias = 0.0
+
+[node name="CozyLight_004" parent="Phase 2 CafeteriaSet" index="111"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.702198, 3.0851545, -9.874292)
+light_color = Color(0.52, 0.32759997, 0.20799997, 1)
+light_energy = 2.74
+omni_range = 5.0
+omni_attenuation = 1.0
+
+[node name="LampLight" parent="Phase 2 CafeteriaSet" index="113"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.720492, 3.0900195, -7.0894213)
+light_color = Color(0.97, 0.873, 0.9392834, 1)
+light_energy = 0.0
+
+[node name="CozyLight_003" parent="Phase 2 CafeteriaSet" index="114"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -5.514349, 3.0851545, -4.6901236)
+light_color = Color(0.52, 0.32759997, 0.20799997, 1)
+light_energy = 2.74
+omni_range = 5.0
+omni_attenuation = 1.0
+
+[node name="CozyLight_002" parent="Phase 2 CafeteriaSet" index="115"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.149055, 3.0851545, -4.6901236)
+light_color = Color(0.52, 0.32759997, 0.20799997, 1)
+light_energy = 2.74
+omni_range = 5.0
+omni_attenuation = 1.0
+
+[node name="CozyLight_001" parent="Phase 2 CafeteriaSet" index="120"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.703067, 3.0851545, -4.6901236)
+light_color = Color(0.52, 0.32759997, 0.20799997, 1)
+light_energy = 2.74
+omni_range = 5.0
+omni_attenuation = 1.0
+
+[node name="CozyLight_006" parent="Phase 2 CafeteriaSet" index="121"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -5.503829, 3.0851545, -9.874292)
+light_color = Color(0.52, 0.32759997, 0.20799997, 1)
+light_energy = 2.74
+omni_range = 5.0
+omni_attenuation = 1.0
+
+[node name="CozyLight_005" parent="Phase 2 CafeteriaSet" index="122"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.148365, 3.0851545, -9.874292)
+light_color = Color(0.52, 0.32759997, 0.20799997, 1)
+light_energy = 2.74
+omni_range = 5.0
+omni_attenuation = 1.0
+
+[node name="CozyLight_012" type="OmniLight3D" parent="Phase 2 CafeteriaSet"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -5.667338, 0.97147346, -9.331277)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 1.898
+omni_range = 0.7874385
+
+[node name="CozyLight_013" type="OmniLight3D" parent="Phase 2 CafeteriaSet"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -5.598397, 1.5089661, -4.5370436)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
+[node name="CozyLight_014" type="OmniLight3D" parent="Phase 2 CafeteriaSet"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.485072, 1.6614997, -4.752527)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 7.344
+omni_range = 1.2469085
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_peehc")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.2732377, 2.9589586, -6.8567495)
+light_color = Color(0.92, 0.7728, 0.7728, 1)
+light_energy = 14.237
+shadow_opacity = 0.72
+spot_range = 5.309391
+spot_angle = 51.501816
+
+[editable path="Phase 2 CafeteriaSet"]
