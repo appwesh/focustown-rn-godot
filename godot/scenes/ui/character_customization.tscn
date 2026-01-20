@@ -1,0 +1,186 @@
+[gd_scene load_steps=3 format=3 uid="uid://dfmcvh5egs4a8"]
+
+[ext_resource type="Script" path="res://scripts/ui/character_customization_ui.gd" id="1_ui"]
+[ext_resource type="Script" path="res://scripts/characters/modular_character.gd" id="2_char"]
+
+[node name="CharacterCustomization" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ui")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.12, 0.15, 1)
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPanel" type="VBoxContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.45
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="HSplitContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="HSplitContainer/LeftPanel/SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(500, 600)
+render_target_update_mode = 4
+
+[node name="CharacterScene" type="Node3D" parent="HSplitContainer/LeftPanel/SubViewportContainer/SubViewport"]
+
+[node name="Camera3D" type="Camera3D" parent="HSplitContainer/LeftPanel/SubViewportContainer/SubViewport/CharacterScene"]
+transform = Transform3D(1, 0, 0, 0, 0.97, 0.25, 0, -0.25, 0.97, 0, 1.2, 2.8)
+fov = 35.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="HSplitContainer/LeftPanel/SubViewportContainer/SubViewport/CharacterScene"]
+transform = Transform3D(0.866, -0.25, 0.433, 0, 0.866, 0.5, -0.5, -0.433, 0.75, 2, 3, 2)
+light_energy = 1.3
+shadow_enabled = true
+
+[node name="FillLight" type="DirectionalLight3D" parent="HSplitContainer/LeftPanel/SubViewportContainer/SubViewport/CharacterScene"]
+transform = Transform3D(0.866, 0.25, -0.433, 0, 0.866, 0.5, 0.5, -0.433, 0.75, -2, 2, -1)
+light_energy = 0.4
+
+[node name="ModularCharacter" type="Node3D" parent="HSplitContainer/LeftPanel/SubViewportContainer/SubViewport/CharacterScene"]
+script = ExtResource("2_char")
+
+[node name="Floor" type="CSGCylinder3D" parent="HSplitContainer/LeftPanel/SubViewportContainer/SubViewport/CharacterScene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+radius = 1.2
+height = 0.04
+
+[node name="RotateButtons" type="HBoxContainer" parent="HSplitContainer/LeftPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="RotateLeftBtn" type="Button" parent="HSplitContainer/LeftPanel/RotateButtons"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+text = "◀ Rotate"
+
+[node name="RotateRightBtn" type="Button" parent="HSplitContainer/LeftPanel/RotateButtons"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+text = "Rotate ▶"
+
+[node name="RightPanel" type="VBoxContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.55
+
+[node name="MainPanel" type="PanelContainer" parent="HSplitContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/RightPanel/MainPanel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Customize Character"
+horizontal_alignment = 1
+
+[node name="CategoryTabs" type="TabContainer" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.4
+current_tab = 0
+
+[node name="Body" type="VBoxContainer" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/CategoryTabs"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Clothes" type="VBoxContainer" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/CategoryTabs"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Accessories" type="VBoxContainer" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/CategoryTabs"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="PartSelection" type="VBoxContainer" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PartNameLabel" type="Label" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/PartSelection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Hair Style"
+horizontal_alignment = 1
+
+[node name="CurrentPartLabel" type="Label" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/PartSelection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Current: Afro"
+horizontal_alignment = 1
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/PartSelection"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PartGrid" type="GridContainer" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/PartSelection/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 4
+
+[node name="AnimationPanel" type="PanelContainer" parent="HSplitContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/RightPanel/AnimationPanel"]
+layout_mode = 2
+
+[node name="AnimLabel" type="Label" parent="HSplitContainer/RightPanel/AnimationPanel/VBoxContainer"]
+layout_mode = 2
+text = "Animations"
+horizontal_alignment = 1
+
+[node name="AnimationList" type="ItemList" parent="HSplitContainer/RightPanel/AnimationPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ButtonPanel" type="HBoxContainer" parent="HSplitContainer/RightPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="RandomizeButton" type="Button" parent="HSplitContainer/RightPanel/ButtonPanel"]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+text = "🎲 Randomize"
+
+[node name="CancelButton" type="Button" parent="HSplitContainer/RightPanel/ButtonPanel"]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+text = "Cancel"
+
+[node name="ConfirmButton" type="Button" parent="HSplitContainer/RightPanel/ButtonPanel"]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+text = "✓ Confirm"
