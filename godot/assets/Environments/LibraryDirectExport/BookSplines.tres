@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://cs87wo7fwjwes"]
+
+[ext_resource type="Texture2D" uid="uid://05pc80ucyrt0" path="res://assets/Environments/LibraryDirectExport/Library4_4_smoothed.jpg" id="1_j3lex"]
+
+[resource]
+resource_name = "BookSplines"
+albedo_texture = ExtResource("1_j3lex")
+roughness = 0.5

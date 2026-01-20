@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://b6r4k50spyovh"]
+
+[resource]
+resource_name = "Computer .001"
+cull_mode = 2
+albedo_color = Color(0.5632877, 0.5632877, 0.5632877, 1)
+roughness = 0.4

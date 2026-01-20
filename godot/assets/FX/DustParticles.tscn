@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://b5yn4sjsainvo"]
+
+[ext_resource type="Texture2D" uid="uid://c5vvm3oetthwf" path="res://Assets/FX/Glowing_circle.png" id="1_uj6pr"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ylwhp"]
+transparency = 1
+specular_mode = 1
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("1_uj6pr")
+
+[sub_resource type="Curve" id="Curve_ilpou"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.24537036, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_y2ip5"]
+curve = SubResource("Curve_ilpou")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xnxqq"]
+lifetime_randomness = 1.0
+emission_shape = 3
+emission_box_extents = Vector3(3, 2, 5)
+gravity = Vector3(0, -0.1, 0)
+scale_min = 0.049999997
+scale_max = 0.07
+scale_curve = SubResource("CurveTexture_y2ip5")
+color = Color(1, 0.8490259, 0.6825575, 1)
+hue_variation_min = -0.04000002
+hue_variation_max = 0.049999975
+turbulence_enabled = true
+turbulence_noise_strength = 5.0
+turbulence_noise_scale = 3.729
+turbulence_noise_speed_random = 0.88
+
+[sub_resource type="QuadMesh" id="QuadMesh_a1cwm"]
+
+[node name="GPUParticles3D" type="GPUParticles3D"]
+material_override = SubResource("StandardMaterial3D_ylwhp")
+amount = 255
+lifetime = 5.0
+randomness = 0.52
+process_material = SubResource("ParticleProcessMaterial_xnxqq")
+draw_pass_1 = SubResource("QuadMesh_a1cwm")

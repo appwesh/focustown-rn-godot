@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://dqwmx4jaohosn"]
+
+[resource]
+resource_name = "Gold_URP"
+albedo_color = Color(1, 0.7666667, 0, 1)
+metallic = 0.97
+roughness = 0.24

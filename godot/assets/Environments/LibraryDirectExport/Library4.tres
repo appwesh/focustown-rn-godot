@@ -1,0 +1,15 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://mbdreeq5icf2"]
+
+[ext_resource type="Texture2D" uid="uid://ds3wbetkmi0q" path="res://assets/Environments/LibraryDirectExport/WoodenFloor-new7.jpg" id="1_yyfhj"]
+[ext_resource type="Texture2D" uid="uid://ihnrw4cgovy4" path="res://assets/Environments/LibraryDirectExport/specMap.jpg" id="2_1b24w"]
+
+[resource]
+resource_name = "Library4"
+cull_mode = 2
+albedo_color = Color(0.78, 0.90466666, 1, 1)
+albedo_texture = ExtResource("1_yyfhj")
+metallic_texture = ExtResource("2_1b24w")
+metallic_texture_channel = 2
+roughness_texture_channel = 1
+uv1_scale = Vector3(1, 2, 1)
+uv1_offset = Vector3(0, -1.47, 0)

@@ -1,0 +1,17 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://du86sy1m6rw31"]
+
+[ext_resource type="Texture2D" uid="uid://bofn52v31muhy" path="res://assets/Environments/LibraryDirectExport/Poliigon_WoodVeneerOak_7760_BaseColor_mid.jpg" id="1_blrtd"]
+[ext_resource type="Texture2D" uid="uid://bfivqpeew8vgg" path="res://assets/Environments/LibraryDirectExport/Poliigon_WoodVeneerOak_7760_Roughness.jpg" id="2_fuvex"]
+[ext_resource type="Texture2D" uid="uid://bqmrnmpfs335p" path="res://assets/Environments/LibraryDirectExport/Poliigon_WoodVeneerOak_7760_Normal.png" id="3_jme31"]
+
+[resource]
+resource_name = "wood_chair"
+albedo_color = Color(1, 0.88644886, 0.55188686, 1)
+albedo_texture = ExtResource("1_blrtd")
+metallic_texture = ExtResource("2_fuvex")
+metallic_texture_channel = 2
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("3_jme31")
+uv1_scale = Vector3(0.5, 0.2, 1)
+uv1_offset = Vector3(0, 0.8, 0)

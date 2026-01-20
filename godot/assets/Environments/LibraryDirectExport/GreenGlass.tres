@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://dhhl5oxdortxd"]
+
+[resource]
+resource_name = "GreenGlass"
+albedo_color = Color(0.07802944, 0.6132076, 0, 1)
+roughness = 0.0
+emission_enabled = true
+emission = Color(0.3102405, 0.88327295, 0, 1)
