@@ -3,7 +3,7 @@ extends Node3D
 ## Full Animation Test UI
 ## Arrow keys to cycle animations, Space to toggle loop, Enter to play once
 
-const ANIMATION_PATH = "res://assets/Characters/human/animations/"
+const ANIMATION_PATH = "res://assets/characters/cozylife/animations/"
 
 var anim_player: AnimationPlayer
 var all_animations: Array[String] = []

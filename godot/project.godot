@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="talktown"
-run/main_scene="res://assets/Scenes/LibraryScene_Chase_1.scn"
+run/main_scene="res://scenes/environment/library_chase/LibraryScene_Chase_1.scn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 

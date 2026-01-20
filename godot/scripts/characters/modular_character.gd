@@ -7,12 +7,12 @@ class_name ModularCharacter
 signal part_changed(category: String, index: int)
 signal animation_changed(animation_name: String)
 
-const BASE_CHARACTER_PATH := "res://assets/Characters/human/SKM_Human.fbx"
-const ANIMATIONS_PATH := "res://assets/Characters/human/animations/"
-const TEXTURES_PATH := "res://assets/Characters/human/textures/"
-const CLOTHES_PATH := "res://assets/Characters/human/clothes/"
-const CLOTHES_TEXTURES_PATH := "res://assets/Characters/human/clothes/Textures/"
-const HAIRS_PATH := "res://assets/Characters/human/hairs/"
+const BASE_CHARACTER_PATH := "res://assets/characters/cozylife/SKM_Human.fbx"
+const ANIMATIONS_PATH := "res://assets/characters/cozylife/animations/"
+const TEXTURES_PATH := "res://assets/characters/cozylife/textures/"
+const CLOTHES_PATH := "res://assets/characters/cozylife/clothes/"
+const CLOTHES_TEXTURES_PATH := "res://assets/characters/cozylife/clothes/textures/"
+const HAIRS_PATH := "res://assets/characters/cozylife/hairs/"
 
 ## Hat adjustments (scale and height offset)
 const HAT_SCALE := Vector3(1.15, 1.15, 1.15)

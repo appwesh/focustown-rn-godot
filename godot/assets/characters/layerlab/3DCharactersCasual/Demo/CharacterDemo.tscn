@@ -1,0 +1,1066 @@
+[gd_scene load_steps=11 format=3 uid="uid://sfdqqbh4jk6e"]
+
+[ext_resource type="PackedScene" uid="uid://mn8kkclf15x0" path="res://assets/characters/layerlab/3DCharactersCasual/3D Characters Pro-Casual/FBX/Character/Characters.fbx" id="1_char"]
+
+[sub_resource type="GDScript" id="GDScript_main"]
+script/source = "extends Control
+
+# Character Demo UI Controller - animations work by copying from animation FBX files
+
+var character_node: Node3D
+var skeleton: Skeleton3D
+var main_anim_player: AnimationPlayer
+var current_animation = \"Stand_Idle1\"
+var loaded_animations: Dictionary = {}
+
+const ANIM_PATH = \"res://assets/LayerLab/3DCharactersCasual/Animation/\"
+
+# Animation name to FBX file mapping
+var animation_files = {
+	\"Stand_Idle1\": \"Anim@Stand_Idle1.fbx\",
+	\"Stand_Idle2\": \"Anim@Stand_Idle2.fbx\",
+	\"Stand_Idle3\": \"Anim@Stand_idle3.fbx\",
+	\"Stand_Idle4\": \"Anim@Stand_Idle4.fbx\",
+	\"Stand_Idle5\": \"Anim@Stand_Idle5.fbx\",
+	\"Stand_Idle6\": \"Anim@Stand_Idle6.fbx\",
+	\"Action_Jump\": \"Anim@Action_Jump.fbx\",
+	\"Action_Punch\": \"Anim@Action_Punch.fbx\",
+	\"Action_Run\": \"Anim@Action_Run.fbx\",
+	\"Action_Walk\": \"Anim@Action_Walk.fbx\",
+	\"Dance_1\": \"Anim@Dance_1.fbx\",
+	\"Dance_2\": \"Anim@Dance_2.fbx\",
+	\"Dance_3\": \"Anim@Dance_3.fbx\",
+	\"Dance_4\": \"Anim@Dance_4.fbx\",
+	\"Interaction_Item_Put\": \"Anim@Interaction_Item_Put.fbx\",
+	\"Interaction_Pickup\": \"Anim@Interaction_Pickup.fbx\",
+	\"Interaction_Shovel\": \"Anim@Interaction_Shovel.fbx\",
+	\"Interaction_Sickle\": \"Anim@Interaction_Sickle.fbx\",
+	\"Emoji_Aghast\": \"Anim@Emoji_Aghast.fbx\",
+	\"Emoji_Angry\": \"Anim@Emoji_Angry.fbx\",
+	\"Emoji_Applaud\": \"Anim@Emoji_Applaud.fbx\",
+	\"Emoji_Be_Bashful\": \"Anim@Emoji_Be_Bashful.fbx\",
+	\"Emoji_Cheer\": \"Anim@Emoji_Cheer.fbx\",
+	\"Emoji_Cry\": \"Anim@Emoji_Cry.fbx\",
+	\"Emoji_Hi\": \"Anim@Emoji_Hi.fbx\",
+	\"Emoji_Nice\": \"Anim@Emoji_Nice.fbx\",
+	\"Emoji_Smile1\": \"Anim@Emoji_Smile1.fbx\",
+	\"Emoji_Smile2\": \"Anim@Emoji_Smile2.fbx\"
+}
+
+# Part tracking - UI label name -> mesh prefix mapping
+# Note: \"Face\" controls Eye meshes (the eyeballs), actual face is part of Body/Head
+var parts = {
+	\"Hair\": {\"current\": 1, \"max\": 28, \"prefix\": \"Hair\"},
+	\"Face\": {\"current\": 1, \"max\": 12, \"prefix\": \"Eye\"},
+	\"Hat\": {\"current\": 0, \"max\": 63, \"prefix\": \"Headgear\"},
+	\"Top\": {\"current\": 1, \"max\": 71, \"prefix\": \"Top\"},
+	\"Glove\": {\"current\": 0, \"max\": 22, \"prefix\": \"Glove\"},
+	\"Bottom\": {\"current\": 1, \"max\": 55, \"prefix\": \"Bottom\"},
+	\"Shoes\": {\"current\": 1, \"max\": 52, \"prefix\": \"Shoes\"},
+	\"Bag\": {\"current\": 0, \"max\": 18, \"prefix\": \"Bag\"},
+	\"Eyewear\": {\"current\": 0, \"max\": 18, \"prefix\": \"Eyewear\"}
+}
+
+# Skin color options
+var skin_colors = [
+	Color(1.0, 0.87, 0.77),  # Light
+	Color(0.96, 0.76, 0.64),  # Medium light
+	Color(0.82, 0.64, 0.49),  # Medium
+	Color(0.65, 0.46, 0.33),  # Medium dark
+	Color(0.45, 0.30, 0.22)   # Dark
+]
+var current_skin = 0
+
+var preview_index = 1
+const MAX_PREVIEWS = 15
+
+var part_nodes: Dictionary = {}  # Category -> Array of mesh names
+var mesh_nodes: Dictionary = {}  # Mesh name -> MeshInstance3D
+
+func _ready():
+	character_node = get_node_or_null(\"SubViewportContainer/SubViewport/World/Character\")
+	if character_node:
+		# Find skeleton and animation player in character
+		skeleton = find_node_of_type(character_node, \"Skeleton3D\")
+		main_anim_player = find_node_of_type(character_node, \"AnimationPlayer\")
+		if not main_anim_player:
+			main_anim_player = AnimationPlayer.new()
+			main_anim_player.name = \"AnimationPlayer\"
+			character_node.add_child(main_anim_player)
+			print(\"Created AnimationPlayer\")
+		if main_anim_player:
+			main_anim_player.root_node = NodePath(\"..\")
+		
+		if skeleton:
+			print(\"Found skeleton: \", skeleton.name)
+		if main_anim_player:
+			print(\"Found AnimationPlayer: \", main_anim_player.name)
+			if not main_anim_player.has_animation_library(\"\"):
+				main_anim_player.add_animation_library(\"\", AnimationLibrary.new())
+		
+		# First catalog all parts (fills mesh_nodes dictionary)
+		catalog_character_parts()
+		
+		# Then apply colors (needs mesh_nodes to be filled)
+		apply_character_colors()
+		
+		# Show only selected parts for each category
+		update_visible_parts()
+	
+	update_all_labels()
+	update_anim_label()
+	print(\"Demo ready! Character: \", character_node)
+	
+	# Load and play default idle
+	call_deferred(\"play_animation\", \"Stand_Idle1\")
+
+func catalog_character_parts():
+	# Initialize categories matching exact mesh prefixes
+	for prefix in [\"Hair\", \"Eye\", \"Eyebrow\", \"Headgear\", \"Top\", \"Glove\", \"Bottom\", \"Shoes\", \"Bag\", \"Eyewear\", \"Body\", \"lips\", \"Earring\"]:
+		part_nodes[prefix] = []
+	
+	# Find all mesh instances and categorize them
+	find_meshes_recursive(character_node)
+	
+	# Update max values based on found parts (using prefix mapping)
+	for ui_name in parts.keys():
+		var prefix = parts[ui_name][\"prefix\"]
+		if part_nodes.has(prefix):
+			parts[ui_name][\"max\"] = part_nodes[prefix].size()
+	
+	print(\"Cataloged parts: \")
+	for cat in part_nodes.keys():
+		if part_nodes[cat].size() > 0:
+			print(\"  %s: %d items\" % [cat, part_nodes[cat].size()])
+
+func find_meshes_recursive(node: Node):
+	if node is MeshInstance3D:
+		var mesh_name = node.name
+		mesh_nodes[mesh_name] = node
+		
+		# Categorize based on name
+		var category = categorize_mesh(mesh_name)
+		if category != \"\" and part_nodes.has(category):
+			part_nodes[category].append(mesh_name)
+		
+		# Hide all initially
+		node.visible = false
+	
+	for child in node.get_children():
+		find_meshes_recursive(child)
+
+func categorize_mesh(mesh_name: String) -> String:
+	# Use exact prefix matching - order matters (longer prefixes first)
+	if mesh_name.begins_with(\"Body_\") or mesh_name == \"Head\":
+		return \"Body\"
+	elif mesh_name.begins_with(\"HairAcc_\"):
+		return \"Hair\"  # Group with hair
+	elif mesh_name.begins_with(\"Hair_\"):
+		return \"Hair\"
+	elif mesh_name.begins_with(\"Eyewear_\"):
+		return \"Eyewear\"
+	elif mesh_name.begins_with(\"Eyebrow_\"):
+		return \"Eyebrow\"
+	elif mesh_name.begins_with(\"Eye_\"):
+		return \"Eye\"
+	elif mesh_name.begins_with(\"Headgear_\"):
+		return \"Headgear\"
+	elif mesh_name.begins_with(\"Top_\"):
+		return \"Top\"
+	elif mesh_name.begins_with(\"Bottom_\"):
+		return \"Bottom\"
+	elif mesh_name.begins_with(\"Shoes_\"):
+		return \"Shoes\"
+	elif mesh_name.begins_with(\"Glove_\"):
+		return \"Glove\"
+	elif mesh_name.begins_with(\"Bag_\"):
+		return \"Bag\"
+	elif mesh_name.begins_with(\"lips_\"):
+		return \"lips\"
+	elif mesh_name.begins_with(\"Earring_\"):
+		return \"Earring\"
+	else:
+		return \"\"  # Skip weapons, accessories etc
+
+func update_visible_parts():
+	# Hide all meshes first
+	for mesh_name in mesh_nodes.keys():
+		mesh_nodes[mesh_name].visible = false
+	
+	# Show selected part for each category (using prefix mapping)
+	for ui_name in parts.keys():
+		var prefix = parts[ui_name][\"prefix\"]
+		var idx = parts[ui_name][\"current\"]
+		if idx > 0 and part_nodes.has(prefix) and idx <= part_nodes[prefix].size():
+			var mesh_name = part_nodes[prefix][idx - 1]
+			if mesh_nodes.has(mesh_name):
+				mesh_nodes[mesh_name].visible = true
+	
+	# Always show body parts
+	if part_nodes.has(\"Body\"):
+		for mesh_name in part_nodes[\"Body\"]:
+			if mesh_nodes.has(mesh_name):
+				mesh_nodes[mesh_name].visible = true
+	
+	# Always show eyebrows and lips for face
+	if part_nodes.has(\"Eyebrow\") and part_nodes[\"Eyebrow\"].size() > 0:
+		mesh_nodes[part_nodes[\"Eyebrow\"][0]].visible = true
+	if part_nodes.has(\"lips\") and part_nodes[\"lips\"].size() > 0:
+		mesh_nodes[part_nodes[\"lips\"][0]].visible = true
+
+func apply_character_colors():
+	# Create materials
+	var skin_mat = StandardMaterial3D.new()
+	skin_mat.albedo_color = skin_colors[current_skin]
+	
+	var hair_mat = StandardMaterial3D.new()
+	hair_mat.albedo_color = Color(0.25, 0.18, 0.12)  # Brown
+	
+	var top_mat = StandardMaterial3D.new()
+	top_mat.albedo_color = Color(0.3, 0.55, 0.85)  # Blue
+	
+	var bottom_mat = StandardMaterial3D.new()
+	bottom_mat.albedo_color = Color(0.25, 0.3, 0.45)  # Dark blue
+	
+	var shoes_mat = StandardMaterial3D.new()
+	shoes_mat.albedo_color = Color(0.95, 0.95, 0.95)  # White
+	
+	var eye_mat = StandardMaterial3D.new()
+	eye_mat.albedo_color = Color(0.2, 0.4, 0.7)  # Blue eyes
+	
+	var eyebrow_mat = StandardMaterial3D.new()
+	eyebrow_mat.albedo_color = Color(0.2, 0.15, 0.1)  # Dark brown
+	
+	var lips_mat = StandardMaterial3D.new()
+	lips_mat.albedo_color = Color(0.9, 0.6, 0.6)  # Pink
+	
+	# Apply to all meshes
+	for mesh_name in mesh_nodes.keys():
+		var mesh = mesh_nodes[mesh_name]
+		var mat: StandardMaterial3D = null
+		
+		if mesh_name.begins_with(\"Body_\") or mesh_name == \"Head\":
+			mat = skin_mat
+		elif mesh_name.begins_with(\"Hair_\") or mesh_name.begins_with(\"HairAcc_\"):
+			mat = hair_mat
+		elif mesh_name.begins_with(\"Top_\"):
+			mat = top_mat
+		elif mesh_name.begins_with(\"Bottom_\"):
+			mat = bottom_mat
+		elif mesh_name.begins_with(\"Shoes_\"):
+			mat = shoes_mat
+		elif mesh_name.begins_with(\"Eye_\"):
+			mat = eye_mat
+		elif mesh_name.begins_with(\"Eyebrow_\"):
+			mat = eyebrow_mat
+		elif mesh_name.begins_with(\"lips_\"):
+			mat = lips_mat
+		
+		if mat and mesh:
+			for i in range(mesh.get_surface_override_material_count()):
+				mesh.set_surface_override_material(i, mat)
+	
+	print(\"Applied colors to %d meshes\" % mesh_nodes.size())
+
+func find_node_of_type(node: Node, type_name: String):
+	if node.get_class() == type_name:
+		return node
+	for child in node.get_children():
+		var result = find_node_of_type(child, type_name)
+		if result:
+			return result
+	return null
+
+func retarget_animation(anim: Animation):
+	if not skeleton or not character_node:
+		return
+	var skeleton_path = character_node.get_path_to(skeleton)
+	var skeleton_path_str = String(skeleton_path)
+	if skeleton_path_str == \"\":
+		return
+	for i in range(anim.get_track_count()):
+		var path = anim.track_get_path(i)
+		if path.get_subname_count() == 0:
+			continue
+		var subnames = []
+		for j in range(path.get_subname_count()):
+			subnames.append(path.get_subname(j))
+		if skeleton.find_bone(subnames[0]) == -1:
+			continue
+		var new_path = NodePath(skeleton_path_str + \":\" + \":\".join(subnames))
+		anim.track_set_path(i, new_path)
+
+func _process(_delta):
+	pass
+
+func update_all_labels():
+	for part_name in parts.keys():
+		update_label(part_name)
+
+func update_label(part_name: String):
+	var label_path = \"LeftPanel/VBoxContainer/\" + part_name + \"/Label\"
+	var label_node = get_node_or_null(label_path)
+	if label_node:
+		var idx = parts[part_name][\"current\"]
+		if idx == 0:
+			label_node.text = \"--\"
+		else:
+			label_node.text = part_name + str(idx)
+
+func update_anim_label():
+	var anim_label = get_node_or_null(\"AnimationPanel/VBoxContainer/AnimLabel\")
+	if anim_label:
+		anim_label.text = current_animation
+
+func change_part(part_name: String, delta: int):
+	var part = parts[part_name]
+	part[\"current\"] += delta
+	if part[\"current\"] > part[\"max\"]:
+		part[\"current\"] = 0
+	elif part[\"current\"] < 0:
+		part[\"current\"] = part[\"max\"]
+	update_label(part_name)
+	update_visible_parts()
+
+func play_animation(anim_name: String):
+	print(\"Selected animation: \", anim_name)
+	current_animation = anim_name
+	update_anim_label()
+	
+	if not main_anim_player:
+		print(\"No AnimationPlayer found!\")
+		return
+	
+	# Check if already loaded
+	if loaded_animations.has(anim_name):
+		main_anim_player.play(anim_name)
+		print(\"Playing cached: \", anim_name)
+		return
+	
+	# Load animation from FBX
+	if animation_files.has(anim_name):
+		var anim_file = animation_files[anim_name]
+		var scene_path = ANIM_PATH + anim_file
+		print(\"Loading animation from: \", scene_path)
+		
+		var scene = load(scene_path)
+		if scene:
+			# Instantiate temporarily to get the animation
+			var temp_instance = scene.instantiate()
+			var temp_anim_player = find_node_of_type(temp_instance, \"AnimationPlayer\")
+			
+			if temp_anim_player:
+				var anims = temp_anim_player.get_animation_list()
+				print(\"Found animations: \", anims)
+				
+				for source_anim_name in anims:
+					if source_anim_name == \"RESET\":
+						continue
+					
+					var anim = temp_anim_player.get_animation(source_anim_name)
+					if anim:
+						# Get or create the default library
+						var lib = main_anim_player.get_animation_library(\"\")
+						if lib:
+							# Add animation to our character's library
+							var anim_copy = anim.duplicate()
+							retarget_animation(anim_copy)
+							lib.add_animation(anim_name, anim_copy)
+							loaded_animations[anim_name] = true
+							print(\"Added animation: \", anim_name)
+							
+							# Play it
+							main_anim_player.play(anim_name)
+							print(\"Playing: \", anim_name)
+						break
+			
+			temp_instance.queue_free()
+
+func _on_random_pressed():
+	for part_name in parts.keys():
+		parts[part_name][\"current\"] = randi_range(0, parts[part_name][\"max\"])
+	update_all_labels()
+	update_visible_parts()
+
+# Part button handlers
+func _on_hair_prev(): change_part(\"Hair\", -1)
+func _on_hair_next(): change_part(\"Hair\", 1)
+func _on_face_prev(): change_part(\"Face\", -1)
+func _on_face_next(): change_part(\"Face\", 1)
+func _on_hat_prev(): change_part(\"Hat\", -1)
+func _on_hat_next(): change_part(\"Hat\", 1)
+func _on_top_prev(): change_part(\"Top\", -1)
+func _on_top_next(): change_part(\"Top\", 1)
+func _on_glove_prev(): change_part(\"Glove\", -1)
+func _on_glove_next(): change_part(\"Glove\", 1)
+func _on_bottom_prev(): change_part(\"Bottom\", -1)
+func _on_bottom_next(): change_part(\"Bottom\", 1)
+func _on_shoes_prev(): change_part(\"Shoes\", -1)
+func _on_shoes_next(): change_part(\"Shoes\", 1)
+func _on_bag_prev(): change_part(\"Bag\", -1)
+func _on_bag_next(): change_part(\"Bag\", 1)
+func _on_eyewear_prev(): change_part(\"Eyewear\", -1)
+func _on_eyewear_next(): change_part(\"Eyewear\", 1)
+
+# Animation handlers
+func _on_idle1(): play_animation(\"Stand_Idle1\")
+func _on_idle2(): play_animation(\"Stand_Idle2\")
+func _on_idle3(): play_animation(\"Stand_Idle3\")
+func _on_idle4(): play_animation(\"Stand_Idle4\")
+func _on_idle5(): play_animation(\"Stand_Idle5\")
+func _on_idle6(): play_animation(\"Stand_Idle6\")
+func _on_action_jump(): play_animation(\"Action_Jump\")
+func _on_action_run(): play_animation(\"Action_Run\")
+func _on_dance1(): play_animation(\"Dance_1\")
+func _on_dance2(): play_animation(\"Dance_2\")
+func _on_anim_interaction_item_put(): play_animation(\"Interaction_Item_Put\")
+func _on_anim_interaction_pickup(): play_animation(\"Interaction_Pickup\")
+func _on_anim_interaction_shovel(): play_animation(\"Interaction_Shovel\")
+func _on_anim_interaction_sickle(): play_animation(\"Interaction_Sickle\")
+func _on_anim_emoji_aghast(): play_animation(\"Emoji_Aghast\")
+func _on_anim_emoji_angry(): play_animation(\"Emoji_Angry\")
+func _on_anim_emoji_applaud(): play_animation(\"Emoji_Applaud\")
+func _on_anim_emoji_be_bashful(): play_animation(\"Emoji_Be_Bashful\")
+func _on_anim_emoji_cheer(): play_animation(\"Emoji_Cheer\")
+func _on_anim_emoji_cry(): play_animation(\"Emoji_Cry\")
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_banner"]
+bg_color = Color(0.3, 0.7, 0.95, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.22, 0.27, 0.52, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.5, 0.8, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_arrow"]
+bg_color = Color(0, 0.75, 0.95, 1)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.2, 0.25, 0.4, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_idle"]
+bg_color = Color(0.2, 0.5, 0.4, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.7, 0.5, 1)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action"]
+bg_color = Color(0.5, 0.3, 0.2, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7, 0.4, 0.3, 1)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_anim"]
+bg_color = Color(0.28, 0.33, 0.58, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5, 0.55, 0.8, 1)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_random"]
+bg_color = Color(0, 0.85, 0.9, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="CharacterDemo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_main")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.25, 0.45, 0.7, 1)
+
+[node name="Banner" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 80.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_banner")
+
+[node name="BannerLabel" type="Label" parent="Banner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -20.0
+offset_right = 150.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "3D Character Demo"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LeftPanel" type="Panel" parent="."]
+layout_mode = 1
+offset_left = 240.0
+offset_top = 824.0
+offset_right = 540.0
+offset_bottom = 1404.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LeftPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 15.0
+offset_right = -10.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="Hair" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Hair"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Hair"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Hair1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Hair"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="Face" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Face"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Face"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Face1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Face"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="Hat" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Hat"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Hat"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "--"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Hat"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="Top" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Top"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Top10"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Top"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="Glove" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Glove"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Glove"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "--"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Glove"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="Bottom" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Bottom"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Bottom"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Bottom33"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Bottom"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="Shoes" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Shoes"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Shoes"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Shoes26"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Shoes"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="Bag" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Bag"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Bag"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "--"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Bag"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="Eyewear" type="HBoxContainer" parent="LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PrevBtn" type="Button" parent="LeftPanel/VBoxContainer/Eyewear"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = "<"
+
+[node name="Label" type="Label" parent="LeftPanel/VBoxContainer/Eyewear"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Eyewear6"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="LeftPanel/VBoxContainer/Eyewear"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow")
+text = ">"
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 1
+offset_left = 246.0
+offset_top = 216.0
+offset_right = 846.0
+offset_bottom = 796.0
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(600, 580)
+render_target_update_mode = 4
+
+[node name="World" type="Node3D" parent="SubViewportContainer/SubViewport"]
+
+[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport/World"]
+transform = Transform3D(1, 0, 0, 0, 0.97072834, 0.2401802, 0, -0.2401802, 0.97072834, -0.07497525, 1.6726904, 3.3052983)
+current = true
+fov = 45.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewportContainer/SubViewport/World"]
+environment = SubResource("Environment_1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewportContainer/SubViewport/World"]
+transform = Transform3D(0.866, -0.35, 0.35, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 2, 5, 2)
+light_energy = 1.5
+shadow_enabled = true
+
+[node name="Character" parent="SubViewportContainer/SubViewport/World" instance=ExtResource("1_char")]
+
+[node name="RightPanel" type="Panel" parent="."]
+layout_mode = 1
+offset_left = 552.0
+offset_top = 824.0
+offset_right = 852.0
+offset_bottom = 1404.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="RightPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RightPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="LabelIdle" type="Label" parent="RightPanel/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Idle Animations"
+
+[node name="Btn_Idle1" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_idle")
+text = "Stand_Idle1"
+
+[node name="Btn_Idle2" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_idle")
+text = "Stand_Idle2"
+
+[node name="Btn_Idle3" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_idle")
+text = "Stand_Idle3"
+
+[node name="Btn_Idle4" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_idle")
+text = "Stand_Idle4"
+
+[node name="Btn_Idle5" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_idle")
+text = "Stand_Idle5"
+
+[node name="Btn_Idle6" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_idle")
+text = "Stand_Idle6"
+
+[node name="LabelAction" type="Label" parent="RightPanel/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.5, 1)
+theme_override_font_sizes/font_size = 14
+text = "Actions"
+
+[node name="Btn_Jump" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_action")
+text = "Action_Jump"
+
+[node name="Btn_Run" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_action")
+text = "Action_Run"
+
+[node name="Btn_Dance1" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_action")
+text = "Dance_1"
+
+[node name="Btn_Dance2" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_action")
+text = "Dance_2"
+
+[node name="Label1" type="Label" parent="RightPanel/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "Interactions"
+
+[node name="Btn_Interaction_Item_Put" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Interaction_Item_Put"
+
+[node name="Btn_Interaction_Pickup" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Interaction_Pickup"
+
+[node name="Btn_Interaction_Shovel" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Interaction_Shovel"
+
+[node name="Btn_Interaction_Sickle" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Interaction_Sickle"
+
+[node name="Label2" type="Label" parent="RightPanel/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "Emojis"
+
+[node name="Btn_Emoji_Aghast" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Emoji_Aghast"
+
+[node name="Btn_Emoji_Angry" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Emoji_Angry"
+
+[node name="Btn_Emoji_Applaud" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Emoji_Applaud"
+
+[node name="Btn_Emoji_Be_Bashful" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Emoji_Be_Bashful"
+
+[node name="Btn_Emoji_Cheer" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Emoji_Cheer"
+
+[node name="Btn_Emoji_Cry" type="Button" parent="RightPanel/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_anim")
+text = "Emoji_Cry"
+
+[node name="AnimationPanel" type="Panel" parent="."]
+layout_mode = 1
+offset_left = 432.0
+offset_top = 1432.0
+offset_right = 832.0
+offset_bottom = 1512.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AnimationPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -30.0
+offset_right = 100.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AnimTitle" type="Label" parent="AnimationPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "Animation"
+horizontal_alignment = 1
+
+[node name="AnimLabel" type="Label" parent="AnimationPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "Stand_Idle1"
+horizontal_alignment = 1
+
+[node name="RandomBtn" type="Button" parent="."]
+layout_mode = 1
+offset_left = 272.0
+offset_top = 1442.0
+offset_right = 412.0
+offset_bottom = 1502.0
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_random")
+text = "Random
+Generation"
+
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Hair/PrevBtn" to="." method="_on_hair_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Hair/NextBtn" to="." method="_on_hair_next"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Face/PrevBtn" to="." method="_on_face_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Face/NextBtn" to="." method="_on_face_next"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Hat/PrevBtn" to="." method="_on_hat_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Hat/NextBtn" to="." method="_on_hat_next"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Top/PrevBtn" to="." method="_on_top_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Top/NextBtn" to="." method="_on_top_next"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Glove/PrevBtn" to="." method="_on_glove_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Glove/NextBtn" to="." method="_on_glove_next"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Bottom/PrevBtn" to="." method="_on_bottom_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Bottom/NextBtn" to="." method="_on_bottom_next"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Shoes/PrevBtn" to="." method="_on_shoes_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Shoes/NextBtn" to="." method="_on_shoes_next"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Bag/PrevBtn" to="." method="_on_bag_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Bag/NextBtn" to="." method="_on_bag_next"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Eyewear/PrevBtn" to="." method="_on_eyewear_prev"]
+[connection signal="pressed" from="LeftPanel/VBoxContainer/Eyewear/NextBtn" to="." method="_on_eyewear_next"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Idle1" to="." method="_on_idle1"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Idle2" to="." method="_on_idle2"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Idle3" to="." method="_on_idle3"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Idle4" to="." method="_on_idle4"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Idle5" to="." method="_on_idle5"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Idle6" to="." method="_on_idle6"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Jump" to="." method="_on_action_jump"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Run" to="." method="_on_action_run"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Dance1" to="." method="_on_dance1"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Dance2" to="." method="_on_dance2"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Interaction_Item_Put" to="." method="_on_anim_interaction_item_put"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Interaction_Pickup" to="." method="_on_anim_interaction_pickup"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Interaction_Shovel" to="." method="_on_anim_interaction_shovel"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Interaction_Sickle" to="." method="_on_anim_interaction_sickle"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Emoji_Aghast" to="." method="_on_anim_emoji_aghast"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Emoji_Angry" to="." method="_on_anim_emoji_angry"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Emoji_Applaud" to="." method="_on_anim_emoji_applaud"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Emoji_Be_Bashful" to="." method="_on_anim_emoji_be_bashful"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Emoji_Cheer" to="." method="_on_anim_emoji_cheer"]
+[connection signal="pressed" from="RightPanel/ScrollContainer/VBoxContainer/Btn_Emoji_Cry" to="." method="_on_anim_emoji_cry"]
+[connection signal="pressed" from="RandomBtn" to="." method="_on_random_pressed"]
