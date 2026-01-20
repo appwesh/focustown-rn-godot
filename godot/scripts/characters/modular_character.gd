@@ -540,6 +540,8 @@ func _load_all_animations() -> void:
 			var path := ANIMATIONS_PATH + file_name
 			var lib := load(path) as AnimationLibrary
 			if lib:
+				# Fix animation track paths that have "Armature/" prefix
+				_remap_animation_library_paths(lib)
 				var lib_name := file_name.replace(".fbx", "").replace("ANIM_Avatar_", "")
 				if not _anim_player.has_animation_library(lib_name):
 					_anim_player.add_animation_library(lib_name, lib)
@@ -549,6 +551,33 @@ func _load_all_animations() -> void:
 	_all_animations.assign(_anim_player.get_animation_list())
 	_all_animations.sort()
 	print("[ModularCharacter] Loaded %d animations" % _all_animations.size())
+
+
+func _remap_animation_library_paths(lib: AnimationLibrary) -> void:
+	## Fix animation track paths that have "Armature/" prefix (from Blender exports)
+	## Our skeleton is at Skeleton3D, not Armature/Skeleton3D
+	for anim_name in lib.get_animation_list():
+		var anim := lib.get_animation(anim_name)
+		if not anim:
+			continue
+		
+		var needs_fix := false
+		for track_idx in range(anim.get_track_count()):
+			var track_path := anim.track_get_path(track_idx)
+			var path_str := str(track_path)
+			if path_str.begins_with("Armature/"):
+				needs_fix = true
+				break
+		
+		if needs_fix:
+			for track_idx in range(anim.get_track_count()):
+				var track_path := anim.track_get_path(track_idx)
+				var path_str := str(track_path)
+				if path_str.begins_with("Armature/"):
+					# Remove "Armature/" prefix
+					var new_path := path_str.substr(9)  # len("Armature/") = 9
+					anim.track_set_path(track_idx, NodePath(new_path))
+			print("[ModularCharacter] Remapped track paths for: %s" % anim_name)
 
 
 func _play_default_animation() -> void:
@@ -584,10 +613,16 @@ func get_animation_list() -> Array[String]:
 func get_animation_categories() -> Dictionary:
 	return {
 		"Idle": ["Idle_F", "Idle_L", "Idle_R", "BoredIdle_01", "BoredIdle_02"],
+		"Sitting": ["Idle_Sitting_01"],
 		"Movement": ["Walk_F", "Walk_L", "Walk_R", "Run_F", "Run_L", "Run_R"],
 		"Emotes": ["Emote_Waving_Loop", "Emote_Happy_Loop", "Emote_Excited_Loop", "Emote_Sad_Loop"],
 		"Actions": ["Pickup_01", "Axe_Swing_01", "Shovel_Dig_01"],
 	}
+
+
+## Get the AnimationPlayer for external control
+func get_animation_player() -> AnimationPlayer:
+	return _anim_player
 
 
 ## Part Selection
