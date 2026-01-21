@@ -1,6 +1,6 @@
 [gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://d38ajgo6g5qvy"]
 
-[ext_resource type="Texture2D" uid="uid://dumo3pl37n1s" path="res://assets/environments/costalScene/textures/image.png" id="1_ctepb"]
+[ext_resource type="Texture2D" uid="uid://diq0nvvxk6vgg" path="res://assets/environments/costalScene/textures/BarFabricCover.png" id="1_ctepb"]
 
 [resource]
 resource_name = "Material.001"

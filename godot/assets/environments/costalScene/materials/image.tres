@@ -6,6 +6,6 @@
 resource_name = "image"
 transparency = 4
 cull_mode = 2
+shading_mode = 0
 albedo_texture = ExtResource("1_ohioo")
-roughness = 0.0
 texture_repeat = false

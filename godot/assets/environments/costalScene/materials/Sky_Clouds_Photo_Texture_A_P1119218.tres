@@ -5,5 +5,6 @@
 [resource]
 resource_name = "Sky_Clouds_Photo_Texture_A_P1119218"
 cull_mode = 2
+shading_mode = 0
 albedo_texture = ExtResource("1_a4bx5")
 texture_repeat = false

@@ -1,7 +1,20 @@
-[gd_scene load_steps=2 format=3 uid="uid://b6djirlp4s1kr"]
+[gd_scene load_steps=3 format=3 uid="uid://b6djirlp4s1kr"]
 
 [ext_resource type="PackedScene" uid="uid://cm86lqhn2xwhm" path="res://assets/environments/costalScene/coastal-cafe-v1-Clean.blend" id="1_srx8i"]
+
+[sub_resource type="Environment" id="Environment_srx8i"]
 
 [node name="CostalSceneMaster" type="Node3D"]
 
 [node name="coastal-cafe-v1-Clean" parent="." instance=ExtResource("1_srx8i")]
+
+[node name="Plane_009" parent="coastal-cafe-v1-Clean" index="38"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -13.253994)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_srx8i")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8805849, 0.024776638, -0.47324038, 0.4738885, -0.046040222, 0.8793805, 0, -0.9986324, -0.052283686, -6.2884097, 13.406264, 0)
+
+[editable path="coastal-cafe-v1-Clean"]
