@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://cvt5wuxb7mb6d"]
+
+[ext_resource type="Texture2D" uid="uid://t1hxrs8xkk0i" path="res://assets/environments/costalScene/textures/Sky-1.png" id="1_a4bx5"]
+
+[resource]
+resource_name = "Sky_Clouds_Photo_Texture_A_P1119218"
+cull_mode = 2
+albedo_texture = ExtResource("1_a4bx5")
+texture_repeat = false

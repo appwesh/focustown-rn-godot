@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dw8v27hbw644y"]
+
+[ext_resource type="Texture2D" uid="uid://b85r05375cge4" path="res://assets/environments/costalScene/textures/image (1).png" id="1_1bcdy"]
+
+[resource]
+resource_name = "stylized bush.001"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_1bcdy")

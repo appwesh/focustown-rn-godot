@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dclu5wlth0d8q"]
+
+[ext_resource type="Texture2D" uid="uid://ow1xblekkh31" path="res://assets/environments/costalScene/textures/Cafe-Table-v1_DefaultMaterial_BaseColor.png" id="1_ykrwp"]
+
+[resource]
+resource_name = "Table_Cafe"
+cull_mode = 2
+albedo_texture = ExtResource("1_ykrwp")
+metallic = 0.39784947
+roughness = 0.7688172

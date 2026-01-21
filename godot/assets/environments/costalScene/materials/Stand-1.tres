@@ -1,0 +1,20 @@
+[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://csvotqxdkxlyx"]
+
+[ext_resource type="Texture2D" uid="uid://cxlswqju88twa" path="res://assets/environments/costalScene/textures/stand-1_Checker_BaseColor.png" id="1_7n6qj"]
+[ext_resource type="Texture2D" uid="uid://mna05gkl2jrx" path="res://assets/environments/costalScene/textures/stand-1_Checker_Emissive.png" id="2_x25mx"]
+[ext_resource type="Texture2D" uid="uid://kwmtaloterbw" path="res://assets/environments/costalScene/textures/stand-1_Checker_Roughness.png" id="3_m6ys4"]
+[ext_resource type="Texture2D" uid="uid://daost6wguhdul" path="res://assets/environments/costalScene/textures/stand-1_Checker_Normal.png" id="4_jtlse"]
+
+[resource]
+resource_name = "Stand-1"
+cull_mode = 2
+albedo_texture = ExtResource("1_7n6qj")
+metallic = 1.0
+metallic_texture = ExtResource("3_m6ys4")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("3_m6ys4")
+roughness_texture_channel = 1
+emission_enabled = true
+emission_texture = ExtResource("2_x25mx")
+normal_enabled = true
+normal_texture = ExtResource("4_jtlse")

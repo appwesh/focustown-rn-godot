@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bbg06x7scg1o7"]
+
+[ext_resource type="Texture2D" uid="uid://c5rku1yshdedm" path="res://assets/environments/costalScene/textures/Flower.png" id="1_so5wj"]
+
+[resource]
+resource_name = "Flower"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_so5wj")
+roughness = 0.7
+texture_repeat = false

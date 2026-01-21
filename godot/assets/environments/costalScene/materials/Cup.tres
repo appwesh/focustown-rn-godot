@@ -1,0 +1,20 @@
+[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://b47gxtdva8xhy"]
+
+[ext_resource type="Texture2D" uid="uid://c6tgmkki7i7vk" path="res://assets/environments/costalScene/textures/Cup_Checker_BaseColor.png" id="1_i4kfp"]
+[ext_resource type="Texture2D" uid="uid://do8v103r6omff" path="res://assets/environments/costalScene/textures/Cup_Checker_Emissive.png" id="2_gj2i2"]
+[ext_resource type="Texture2D" uid="uid://bts1wopmtv57q" path="res://assets/environments/costalScene/textures/Cup_Checker_Roughness.png" id="3_kgulg"]
+[ext_resource type="Texture2D" uid="uid://b000geht4xrhy" path="res://assets/environments/costalScene/textures/Cup_Checker_Normal.png" id="4_g7rla"]
+
+[resource]
+resource_name = "Cup"
+cull_mode = 2
+albedo_texture = ExtResource("1_i4kfp")
+metallic = 1.0
+metallic_texture = ExtResource("3_kgulg")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("3_kgulg")
+roughness_texture_channel = 1
+emission_enabled = true
+emission_texture = ExtResource("2_gj2i2")
+normal_enabled = true
+normal_texture = ExtResource("4_g7rla")

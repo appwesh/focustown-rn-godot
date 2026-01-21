@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://cxcyf3bd2y7qk"]
+
+[resource]
+resource_name = "Tree bottom"
+cull_mode = 2
+albedo_color = Color(0.5960785, 0.37647066, 0.14901963, 1)
+roughness = 0.85
