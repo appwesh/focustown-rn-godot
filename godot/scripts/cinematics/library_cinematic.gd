@@ -90,6 +90,12 @@ var _target_study_spot: Dictionary = {}
 ## Keyboard movement state
 var _keyboard_moving: bool = false
 
+## Current seated spot node (kept alive during session)
+var _current_spot_node: Node3D = null
+
+## Is player currently seated (blocks navigation)
+var _is_player_seated: bool = false
+
 
 func _ready() -> void:
 	_character_scene = preload("res://scenes/characters/cinematic_character.tscn")
@@ -128,6 +134,10 @@ func _process(delta: float) -> void:
 
 func _handle_keyboard_movement(delta: float) -> void:
 	## Handle WASD/Arrow key movement
+	## Blocked when player is seated
+	if _is_player_seated:
+		return
+	
 	var input_dir := Vector2.ZERO
 	
 	# Get input direction
@@ -333,6 +343,13 @@ func is_first_person() -> bool:
 	return false
 
 
+## Check if currently in seated (focus session) view
+func is_seated() -> bool:
+	if camera_rig:
+		return camera_rig.get_current_mode() == CinematicCameraRig.CameraMode.SEATED
+	return false
+
+
 ## Switch to overview camera
 func switch_to_overview() -> void:
 	if camera_rig:
@@ -433,6 +450,10 @@ func _create_study_spot_area(spot: Dictionary) -> void:
 
 func _on_study_spot_input(_camera: Camera3D, event: InputEvent, _position: Vector3, _normal: Vector3, _shape_idx: int, _area: Area3D, spot: Dictionary) -> void:
 	## Handle tap/click on a study spot
+	## Blocked when player is seated
+	if _is_player_seated:
+		return
+	
 	if event is InputEventMouseButton:
 		var mouse_event := event as InputEventMouseButton
 		if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
@@ -445,8 +466,7 @@ func _on_study_spot_input(_camera: Camera3D, event: InputEvent, _position: Vecto
 
 func _on_study_spot_tapped(spot: Dictionary) -> void:
 	## Player tapped on a study spot - walk to it
-	if FocusSessionManager.is_focusing():
-		print("[LibraryCinematic] Already in a session, ignoring tap")
+	if _is_player_seated:
 		return
 	
 	if not _character:
@@ -485,6 +505,9 @@ func _trigger_session_at_spot(spot: Dictionary) -> void:
 	## Player arrived at study spot - trigger focus session
 	print("[LibraryCinematic] Arrived at study spot: %s" % spot.get("name", "Unknown"))
 	
+	# Player is now seated - disable navigation
+	_is_player_seated = true
+	
 	# Face the correct direction
 	var spot_rotation: float = spot.get("rotation", 0.0)
 	_character.rotation_degrees.y = spot_rotation
@@ -492,9 +515,9 @@ func _trigger_session_at_spot(spot: Dictionary) -> void:
 	# Play sitting/studying animation
 	_character.transition_to_animation(sitting_animation)
 	
-	# Switch camera to third person view (focused on seated character)
+	# Switch camera to seated view (zoomed top view)
 	if camera_rig:
-		camera_rig.switch_to_third_person()
+		camera_rig.switch_to_seated()
 	
 	# Emit signal
 	session_triggered.emit(spot.get("position", Vector3.ZERO))
@@ -509,21 +532,22 @@ func _notify_rn_player_seated(spot: Dictionary) -> void:
 	var building_name: String = spot.get("building_name", "Library")
 	var spot_id: String = spot.get("name", "StudySpot")
 	
+	# Clean up previous spot node if any
+	if _current_spot_node:
+		_current_spot_node.queue_free()
+		_current_spot_node = null
+	
 	# Call RNBridge if available
 	if RNBridge:
-		# Create a mock spot node for RNBridge compatibility
-		var mock_spot := Node3D.new()
-		mock_spot.name = spot_id
-		mock_spot.set_meta("building_id", building_id)
-		mock_spot.set_meta("building_name", building_name)
-		mock_spot.position = spot.get("position", Vector3.ZERO)
+		# Create a spot node for RNBridge - kept alive until session ends
+		_current_spot_node = Node3D.new()
+		_current_spot_node.name = spot_id
+		_current_spot_node.set_meta("building_id", building_id)
+		_current_spot_node.set_meta("building_name", building_name)
+		_current_spot_node.position = spot.get("position", Vector3.ZERO)
 		
-		add_child(mock_spot)
-		RNBridge.on_player_seated_at_spot(mock_spot)
-		
-		# Clean up mock node after a frame
-		await get_tree().process_frame
-		mock_spot.queue_free()
+		add_child(_current_spot_node)
+		RNBridge.on_player_seated_at_spot(_current_spot_node)
 	
 	print("[LibraryCinematic] Notified RN: seated at %s in %s" % [spot_id, building_name])
 
@@ -541,15 +565,23 @@ func start_focus_session() -> void:
 
 ## End focus session and return to idle
 func end_focus_session() -> void:
-	if not FocusSessionManager.is_focusing():
-		return
+	print("[LibraryCinematic] Ending focus session")
 	
-	var coins := FocusSessionManager.end_session()
-	print("[LibraryCinematic] Focus session ended, earned %d coins" % coins)
+	# Player is no longer seated - enable navigation
+	_is_player_seated = false
 	
-	# Switch camera back to third person (or overview)
-	if camera_rig and is_first_person():
-		camera_rig.switch_to_third_person()
+	if FocusSessionManager.is_focusing():
+		var coins := FocusSessionManager.end_session()
+		print("[LibraryCinematic] Focus session ended, earned %d coins" % coins)
+	
+	# Clean up spot node
+	if _current_spot_node:
+		_current_spot_node.queue_free()
+		_current_spot_node = null
+	
+	# Switch camera back to overview
+	if camera_rig:
+		camera_rig.switch_to_overview()
 	
 	# Return to idle animation
 	if _character:
@@ -599,6 +631,23 @@ func _apply_npc_preset_deferred(npc: CinematicCharacter, preset_name: String) ->
 
 
 func _input(event: InputEvent) -> void:
+	# Block all navigation when player is seated
+	if _is_player_seated:
+		# Any tap/click triggers confirm end popup
+		if event is InputEventMouseButton:
+			var mouse_event := event as InputEventMouseButton
+			if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
+				print("[LibraryCinematic] Tap while seated - showing confirm popup")
+				RNBridge.on_session_tap_outside()
+				get_viewport().set_input_as_handled()
+		elif event is InputEventScreenTouch:
+			var touch_event := event as InputEventScreenTouch
+			if touch_event.pressed:
+				print("[LibraryCinematic] Touch while seated - showing confirm popup")
+				RNBridge.on_session_tap_outside()
+				get_viewport().set_input_as_handled()
+		return
+	
 	# Handle camera toggle (C key)
 	if camera_toggle_enabled and event is InputEventKey:
 		var key_event := event as InputEventKey
@@ -623,6 +672,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _handle_click(screen_position: Vector2) -> void:
+	## Handle click to move - only called when NOT in a focus session
 	if not _character:
 		return
 	

@@ -28,6 +28,7 @@ export interface SpotLocation {
 let sessionHandler: ((duration: number, coins: number) => void) | null = null;
 let playerSeatedHandler: ((location: SpotLocation) => void) | null = null;
 let playerPositionHandler: ((x: number, y: number, z: number) => void) | null = null;
+let sessionTapOutsideHandler: (() => void) | null = null;
 
 /**
  * Set the session handler (called from JS thread when session completes)
@@ -54,6 +55,16 @@ export function setPlayerPositionHandler(
   handler: ((x: number, y: number, z: number) => void) | null
 ): void {
   playerPositionHandler = handler;
+}
+
+/**
+ * Set the session tap outside handler (called when user taps outside during session)
+ * RN should show confirm end session modal when this fires
+ */
+export function setSessionTapOutsideHandler(
+  handler: (() => void) | null
+): void {
+  sessionTapOutsideHandler = handler;
 }
 
 /**
@@ -90,6 +101,17 @@ function handlePlayerPosition(x: number, y: number, z: number): void {
   }
 }
 
+/**
+ * Called from worklet - bridges session tap outside to JS thread
+ * This fires when user taps outside during a focus session
+ */
+function handleSessionTapOutside(): void {
+  console.log('[Bridge] Session tap outside detected');
+  if (sessionTapOutsideHandler) {
+    sessionTapOutsideHandler();
+  }
+}
+
 // Create worklet-compatible functions that can be called from Godot thread
 const handleSessionCompleteWorklet = Worklets.createRunOnJS(handleSessionComplete);
 const handlePlayerSeatedWorklet = Worklets.createRunOnJS(handlePlayerSeated) as (
@@ -102,6 +124,7 @@ const handlePlayerPositionWorklet = Worklets.createRunOnJS(handlePlayerPosition)
   y: number,
   z: number
 ) => void;
+const handleSessionTapOutsideWorklet = Worklets.createRunOnJS(handleSessionTapOutside);
 
 /**
  * Check if Godot instance is ready
@@ -249,6 +272,107 @@ export function stopPositionSync(): void {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (rnBridge as any).stop_position_sync();
       console.log('[Bridge] Stopped position sync');
+    }
+  });
+}
+
+/**
+ * Register session tap outside callback with Godot
+ * Fires when user taps outside during a focus session (to show confirm end popup)
+ */
+export function registerSessionTapOutsideCallback(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).set_session_tap_outside_callback(function () {
+        'worklet';
+        handleSessionTapOutsideWorklet();
+      });
+      console.log('[Bridge] Session tap outside callback registered');
+    }
+  });
+}
+
+// ============================================================================
+// Camera Control (for focus sessions)
+// ============================================================================
+
+/**
+ * Toggle camera between zoomed (seated) and overview during focus session
+ */
+export function toggleSessionCamera(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).toggle_session_camera();
+      console.log('[Bridge] Toggled session camera');
+    }
+  });
+}
+
+/**
+ * Switch to zoomed seated camera view
+ */
+export function switchToSeatedCamera(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).switch_to_seated_camera();
+      console.log('[Bridge] Switched to seated camera');
+    }
+  });
+}
+
+/**
+ * Switch to overview camera view
+ */
+export function switchToOverviewCamera(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).switch_to_overview_camera();
+      console.log('[Bridge] Switched to overview camera');
     }
   });
 }

@@ -22,6 +22,12 @@ var _player_seated_callback: Callable
 ## Callback for position sync
 var _player_position_callback: Callable
 
+## Callback when user taps outside during a focus session (to show confirm end popup)
+var _session_tap_outside_callback: Callable
+
+## Reference to the camera rig for camera control
+var _camera_rig: CinematicCameraRig = null
+
 ## Position sync timer
 var _position_sync_timer: Timer = null
 var _position_sync_enabled: bool = false
@@ -92,6 +98,13 @@ func set_player_seated_callback(callback: Callable) -> void:
 func set_player_position_callback(callback: Callable) -> void:
 	_player_position_callback = callback
 	print("[RNBridge] Player position callback registered")
+
+
+## Register callback from RN for when user taps outside during session
+## RN should show confirm end session popup when this is called
+func set_session_tap_outside_callback(callback: Callable) -> void:
+	_session_tap_outside_callback = callback
+	print("[RNBridge] Session tap outside callback registered")
 
 
 ## Start position sync (sends player position to RN periodically)
@@ -292,6 +305,75 @@ func end_session() -> Dictionary:
 		"duration": duration,
 		"coins_earned": coins
 	}
+
+
+# =============================================================================
+# Camera Control (called from RN)
+# =============================================================================
+
+## Toggle camera between zoomed (seated) and overview during focus session
+## Called from RN when user presses camera toggle button
+func toggle_session_camera() -> void:
+	_ensure_camera_rig()
+	if _camera_rig:
+		_camera_rig.toggle_session_camera()
+		print("[RNBridge] Camera toggled")
+
+
+## Switch to zoomed seated view
+func switch_to_seated_camera() -> void:
+	_ensure_camera_rig()
+	if _camera_rig:
+		_camera_rig.switch_to_seated()
+		print("[RNBridge] Switched to seated camera")
+
+
+## Switch to overview camera
+func switch_to_overview_camera() -> void:
+	_ensure_camera_rig()
+	if _camera_rig:
+		_camera_rig.switch_to_overview()
+		print("[RNBridge] Switched to overview camera")
+
+
+## Get current camera mode
+func get_camera_mode() -> String:
+	_ensure_camera_rig()
+	if _camera_rig:
+		return _camera_rig.get_current_mode_name()
+	return "unknown"
+
+
+func _ensure_camera_rig() -> void:
+	## Find the camera rig if not cached
+	if _camera_rig:
+		return
+	
+	# Search scene tree for camera rig
+	var root := get_tree().current_scene
+	if root:
+		_camera_rig = _find_camera_rig_recursive(root)
+
+
+func _find_camera_rig_recursive(node: Node) -> CinematicCameraRig:
+	if node is CinematicCameraRig:
+		return node
+	for child in node.get_children():
+		var found := _find_camera_rig_recursive(child)
+		if found:
+			return found
+	return null
+
+
+## Called internally when user taps outside during a focus session
+## Notifies RN to show confirm end session popup
+func on_session_tap_outside() -> void:
+	print("[RNBridge] User tapped outside during session")
+	if _session_tap_outside_callback.is_valid():
+		_session_tap_outside_callback.call()
+		print("[RNBridge] Session tap outside callback invoked")
+	else:
+		print("[RNBridge] No tap outside callback registered")
 
 
 # =============================================================================

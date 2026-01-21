@@ -11,7 +11,8 @@ signal transition_finished(camera_name: String)
 enum CameraMode {
 	OVERVIEW,
 	THIRD_PERSON,
-	FIRST_PERSON
+	FIRST_PERSON,
+	SEATED  # Zoomed-in top view for focus sessions
 }
 
 @export_group("Cameras")
@@ -46,6 +47,16 @@ enum CameraMode {
 ## FOV for first person
 @export var first_person_fov: float = 70.0
 
+@export_group("Seated Camera Settings")
+## Height above the target for seated view (zoomed top view)
+@export var seated_height: float = 5.0
+## Distance behind the target
+@export var seated_distance: float = 2.0
+## Vertical angle (looking down at character)
+@export var seated_pitch: float = -50.0
+## FOV for seated view (narrower = more zoomed)
+@export var seated_fov: float = 40.0
+
 @export_group("Transitions")
 ## Duration of camera transitions
 @export var transition_duration: float = 1.0
@@ -65,6 +76,10 @@ var _spring_arm: SpringArm3D
 var _third_person_camera: Camera3D
 ## First person camera instance
 var _first_person_camera: Camera3D
+## Seated camera instance (zoomed top view)
+var _seated_camera: Camera3D
+## Seated camera pivot (follows player from above)
+var _seated_pivot: Node3D
 ## Active transition tween
 var _transition_tween: Tween
 ## Is currently transitioning
@@ -85,6 +100,7 @@ func _physics_process(delta: float) -> void:
 	# Update camera positions based on target
 	_update_third_person_camera(delta)
 	_update_first_person_camera()
+	_update_seated_camera(delta)
 
 
 func _setup_cameras() -> void:
@@ -122,6 +138,18 @@ func _setup_cameras() -> void:
 	_first_person_camera.current = false
 	add_child(_first_person_camera)
 	
+	# Create seated camera pivot (zoomed top view for focus sessions)
+	_seated_pivot = Node3D.new()
+	_seated_pivot.name = "SeatedPivot"
+	add_child(_seated_pivot)
+	
+	# Create seated camera (zoomed overhead view)
+	_seated_camera = Camera3D.new()
+	_seated_camera.name = "SeatedCamera"
+	_seated_camera.fov = seated_fov
+	_seated_camera.current = false
+	_seated_pivot.add_child(_seated_camera)
+	
 	# Create interpolation camera for smooth transitions
 	_interp_camera = Camera3D.new()
 	_interp_camera.name = "InterpCamera"
@@ -153,6 +181,7 @@ func get_current_mode_name() -> String:
 		CameraMode.OVERVIEW: return "overview"
 		CameraMode.THIRD_PERSON: return "third_person"
 		CameraMode.FIRST_PERSON: return "first_person"
+		CameraMode.SEATED: return "seated"
 	return "unknown"
 
 
@@ -176,7 +205,12 @@ func switch_to_first_person(instant: bool = false) -> void:
 	_switch_to_mode(CameraMode.FIRST_PERSON, instant)
 
 
-## Cycle through camera modes
+## Switch to seated camera (zoomed top view for focus sessions)
+func switch_to_seated(instant: bool = false) -> void:
+	_switch_to_mode(CameraMode.SEATED, instant)
+
+
+## Cycle through camera modes (excludes SEATED - that's only for focus sessions)
 func cycle_camera() -> void:
 	var next_mode: CameraMode
 	match _current_mode:
@@ -186,7 +220,17 @@ func cycle_camera() -> void:
 			next_mode = CameraMode.FIRST_PERSON
 		CameraMode.FIRST_PERSON:
 			next_mode = CameraMode.OVERVIEW
+		CameraMode.SEATED:
+			next_mode = CameraMode.OVERVIEW  # Exit seated goes to overview
 	_switch_to_mode(next_mode)
+
+
+## Toggle between seated (zoomed) and overview during focus session
+func toggle_session_camera() -> void:
+	if _current_mode == CameraMode.SEATED:
+		_switch_to_mode(CameraMode.OVERVIEW)
+	else:
+		_switch_to_mode(CameraMode.SEATED)
 
 
 func _switch_to_mode(new_mode: CameraMode, instant: bool = false) -> void:
@@ -258,6 +302,8 @@ func _get_camera_for_mode(mode: CameraMode) -> Camera3D:
 			return _third_person_camera
 		CameraMode.FIRST_PERSON:
 			return _first_person_camera
+		CameraMode.SEATED:
+			return _seated_camera
 	return null
 
 
@@ -266,6 +312,7 @@ func _mode_to_string(mode: CameraMode) -> String:
 		CameraMode.OVERVIEW: return "overview"
 		CameraMode.THIRD_PERSON: return "third_person"
 		CameraMode.FIRST_PERSON: return "first_person"
+		CameraMode.SEATED: return "seated"
 	return "unknown"
 
 
@@ -314,6 +361,30 @@ func _update_first_person_camera() -> void:
 	_first_person_camera.global_position = head_pos
 	# Camera looks down -Z, so add PI to face the same direction as character
 	_first_person_camera.global_rotation.y = target_rotation + PI
+
+
+func _update_seated_camera(delta: float) -> void:
+	## Update seated camera (zoomed top view) to look down at target
+	if not _seated_pivot or not _seated_camera or not _target:
+		return
+	
+	var target_pos := _target.global_position
+	
+	# Position pivot above and behind the target
+	var desired_pivot_pos := target_pos + Vector3.UP * seated_height + Vector3.BACK * seated_distance
+	
+	# Smooth follow for the pivot
+	if delta > 0:
+		_seated_pivot.global_position = _seated_pivot.global_position.lerp(
+			desired_pivot_pos,
+			follow_smoothing * delta
+		)
+	else:
+		_seated_pivot.global_position = desired_pivot_pos
+	
+	# Camera looks down at the target
+	_seated_camera.global_position = _seated_pivot.global_position
+	_seated_camera.look_at(target_pos + Vector3.UP * 0.5)  # Look at roughly chest height
 
 
 ## Get the currently active camera

@@ -173,6 +173,75 @@ export function useSessionControls() {
 }
 
 /**
+ * Hook to register session tap outside callback with Godot
+ * Fires when user taps outside during a focus session (to show confirm end popup)
+ *
+ * @param onTapOutside - Callback when user taps outside during session
+ */
+export function useSessionTapOutside(
+  onTapOutside?: () => void
+) {
+  const callbackRegistered = useRef(false);
+
+  // Set up the handler
+  useEffect(() => {
+    if (onTapOutside) {
+      Bridge.setSessionTapOutsideHandler(onTapOutside);
+    }
+
+    return () => {
+      Bridge.setSessionTapOutsideHandler(null);
+    };
+  }, [onTapOutside]);
+
+  // Register the Godot callback once ready
+  useEffect(() => {
+    const checkAndRegister = () => {
+      if (Bridge.isGodotReady() && !callbackRegistered.current) {
+        console.log('[useSessionTapOutside] Registering callback...');
+        Bridge.registerSessionTapOutsideCallback();
+        callbackRegistered.current = true;
+      }
+    };
+
+    checkAndRegister();
+
+    const interval = setInterval(() => {
+      if (!callbackRegistered.current) {
+        checkAndRegister();
+      } else {
+        clearInterval(interval);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+}
+
+/**
+ * Hook for camera controls during focus session
+ */
+export function useCameraControls() {
+  const toggleCamera = useCallback(() => {
+    Bridge.toggleSessionCamera();
+  }, []);
+
+  const switchToSeated = useCallback(() => {
+    Bridge.switchToSeatedCamera();
+  }, []);
+
+  const switchToOverview = useCallback(() => {
+    Bridge.switchToOverviewCamera();
+  }, []);
+
+  return {
+    toggleCamera,
+    switchToSeated,
+    switchToOverview,
+  };
+}
+
+/**
  * Hook to enable position sync for multiplayer sessions
  * Waits for Godot to be ready, then registers position callback and starts sync
  *

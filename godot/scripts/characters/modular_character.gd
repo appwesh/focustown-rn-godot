@@ -10,6 +10,50 @@ signal animation_changed(animation_name: String)
 const BASE_CHARACTER_PATH := "res://assets/characters/cozylife/SKM_Human.fbx"
 const ANIMATIONS_PATH := "res://assets/characters/cozylife/animations/"
 const TEXTURES_PATH := "res://assets/characters/cozylife/textures/"
+
+## Static list of animation files (DirAccess doesn't work in exported builds)
+const ANIMATION_FILES: PackedStringArray = [
+	"ANIM_Avatar_Axe_Swing_01.fbx",
+	"ANIM_Avatar_BoredIdle_01.fbx",
+	"ANIM_Avatar_BoredIdle_02.fbx",
+	"ANIM_Avatar_BugNet_Swish_01.fbx",
+	"ANIM_Avatar_Emote_Angry_Entry.fbx",
+	"ANIM_Avatar_Emote_Angry_Loop.fbx",
+	"ANIM_Avatar_Emote_Confused_Entry.fbx",
+	"ANIM_Avatar_Emote_Confused_Loop.fbx",
+	"ANIM_Avatar_Emote_Excited_Entry.fbx",
+	"ANIM_Avatar_Emote_Excited_Loop.fbx",
+	"ANIM_Avatar_Emote_Happy_Loop.fbx",
+	"ANIM_Avatar_Emote_Laughing_Loop.fbx",
+	"ANIM_Avatar_Emote_Sad_Entry.fbx",
+	"ANIM_Avatar_Emote_Sad_Loop.fbx",
+	"ANIM_Avatar_Emote_Shocked_Entry.fbx",
+	"ANIM_Avatar_Emote_Shocked_Loop.fbx",
+	"ANIM_Avatar_Emote_Waving_Loop.fbx",
+	"ANIM_Avatar_FishingRod_Cast_01.fbx",
+	"ANIM_Avatar_FishingRod_Cast_Idle_01.fbx",
+	"ANIM_Avatar_FishingRod_Reel_01.fbx",
+	"ANIM_Avatar_Hold_Axe.fbx",
+	"ANIM_Avatar_Hold_BugNet.fbx",
+	"ANIM_Avatar_Hold_BugNet_Sneak.fbx",
+	"ANIM_Avatar_Hold_FishingRod.fbx",
+	"ANIM_Avatar_Hold_Shovel.fbx",
+	"ANIM_Avatar_Hold_Sword.fbx",
+	"ANIM_Avatar_Idle_F_01.fbx",
+	"ANIM_Avatar_Idle_L_01.fbx",
+	"ANIM_Avatar_Idle_R_01.fbx",
+	"ANIM_Avatar_Idle_Sitting_01.fbx",
+	"ANIM_Avatar_Pickup_01.fbx",
+	"ANIM_Avatar_Run_F_01.fbx",
+	"ANIM_Avatar_Run_L_01.fbx",
+	"ANIM_Avatar_Run_R_01.fbx",
+	"ANIM_Avatar_Shovel_Dig_01.fbx",
+	"ANIM_Avatar_Sword_Attack_01.fbx",
+	"ANIM_Avatar_Sword_Attack_02.fbx",
+	"ANIM_Avatar_Walk_F_01.fbx",
+	"ANIM_Avatar_Walk_L_01.fbx",
+	"ANIM_Avatar_Walk_R_01.fbx",
+]
 const CLOTHES_PATH := "res://assets/characters/cozylife/clothes/"
 const CLOTHES_TEXTURES_PATH := "res://assets/characters/cozylife/clothes/textures/"
 const HAIRS_PATH := "res://assets/characters/cozylife/hairs/"
@@ -529,24 +573,16 @@ func _load_all_animations() -> void:
 	if not _anim_player:
 		return
 	
-	var dir := DirAccess.open(ANIMATIONS_PATH)
-	if not dir:
-		return
-	
-	dir.list_dir_begin()
-	var file_name := dir.get_next()
-	while file_name != "":
-		if file_name.ends_with(".fbx") and not file_name.ends_with(".import"):
-			var path := ANIMATIONS_PATH + file_name
-			var lib := load(path) as AnimationLibrary
-			if lib:
-				# Fix animation track paths that have "Armature/" prefix
-				_remap_animation_library_paths(lib)
-				var lib_name := file_name.replace(".fbx", "").replace("ANIM_Avatar_", "")
-				if not _anim_player.has_animation_library(lib_name):
-					_anim_player.add_animation_library(lib_name, lib)
-		file_name = dir.get_next()
-	dir.list_dir_end()
+	# Use static list instead of DirAccess (DirAccess doesn't work in exported builds)
+	for file_name in ANIMATION_FILES:
+		var path := ANIMATIONS_PATH + file_name
+		var lib := load(path) as AnimationLibrary
+		if lib:
+			# Fix animation track paths that have "Armature/" prefix
+			_remap_animation_library_paths(lib)
+			var lib_name := file_name.replace(".fbx", "").replace("ANIM_Avatar_", "")
+			if not _anim_player.has_animation_library(lib_name):
+				_anim_player.add_animation_library(lib_name, lib)
 	
 	_all_animations.assign(_anim_player.get_animation_list())
 	_all_animations.sort()
