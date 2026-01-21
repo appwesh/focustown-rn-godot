@@ -1,10 +1,10 @@
 [gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://rsw4sj08gwnw"]
 
-[ext_resource type="Texture2D" uid="uid://bfgak7n78hgc5" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_BaseColor.png" id="1_hn3pe"]
-[ext_resource type="Texture2D" uid="uid://bw4ujuxi5ojqk" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Emission.png" id="2_eqgb1"]
-[ext_resource type="Texture2D" uid="uid://ddqc0a8sg6whh" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Metallic.png" id="3_2hj6o"]
-[ext_resource type="Texture2D" uid="uid://cyfym47jqy43t" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Normal.png" id="4_71nsi"]
-[ext_resource type="Texture2D" uid="uid://p2pn5iww6wos" path="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Roughness.png" id="5_h7f3d"]
+[ext_resource type="Texture2D" uid="uid://bfgak7n78hgc5" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_BaseColor.png" id="1_hn3pe"]
+[ext_resource type="Texture2D" uid="uid://bw4ujuxi5ojqk" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Emission.png" id="2_eqgb1"]
+[ext_resource type="Texture2D" uid="uid://ddqc0a8sg6whh" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Metallic.png" id="3_2hj6o"]
+[ext_resource type="Texture2D" uid="uid://cyfym47jqy43t" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Normal.png" id="4_71nsi"]
+[ext_resource type="Texture2D" uid="uid://p2pn5iww6wos" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Roughness.png" id="5_h7f3d"]
 
 [resource]
 resource_name = "SmallPlants"

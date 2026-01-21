@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bp6cqdcspflps"
-path="res://.godot/imported/blocky.png-3619a5694e098d670b7cc9262638f3d8.ctex"
+path="res://.godot/imported/blocky.png-5709cc7515e364ff640d1ce2a60ba9b6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/blocky.png"
-dest_files=["res://.godot/imported/blocky.png-3619a5694e098d670b7cc9262638f3d8.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/blocky.png"
+dest_files=["res://.godot/imported/blocky.png-5709cc7515e364ff640d1ce2a60ba9b6.ctex"]
 
 [params]
 

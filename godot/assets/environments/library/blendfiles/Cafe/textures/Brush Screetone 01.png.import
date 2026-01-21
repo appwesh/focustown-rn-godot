@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dhn7ndqbcvlwm"
-path="res://.godot/imported/Brush Screetone 01.png-ce7ccafa76e3fa8026508cd628b21b08.ctex"
+path="res://.godot/imported/Brush Screetone 01.png-cd0f765d5d926fa909978e92f33a2888.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/Brush Screetone 01.png"
-dest_files=["res://.godot/imported/Brush Screetone 01.png-ce7ccafa76e3fa8026508cd628b21b08.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/Brush Screetone 01.png"
+dest_files=["res://.godot/imported/Brush Screetone 01.png-cd0f765d5d926fa909978e92f33a2888.ctex"]
 
 [params]
 

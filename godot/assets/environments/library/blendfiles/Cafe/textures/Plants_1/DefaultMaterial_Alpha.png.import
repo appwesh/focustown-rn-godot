@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b8bt6yujmtmiw"
-path="res://.godot/imported/DefaultMaterial_Alpha.png-465dfcf648043d7d4326e0071883aea4.ctex"
+path="res://.godot/imported/DefaultMaterial_Alpha.png-302b9d4226ef00bfecec3f731228428e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Alpha.png"
-dest_files=["res://.godot/imported/DefaultMaterial_Alpha.png-465dfcf648043d7d4326e0071883aea4.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/Plants_1/DefaultMaterial_Alpha.png"
+dest_files=["res://.godot/imported/DefaultMaterial_Alpha.png-302b9d4226ef00bfecec3f731228428e.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b6eer21avn5kc"
-path="res://.godot/imported/Brush Cross 02.png-81771522a09727ced280fdb4643990ad.ctex"
+path="res://.godot/imported/Brush Cross 02.png-0e778506c38deda72f47ec248ab0fcc4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/Brush Cross 02.png"
-dest_files=["res://.godot/imported/Brush Cross 02.png-81771522a09727ced280fdb4643990ad.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/Brush Cross 02.png"
+dest_files=["res://.godot/imported/Brush Cross 02.png-0e778506c38deda72f47ec248ab0fcc4.ctex"]
 
 [params]
 

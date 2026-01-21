@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cytf8n8n4rrju"
-path.s3tc="res://.godot/imported/DefaultMaterial_Roughness.png-e5e7d94a8b9365e9f18bcd1e5acb22d3.s3tc.ctex"
-path.etc2="res://.godot/imported/DefaultMaterial_Roughness.png-e5e7d94a8b9365e9f18bcd1e5acb22d3.etc2.ctex"
+path.s3tc="res://.godot/imported/DefaultMaterial_Roughness.png-81d320207edefef48f532a0604b1f6e9.s3tc.ctex"
+path.etc2="res://.godot/imported/DefaultMaterial_Roughness.png-81d320207edefef48f532a0604b1f6e9.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_Roughness.png"
-dest_files=["res://.godot/imported/DefaultMaterial_Roughness.png-e5e7d94a8b9365e9f18bcd1e5acb22d3.s3tc.ctex", "res://.godot/imported/DefaultMaterial_Roughness.png-e5e7d94a8b9365e9f18bcd1e5acb22d3.etc2.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_Roughness.png"
+dest_files=["res://.godot/imported/DefaultMaterial_Roughness.png-81d320207edefef48f532a0604b1f6e9.s3tc.ctex", "res://.godot/imported/DefaultMaterial_Roughness.png-81d320207edefef48f532a0604b1f6e9.etc2.ctex"]
 
 [params]
 

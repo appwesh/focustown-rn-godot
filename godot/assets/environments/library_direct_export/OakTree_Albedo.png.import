@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cnr33bhj3ddpa"
-path.s3tc="res://.godot/imported/OakTree_Albedo.png-c90d0cf5f923aba4dbcc89f610e2d1d5.s3tc.ctex"
-path.etc2="res://.godot/imported/OakTree_Albedo.png-c90d0cf5f923aba4dbcc89f610e2d1d5.etc2.ctex"
+path.s3tc="res://.godot/imported/OakTree_Albedo.png-7508aac88b96f3fde1daccfbb6709226.s3tc.ctex"
+path.etc2="res://.godot/imported/OakTree_Albedo.png-7508aac88b96f3fde1daccfbb6709226.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/models/Textures/OakTree_Albedo.png"
-dest_files=["res://.godot/imported/OakTree_Albedo.png-c90d0cf5f923aba4dbcc89f610e2d1d5.s3tc.ctex", "res://.godot/imported/OakTree_Albedo.png-c90d0cf5f923aba4dbcc89f610e2d1d5.etc2.ctex"]
+source_file="res://assets/environments/library_direct_export/OakTree_Albedo.png"
+dest_files=["res://.godot/imported/OakTree_Albedo.png-7508aac88b96f3fde1daccfbb6709226.s3tc.ctex", "res://.godot/imported/OakTree_Albedo.png-7508aac88b96f3fde1daccfbb6709226.etc2.ctex"]
 
 [params]
 

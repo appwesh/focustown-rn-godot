@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bxfcktqksr5fb"
-path.s3tc="res://.godot/imported/DefaultMaterial_Metallic.png-6f636778c751f48ff256bb2122f94cd0.s3tc.ctex"
-path.etc2="res://.godot/imported/DefaultMaterial_Metallic.png-6f636778c751f48ff256bb2122f94cd0.etc2.ctex"
+path.s3tc="res://.godot/imported/DefaultMaterial_Metallic.png-931f474f639a8182d3d95d388d4cebcd.s3tc.ctex"
+path.etc2="res://.godot/imported/DefaultMaterial_Metallic.png-931f474f639a8182d3d95d388d4cebcd.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/room/DefaultMaterial_Metallic.png"
-dest_files=["res://.godot/imported/DefaultMaterial_Metallic.png-6f636778c751f48ff256bb2122f94cd0.s3tc.ctex", "res://.godot/imported/DefaultMaterial_Metallic.png-6f636778c751f48ff256bb2122f94cd0.etc2.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/room/DefaultMaterial_Metallic.png"
+dest_files=["res://.godot/imported/DefaultMaterial_Metallic.png-931f474f639a8182d3d95d388d4cebcd.s3tc.ctex", "res://.godot/imported/DefaultMaterial_Metallic.png-931f474f639a8182d3d95d388d4cebcd.etc2.ctex"]
 
 [params]
 

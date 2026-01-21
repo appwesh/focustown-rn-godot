@@ -1,10 +1,10 @@
 [gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://c27tm1n25h87o"]
 
-[ext_resource type="Texture2D" uid="uid://b2b0qio1cqddk" path="res://assets/models/blendfiles/Cafe/textures/room/DefaultMaterial_BaseColor.png" id="1_tfe7t"]
-[ext_resource type="Texture2D" uid="uid://cn3k5jnwy3uja" path="res://assets/models/blendfiles/Cafe/textures/room/DefaultMaterial_Emission.png" id="2_o7org"]
-[ext_resource type="Texture2D" uid="uid://bxfcktqksr5fb" path="res://assets/models/blendfiles/Cafe/textures/room/DefaultMaterial_Metallic.png" id="3_pkh8v"]
-[ext_resource type="Texture2D" uid="uid://b5cvoknhgigsu" path="res://assets/models/blendfiles/Cafe/textures/room/DefaultMaterial_Normal.png" id="4_xkaow"]
-[ext_resource type="Texture2D" uid="uid://d0bs7bsyby5rl" path="res://assets/models/blendfiles/Cafe/textures/room/DefaultMaterial_Roughness.png" id="5_0ub6j"]
+[ext_resource type="Texture2D" uid="uid://b2b0qio1cqddk" path="res://assets/environments/library/blendfiles/Cafe/textures/room/DefaultMaterial_BaseColor.png" id="1_tfe7t"]
+[ext_resource type="Texture2D" uid="uid://cn3k5jnwy3uja" path="res://assets/environments/library/blendfiles/Cafe/textures/room/DefaultMaterial_Emission.png" id="2_o7org"]
+[ext_resource type="Texture2D" uid="uid://bxfcktqksr5fb" path="res://assets/environments/library/blendfiles/Cafe/textures/room/DefaultMaterial_Metallic.png" id="3_pkh8v"]
+[ext_resource type="Texture2D" uid="uid://b5cvoknhgigsu" path="res://assets/environments/library/blendfiles/Cafe/textures/room/DefaultMaterial_Normal.png" id="4_xkaow"]
+[ext_resource type="Texture2D" uid="uid://d0bs7bsyby5rl" path="res://assets/environments/library/blendfiles/Cafe/textures/room/DefaultMaterial_Roughness.png" id="5_0ub6j"]
 
 [resource]
 resource_name = "CafeBuilding"

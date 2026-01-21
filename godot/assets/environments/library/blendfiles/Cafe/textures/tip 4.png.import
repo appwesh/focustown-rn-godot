@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://f2qke7ipvwqp"
-path="res://.godot/imported/tip 4.png-62544e2ff874facf4731b468c725248c.ctex"
+path="res://.godot/imported/tip 4.png-00b7b2b92b609d829c3d12b621cd9a4f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/tip 4.png"
-dest_files=["res://.godot/imported/tip 4.png-62544e2ff874facf4731b468c725248c.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/tip 4.png"
+dest_files=["res://.godot/imported/tip 4.png-00b7b2b92b609d829c3d12b621cd9a4f.ctex"]
 
 [params]
 

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://boppqjfyjtm0u"
-path.s3tc="res://.godot/imported/Plant Leaf_Normal.png-9fd2895f333cc5c3dc1417a5a61d6a66.s3tc.ctex"
-path.etc2="res://.godot/imported/Plant Leaf_Normal.png-9fd2895f333cc5c3dc1417a5a61d6a66.etc2.ctex"
+path.s3tc="res://.godot/imported/Plant Leaf_Normal.png-524c9587d83203f445d43f6489e9257a.s3tc.ctex"
+path.etc2="res://.godot/imported/Plant Leaf_Normal.png-524c9587d83203f445d43f6489e9257a.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Normal.png"
-dest_files=["res://.godot/imported/Plant Leaf_Normal.png-9fd2895f333cc5c3dc1417a5a61d6a66.s3tc.ctex", "res://.godot/imported/Plant Leaf_Normal.png-9fd2895f333cc5c3dc1417a5a61d6a66.etc2.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Normal.png"
+dest_files=["res://.godot/imported/Plant Leaf_Normal.png-524c9587d83203f445d43f6489e9257a.s3tc.ctex", "res://.godot/imported/Plant Leaf_Normal.png-524c9587d83203f445d43f6489e9257a.etc2.ctex"]
 
 [params]
 

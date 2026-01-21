@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://by4wgxy6p4xxc"
-path.s3tc="res://.godot/imported/FS003_Day.png-28c34e1d15214f62e7850f2cec2df73d.s3tc.ctex"
-path.etc2="res://.godot/imported/FS003_Day.png-28c34e1d15214f62e7850f2cec2df73d.etc2.ctex"
+path.s3tc="res://.godot/imported/FS003_Day.png-5dce7ad7bb5c8630ffde979bd9359949.s3tc.ctex"
+path.etc2="res://.godot/imported/FS003_Day.png-5dce7ad7bb5c8630ffde979bd9359949.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/SkyboxDome/FS003_Day.png"
-dest_files=["res://.godot/imported/FS003_Day.png-28c34e1d15214f62e7850f2cec2df73d.s3tc.ctex", "res://.godot/imported/FS003_Day.png-28c34e1d15214f62e7850f2cec2df73d.etc2.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/SkyboxDome/FS003_Day.png"
+dest_files=["res://.godot/imported/FS003_Day.png-5dce7ad7bb5c8630ffde979bd9359949.s3tc.ctex", "res://.godot/imported/FS003_Day.png-5dce7ad7bb5c8630ffde979bd9359949.etc2.ctex"]
 
 [params]
 

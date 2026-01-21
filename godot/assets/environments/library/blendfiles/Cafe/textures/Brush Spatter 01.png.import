@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b2830ei0hlf05"
-path="res://.godot/imported/Brush Spatter 01.png-9e0b032df8f4df0182a268fd86c6f4d4.ctex"
+path="res://.godot/imported/Brush Spatter 01.png-69b3ee93b9626afb08fdf1465a1cf1c7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/Brush Spatter 01.png"
-dest_files=["res://.godot/imported/Brush Spatter 01.png-9e0b032df8f4df0182a268fd86c6f4d4.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/Brush Spatter 01.png"
+dest_files=["res://.godot/imported/Brush Spatter 01.png-69b3ee93b9626afb08fdf1465a1cf1c7.ctex"]
 
 [params]
 

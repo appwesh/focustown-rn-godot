@@ -2,6 +2,6 @@
 
 [resource]
 resource_name = "Mirror"
-albedo_color = Color(0.3416897, 0.9063355, 0.67773616, 1)
-metallic = 0.8593156
+albedo_color = Color(0.45, 0.89916664, 1, 1)
+metallic = 0.36
 roughness = 0.0

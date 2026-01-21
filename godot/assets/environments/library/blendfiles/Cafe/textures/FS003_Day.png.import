@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bcndkwd6ov3m5"
-path="res://.godot/imported/FS003_Day.png-7d8b59b33baeaa1a2907cc272d9e12e0.ctex"
+path="res://.godot/imported/FS003_Day.png-7ec16750276cd88a91af3b544ee22be9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/FS003_Day.png"
-dest_files=["res://.godot/imported/FS003_Day.png-7d8b59b33baeaa1a2907cc272d9e12e0.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/FS003_Day.png"
+dest_files=["res://.godot/imported/FS003_Day.png-7ec16750276cd88a91af3b544ee22be9.ctex"]
 
 [params]
 

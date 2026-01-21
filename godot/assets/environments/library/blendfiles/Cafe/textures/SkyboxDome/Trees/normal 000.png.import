@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://budpmn2h1ubxl"
-path.s3tc="res://.godot/imported/normal 000.png-c97059b0a10f9bcce6bbfd8dbaf6864d.s3tc.ctex"
-path.etc2="res://.godot/imported/normal 000.png-c97059b0a10f9bcce6bbfd8dbaf6864d.etc2.ctex"
+path.s3tc="res://.godot/imported/normal 000.png-81be0a68958599b7dff4856f845d17e1.s3tc.ctex"
+path.etc2="res://.godot/imported/normal 000.png-81be0a68958599b7dff4856f845d17e1.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/models/blendfiles/Cafe/textures/SkyboxDome/Trees/normal 000.png"
-dest_files=["res://.godot/imported/normal 000.png-c97059b0a10f9bcce6bbfd8dbaf6864d.s3tc.ctex", "res://.godot/imported/normal 000.png-c97059b0a10f9bcce6bbfd8dbaf6864d.etc2.ctex"]
+source_file="res://assets/environments/library/blendfiles/Cafe/textures/SkyboxDome/Trees/normal 000.png"
+dest_files=["res://.godot/imported/normal 000.png-81be0a68958599b7dff4856f845d17e1.s3tc.ctex", "res://.godot/imported/normal 000.png-81be0a68958599b7dff4856f845d17e1.etc2.ctex"]
 
 [params]
 
