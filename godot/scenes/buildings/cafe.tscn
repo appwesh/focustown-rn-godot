@@ -10,94 +10,83 @@ background_energy_multiplier = 0.0
 sky = SubResource("Sky_eat8h")
 ambient_light_source = 2
 ambient_light_color = Color(0.5495961, 0.42998666, 0.46748686, 1)
-ambient_light_energy = 1.58
+ambient_light_energy = 2.01
 tonemap_mode = 4
 glow_enabled = true
-glow_intensity = 0.5
-glow_hdr_threshold = 1.09
+glow_intensity = 0.79
+glow_bloom = 0.1
+glow_hdr_threshold = 0.62
 fog_enabled = true
 fog_mode = 1
-fog_light_color = Color(0.22201309, 0.4295015, 0.5577728, 1)
-fog_light_energy = 0.29
-fog_density = 1.0
+fog_light_color = Color(0.22399999, 0.40319997, 0.56, 1)
+fog_light_energy = 0.49
+fog_density = 0.1533
 fog_height = 2.0
 fog_height_density = -0.2827
-fog_depth_curve = 1.109572
+fog_depth_curve = 0.933034
+fog_depth_begin = 0.0
 fog_depth_end = 25.0
 volumetric_fog_density = 0.4064
 adjustment_enabled = true
-adjustment_brightness = 1.05
-adjustment_contrast = 0.9
-adjustment_saturation = 1.12
+adjustment_brightness = 1.09
+adjustment_contrast = 0.93
+adjustment_saturation = 1.08
 
 [node name="Cafe" type="Node3D"]
 
 [node name="Phase 2 CafeteriaSet" parent="." instance=ExtResource("1_eat8h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013583183, -0.008878231, -0.007125616)
 
+[node name="Camera" parent="Phase 2 CafeteriaSet" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.7578972, 0.65237385, 0, -0.65237385, 0.7578972, -7.9541492, 5.260418, -3.9323215)
+
 [node name="SkyBox" parent="Phase 2 CafeteriaSet" index="2"]
 transform = Transform3D(17.232714, 0, 0, 0, 17.232714, 0, 0, 0, 17.232714, -6.6628723, -3.6169367, -7.92859)
-
-[node name="Camera3D" type="Camera3D" parent="Phase 2 CafeteriaSet/SkyBox" index="0"]
-transform = Transform3D(0.057808347, 0.0027914625, -0.00421744, 0, 0.048389696, 0.03202844, 0.0050575747, -0.031906564, 0.04820556, -0.08391997, 0.4773128, 0.242551)
-current = true
-fov = 76.6
 
 [node name="Shelf" parent="Phase 2 CafeteriaSet" index="4"]
 transform = Transform3D(0.7330414, 0, 0, 0, 0.905712, 0, 0, 0, 0.7330414, -4.1185713, 2.143248, -8.658625)
 
-[node name="ThickBook_008" parent="Phase 2 CafeteriaSet" index="44"]
+[node name="ThickBook_008" parent="Phase 2 CafeteriaSet" index="51"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.111149, 2.158829, -8.441959)
 
-[node name="Book_008" parent="Phase 2 CafeteriaSet" index="45"]
+[node name="Book_008" parent="Phase 2 CafeteriaSet" index="52"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.1446915, 2.1623223, -8.619329)
 
-[node name="BookSmall_007" parent="Phase 2 CafeteriaSet" index="46"]
+[node name="BookSmall_007" parent="Phase 2 CafeteriaSet" index="53"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.137109, 2.1173105, -8.534544)
 
-[node name="ThickBook_009" parent="Phase 2 CafeteriaSet" index="47"]
+[node name="ThickBook_009" parent="Phase 2 CafeteriaSet" index="54"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.111149, 2.158829, -8.709212)
 
-[node name="Book_009" parent="Phase 2 CafeteriaSet" index="48"]
+[node name="Book_009" parent="Phase 2 CafeteriaSet" index="55"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.1446915, 2.1623223, -8.886582)
 
-[node name="BookSmall_008" parent="Phase 2 CafeteriaSet" index="49"]
+[node name="BookSmall_008" parent="Phase 2 CafeteriaSet" index="56"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.137109, 2.1173105, -8.801797)
 
-[node name="Mirror_001" parent="Phase 2 CafeteriaSet" index="53"]
+[node name="Mirror_001" parent="Phase 2 CafeteriaSet" index="60"]
 transform = Transform3D(0.48137644, 0.008402467, 0, 0, 0, -0.48144972, -0.008402467, 0.48137644, 0, -10.532374, 3.1242244, -16.132196)
 
-[node name="Plant Canvas" parent="Phase 2 CafeteriaSet" index="85"]
+[node name="Plant Canvas" parent="Phase 2 CafeteriaSet" index="84"]
 transform = Transform3D(-3.9703176, 0, -9.4691124e-08, 0, 3.9703176, 0, 9.4691124e-08, 0, -3.9703176, -11.2243, 2.156457, -14.407993)
 
-[node name="Plants1_002" parent="Phase 2 CafeteriaSet" index="114"]
+[node name="PastryGlass" parent="Phase 2 CafeteriaSet" index="108"]
+sorting_offset = 6.04
+
+[node name="Plants1_002" parent="Phase 2 CafeteriaSet" index="110"]
 transform = Transform3D(0.59444565, 0, 0.10481681, 0, 0.6036159, 0, -0.10481681, 0, 0.59444565, -4.268577, 1.514113, -8.644715)
 
-[node name="Plants1_005" parent="Phase 2 CafeteriaSet" index="117"]
+[node name="Plants1_005" parent="Phase 2 CafeteriaSet" index="113"]
 transform = Transform3D(0.46389684, 0, 0.08179754, 0, 0.4710532, 0, -0.08179754, 0, 0.46389684, -4.22132, 2.7009604, -8.541763)
 
-[node name="CozyLight_012" type="OmniLight3D" parent="Phase 2 CafeteriaSet"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.105239, 0.97147346, -9.634162)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 1.898
-omni_range = 0.7874385
-
-[node name="CozyLight_013" type="OmniLight3D" parent="Phase 2 CafeteriaSet"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.7540298, 1.7571734, -7.036021)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 4.461
-omni_range = 1.828648
-
-[node name="CozyLight_014" type="OmniLight3D" parent="Phase 2 CafeteriaSet"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.485072, 1.6614997, -4.752527)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 7.344
-omni_range = 1.2469085
-
-[node name="Plants2_005" parent="Phase 2 CafeteriaSet" index="136"]
+[node name="Plants2_005" parent="Phase 2 CafeteriaSet" index="129"]
 transform = Transform3D(0.61773205, 0, 0.10892283, 0, 0.6272614, 0, -0.10892283, 0, 0.61773205, -4.314972, 0.36531115, -11.375658)
 
-[node name="Sun" parent="Phase 2 CafeteriaSet" index="143"]
+[node name="Plants2_010" parent="Phase 2 CafeteriaSet" index="134"]
+transform = Transform3D(1.243286, 0, -0.021560641, 0, 1.2434728, 0, 0.021560641, 0, 1.243286, -11.099703, 0.843887, -8.031099)
+
+[node name="Sun" parent="Phase 2 CafeteriaSet" index="139"]
+transform = Transform3D(0.53420717, 0.27899107, 0.7979891, -0.83098435, -3.632348e-08, 0.5562955, 0.15520154, -0.9602936, 0.2318372, 13.203803, 15.750857, -2.622426)
 light_energy = 0.197
 shadow_enabled = true
 shadow_bias = 0.0
@@ -105,32 +94,123 @@ shadow_bias = 0.0
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_peehc")
 
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="CeilingLigths" type="Node3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013583183, -0.008878231, -0.007125616)
+
+[node name="CeilingLight_01" type="OmniLight3D" parent="Lights/CeilingLigths"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.011788, 4.8738704, -8.530569)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 0.929
+omni_range = 10.769
+omni_attenuation = 1.087
+
+[node name="CeilingLight_02" type="OmniLight3D" parent="Lights/CeilingLigths"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -5.3674455, 4.8547335, -10.794323)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 0.929
+omni_range = 10.769
+omni_attenuation = 1.087
+
+[node name="CeilingLight_03" type="OmniLight3D" parent="Lights/CeilingLigths"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -10.281446, 4.8738704, -14.757459)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 0.929
+omni_range = 10.769
+omni_attenuation = 1.087
+
+[node name="CeilingLight_04" type="OmniLight3D" parent="Lights/CeilingLigths"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.284027, 4.9008646, -14.976282)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 0.929
+omni_range = 10.769
+omni_attenuation = 1.087
+
+[node name="AmbientLight" type="DirectionalLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.4013243, 4.1479425, -8.795971)
+light_color = Color(0.89, 0.74048, 0.5696, 1)
+light_energy = 0.3
+light_specular = 7.026
+sky_mode = 1
+
+[node name="Node3D" type="Node3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1261253, 1.4156951, -10.68306)
+
+[node name="CozyLight_01" type="OmniLight3D" parent="Lights/Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, 0.0554837, 3.9044466)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
+[node name="CozyLight_02" type="OmniLight3D" parent="Lights/Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, 0.0554837, 1.836668)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
+[node name="CozyLight_03" type="OmniLight3D" parent="Lights/Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, 0.0554837, 0.015655518)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
+[node name="CozyLight_04" type="OmniLight3D" parent="Lights/Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, 0.0554837, -1.9180775)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
+[node name="CozyLight_05" type="OmniLight3D" parent="Lights/Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, 0.0554837, 3.9044466)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
+[node name="CozyLight_06" type="OmniLight3D" parent="Lights/Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, 0.0554837, 1.836668)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
+[node name="CozyLight_07" type="OmniLight3D" parent="Lights/Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, 0.0554837, 0.015655518)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
+[node name="CozyLight_08" type="OmniLight3D" parent="Lights/Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, 0.0554837, -1.9180775)
+light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
+light_energy = 4.461
+omni_range = 1.828648
+
 [node name="SpotLight3D" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.88547, 3.1478, -6.8567495)
-light_color = Color(0.92, 0.7728, 0.7728, 1)
-light_energy = 7.39
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.250936, 4.928073, -14.818724)
+light_color = Color(0.923949, 0.7855271, 0.6630764, 1)
+light_energy = 9.329
 shadow_opacity = 0.72
-spot_range = 5.309391
+spot_range = 11.903583
 spot_angle = 51.501816
 
 [node name="Trees" type="Node3D" parent="."]
 
 [node name="tree-oak" parent="Trees" instance=ExtResource("2_peehc")]
-transform = Transform3D(0.4489986, 0, 0, 0, 0.4489986, 0, 0, 0, 0.4489986, -1.8154943, -0.29280567, -11.435647)
+transform = Transform3D(0.4489986, 0, 0, 0, 0.4489986, 0, 0, 0, 0.4489986, -1.8154943, -0.29280567, -16.842365)
 
 [node name="tree-oak2" parent="Trees" instance=ExtResource("2_peehc")]
-transform = Transform3D(-0.16226234, 0, -0.4197272, 0, 0.45, 0, 0.4197272, 0, -0.16226234, -1.5526974, -0.29280543, -7.9800467)
+transform = Transform3D(-0.16226234, 0, -0.4197272, 0, 0.45, 0, 0.4197272, 0, -0.16226234, -1.5526974, -0.29280543, -12.605219)
 
 [node name="tree-oak4" parent="Trees" instance=ExtResource("2_peehc")]
 transform = Transform3D(-0.34444684, 0, -0.06209989, 0, 0.35, 0, 0.06209989, 0, -0.34444684, -8.843154, -0.081943154, -1.1866233)
 
 [node name="tree-oak5" parent="Trees" instance=ExtResource("2_peehc")]
-transform = Transform3D(-0.3434701, 0, -0.06729274, 0, 0.35, 0, 0.06729274, 0, -0.3434701, -3.2764363, -0.08194268, -0.8613832)
+transform = Transform3D(-0.3434701, 0, -0.06729274, 0, 0.35, 0, 0.06729274, 0, -0.3434701, -2.1763153, -0.0819422, -4.0345063)
 
 [node name="tree-oak3" parent="Trees" instance=ExtResource("2_peehc")]
-transform = Transform3D(-0.12620404, 0, -0.3264545, 0, 0.35, 0, 0.3264545, 0, -0.12620404, -1.3136189, -0.07483852, -3.9907422)
+transform = Transform3D(-0.12620404, 0, -0.3264545, 0, 0.35, 0, 0.3264545, 0, -0.12620404, -1.736937, -0.07483852, -6.7490587)
 
 [node name="tree-oak6" parent="Trees" instance=ExtResource("2_peehc")]
-transform = Transform3D(-0.5060618, 0, -0.076028734, 0, 0.511741, 0, 0.076028734, 0, -0.5060618, 0.44167793, -0.4320469, -4.7474337)
+transform = Transform3D(-0.5060618, 0, -0.076028734, 0, 0.511741, 0, 0.076028734, 0, -0.5060618, -1.4043523, -0.4320469, -9.765241)
 
 [editable path="Phase 2 CafeteriaSet"]

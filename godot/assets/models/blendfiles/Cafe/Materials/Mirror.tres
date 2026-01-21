@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://b3asygrga1s7t"]
+
+[resource]
+resource_name = "Mirror"
+albedo_color = Color(0.3416897, 0.9063355, 0.67773616, 1)
+metallic = 0.8593156
+roughness = 0.0

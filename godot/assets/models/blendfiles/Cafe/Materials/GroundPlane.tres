@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://cub75jfl0fxv2"]
+
+[resource]
+resource_name = "GroundPlane"
+cull_mode = 2
+albedo_color = Color(0.17484526, 0.31077385, 0.14418456, 1)
