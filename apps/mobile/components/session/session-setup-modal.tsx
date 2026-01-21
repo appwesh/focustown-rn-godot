@@ -13,23 +13,30 @@ import {
   Pressable,
   StyleSheet,
   Switch,
-  ScrollView,
 } from 'react-native';
+import Slider from '@react-native-community/slider';
 import { useSessionStore } from '@/lib/session';
-import { DURATION_OPTIONS } from '@/lib/session/types';
 
 interface SessionSetupModalProps {
   visible: boolean;
 }
 
+// Duration range (minutes)
+const MIN_DURATION = 5;
+const MAX_DURATION = 60;
+const STEP = 5;
+
 export function SessionSetupModal({ visible }: SessionSetupModalProps) {
   const config = useSessionStore((s) => s.config);
   const updateConfig = useSessionStore((s) => s.updateConfig);
   const startSession = useSessionStore((s) => s.startSession);
-  const cancelSetup = useSessionStore((s) => s.cancelSetup);
+  const showBreakSetup = useSessionStore((s) => s.showBreakSetup);
+  const hasCompletedAnySession = useSessionStore((s) => s.hasCompletedAnySession);
 
-  const handleSelectDuration = (minutes: number) => {
-    updateConfig({ durationMinutes: minutes });
+  const handleDurationChange = (value: number) => {
+    // Snap to nearest step
+    const snapped = Math.round(value / STEP) * STEP;
+    updateConfig({ durationMinutes: snapped });
   };
 
   const handleToggleDeepFocus = (value: boolean) => {
@@ -41,10 +48,9 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={cancelSetup}
     >
-      <Pressable style={styles.backdrop} onPress={cancelSetup}>
-        <Pressable style={styles.container} onPress={e => e.stopPropagation()}>
+      <View style={styles.backdrop}>
+        <View style={styles.container}>
           {/* Timer Icon */}
           <View style={styles.iconContainer}>
             <Text style={styles.icon}>⏱️</Text>
@@ -55,33 +61,20 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
             {config.durationMinutes}:00
           </Text>
 
-          {/* Duration Picker */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.durationPicker}
-            style={styles.durationScroll}
-          >
-            {DURATION_OPTIONS.map((minutes) => (
-              <Pressable
-                key={minutes}
-                style={[
-                  styles.durationOption,
-                  config.durationMinutes === minutes && styles.durationOptionSelected,
-                ]}
-                onPress={() => handleSelectDuration(minutes)}
-              >
-                <Text
-                  style={[
-                    styles.durationOptionText,
-                    config.durationMinutes === minutes && styles.durationOptionTextSelected,
-                  ]}
-                >
-                  {minutes}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
+          {/* Duration Slider */}
+          <View style={styles.sliderContainer}>
+            <Slider
+              style={styles.slider}
+              minimumValue={MIN_DURATION}
+              maximumValue={MAX_DURATION}
+              step={STEP}
+              value={config.durationMinutes}
+              onValueChange={handleDurationChange}
+              minimumTrackTintColor="#5D4037"
+              maximumTrackTintColor="#D5CCC0"
+              thumbTintColor="#FFF"
+            />
+          </View>
 
           {/* Deep Focus Toggle */}
           <View style={styles.toggleRow}>
@@ -89,11 +82,21 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
               value={config.deepFocusMode}
               onValueChange={handleToggleDeepFocus}
               trackColor={{ false: '#DDD5C7', true: '#4A7C59' }}
-              thumbColor="#FFF8E7"
+              thumbColor="#FFF"
               ios_backgroundColor="#DDD5C7"
             />
             <Text style={styles.toggleLabel}>Deep focus mode</Text>
           </View>
+
+          {/* Take a break link - only shown after completing at least one session */}
+          {hasCompletedAnySession && (
+            <Pressable
+              style={styles.linkButton}
+              onPress={showBreakSetup}
+            >
+              <Text style={styles.linkText}>Take a break instead</Text>
+            </Pressable>
+          )}
 
           {/* Start Button */}
           <Pressable
@@ -105,8 +108,8 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
           >
             <Text style={styles.startButtonText}>Start Session</Text>
           </Pressable>
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 }
@@ -122,9 +125,9 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFF8E7',
     borderRadius: 24,
-    padding: 24,
+    padding: 28,
     width: '100%',
-    maxWidth: 320,
+    maxWidth: 340,
     alignItems: 'center',
     shadowColor: '#5D4037',
     shadowOffset: { width: 0, height: 8 },
@@ -135,56 +138,35 @@ const styles = StyleSheet.create({
     borderColor: '#DDD5C7',
   },
   iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FFF',
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#DDD5C7',
   },
   icon: {
-    fontSize: 24,
+    fontSize: 32,
   },
   timerDisplay: {
-    fontSize: 64,
+    fontSize: 80,
     fontWeight: '700',
-    color: '#3D3D3D',
+    color: '#5D4037',
     fontVariant: ['tabular-nums'],
+    marginTop: 20,
     marginBottom: 16,
   },
-  durationScroll: {
-    maxHeight: 56,
-    marginBottom: 20,
+  sliderContainer: {
+    width: '100%',
+    paddingHorizontal: 8,
+    marginBottom: 24,
   },
-  durationPicker: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 4,
-  },
-  durationOption: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#DDD5C7',
-  },
-  durationOptionSelected: {
-    backgroundColor: '#4A7C59',
-    borderColor: '#3D6A4A',
-  },
-  durationOptionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#5D4037',
-  },
-  durationOptionTextSelected: {
-    color: '#FFF',
+  slider: {
+    width: '100%',
+    height: 40,
   },
   toggleRow: {
     flexDirection: 'row',
@@ -193,18 +175,26 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   toggleLabel: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#3D3D3D',
     fontWeight: '500',
   },
+  linkButton: {
+    marginBottom: 20,
+  },
+  linkText: {
+    fontSize: 14,
+    color: '#8B7355',
+    textDecorationLine: 'underline',
+  },
   startButton: {
-    backgroundColor: '#4A7C59',
-    paddingVertical: 16,
+    backgroundColor: '#5B9BD5',
+    paddingVertical: 18,
     paddingHorizontal: 48,
-    borderRadius: 16,
+    borderRadius: 20,
     width: '100%',
     alignItems: 'center',
-    shadowColor: '#2D4A35',
+    shadowColor: '#3D7AB8',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -216,7 +206,7 @@ const styles = StyleSheet.create({
   },
   startButtonText: {
     color: '#FFF',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
   },
 });

@@ -49,6 +49,13 @@ export {
   toggleSessionCamera,
   switchToSeatedCamera,
   switchToOverviewCamera,
+  // Break control
+  setBreakTickHandler,
+  setBreakEndedHandler,
+  registerBreakTickCallback,
+  registerBreakEndedCallback,
+  startGodotBreak,
+  endGodotBreak,
 } from './bridge';
 
 // React hooks (recommended)
@@ -62,4 +69,6 @@ export {
   usePositionSync,
   useSessionTapOutside,
   useCameraControls,
+  useBreakControls,
+  useBreakCallbacks,
 } from './hooks';

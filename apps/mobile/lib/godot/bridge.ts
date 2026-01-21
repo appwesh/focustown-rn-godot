@@ -29,6 +29,8 @@ let sessionHandler: ((duration: number, coins: number) => void) | null = null;
 let playerSeatedHandler: ((location: SpotLocation) => void) | null = null;
 let playerPositionHandler: ((x: number, y: number, z: number) => void) | null = null;
 let sessionTapOutsideHandler: (() => void) | null = null;
+let breakTickHandler: ((elapsed: number) => void) | null = null;
+let breakEndedHandler: ((duration: number) => void) | null = null;
 
 /**
  * Set the session handler (called from JS thread when session completes)
@@ -65,6 +67,24 @@ export function setSessionTapOutsideHandler(
   handler: (() => void) | null
 ): void {
   sessionTapOutsideHandler = handler;
+}
+
+/**
+ * Set the break tick handler (called each second during break)
+ */
+export function setBreakTickHandler(
+  handler: ((elapsed: number) => void) | null
+): void {
+  breakTickHandler = handler;
+}
+
+/**
+ * Set the break ended handler (called when break ends)
+ */
+export function setBreakEndedHandler(
+  handler: ((duration: number) => void) | null
+): void {
+  breakEndedHandler = handler;
 }
 
 /**
@@ -112,6 +132,25 @@ function handleSessionTapOutside(): void {
   }
 }
 
+/**
+ * Called from worklet - bridges break tick to JS thread
+ */
+function handleBreakTick(elapsed: number): void {
+  if (breakTickHandler) {
+    breakTickHandler(elapsed);
+  }
+}
+
+/**
+ * Called from worklet - bridges break ended to JS thread
+ */
+function handleBreakEnded(duration: number): void {
+  console.log('[Bridge] Break ended:', duration, 's');
+  if (breakEndedHandler) {
+    breakEndedHandler(duration);
+  }
+}
+
 // Create worklet-compatible functions that can be called from Godot thread
 const handleSessionCompleteWorklet = Worklets.createRunOnJS(handleSessionComplete);
 const handlePlayerSeatedWorklet = Worklets.createRunOnJS(handlePlayerSeated) as (
@@ -125,6 +164,12 @@ const handlePlayerPositionWorklet = Worklets.createRunOnJS(handlePlayerPosition)
   z: number
 ) => void;
 const handleSessionTapOutsideWorklet = Worklets.createRunOnJS(handleSessionTapOutside);
+const handleBreakTickWorklet = Worklets.createRunOnJS(handleBreakTick) as (
+  elapsed: number
+) => void;
+const handleBreakEndedWorklet = Worklets.createRunOnJS(handleBreakEnded) as (
+  duration: number
+) => void;
 
 /**
  * Check if Godot instance is ready
@@ -300,6 +345,112 @@ export function registerSessionTapOutsideCallback(): void {
         handleSessionTapOutsideWorklet();
       });
       console.log('[Bridge] Session tap outside callback registered');
+    }
+  });
+}
+
+// ============================================================================
+// Break Control
+// ============================================================================
+
+/**
+ * Register break tick callback with Godot
+ * Fires each second during a break with elapsed time
+ */
+export function registerBreakTickCallback(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).set_break_tick_callback(function (elapsed: number) {
+        'worklet';
+        handleBreakTickWorklet(elapsed);
+      });
+      console.log('[Bridge] Break tick callback registered');
+    }
+  });
+}
+
+/**
+ * Register break ended callback with Godot
+ * Fires when a break ends
+ */
+export function registerBreakEndedCallback(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).set_break_ended_callback(function (duration: number) {
+        'worklet';
+        handleBreakEndedWorklet(duration);
+      });
+      console.log('[Bridge] Break ended callback registered');
+    }
+  });
+}
+
+/**
+ * Start a break in Godot (camera switches to overview)
+ */
+export function startGodotBreak(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).start_break();
+      console.log('[Bridge] Started break in Godot');
+    }
+  });
+}
+
+/**
+ * End the current break in Godot
+ */
+export function endGodotBreak(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).end_break();
+      console.log('[Bridge] Ended break in Godot');
     }
   });
 }

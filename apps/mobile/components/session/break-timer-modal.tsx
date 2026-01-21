@@ -2,7 +2,7 @@
  * Break Timer Modal & Overlay
  * 
  * Shown after completing a focus session.
- * - Setup phase: Modal with duration picker
+ * - Setup phase: Modal with duration slider
  * - Active break: Bottom overlay (same style as active session)
  */
 
@@ -13,13 +13,15 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  ScrollView,
 } from 'react-native';
+import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSessionStore, formatTime } from '@/lib/session';
 
-// Break duration options in minutes
-const BREAK_DURATIONS = [1, 3, 5, 10, 15] as const;
+// Break duration range (minutes)
+const MIN_BREAK = 1;
+const MAX_BREAK = 15;
+const STEP = 1;
 
 interface BreakTimerModalProps {
   visible: boolean;
@@ -33,6 +35,10 @@ export function BreakTimerModal({ visible }: BreakTimerModalProps) {
   const startBreak = useSessionStore((s) => s.startBreak);
   const endBreak = useSessionStore((s) => s.endBreak);
   const startAnotherSession = useSessionStore((s) => s.startAnotherSession);
+
+  const handleDurationChange = (value: number) => {
+    setBreakDuration(Math.round(value));
+  };
 
   // Break not started yet - show duration picker modal
   if (!breakSession) {
@@ -54,33 +60,20 @@ export function BreakTimerModal({ visible }: BreakTimerModalProps) {
               {breakDurationMinutes}:00
             </Text>
 
-            {/* Duration Picker */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.durationPicker}
-              style={styles.durationScroll}
-            >
-              {BREAK_DURATIONS.map((minutes) => (
-                <Pressable
-                  key={minutes}
-                  style={[
-                    styles.durationOption,
-                    breakDurationMinutes === minutes && styles.durationOptionSelected,
-                  ]}
-                  onPress={() => setBreakDuration(minutes)}
-                >
-                  <Text
-                    style={[
-                      styles.durationOptionText,
-                      breakDurationMinutes === minutes && styles.durationOptionTextSelected,
-                    ]}
-                  >
-                    {minutes}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
+            {/* Duration Slider */}
+            <View style={styles.sliderContainer}>
+              <Slider
+                style={styles.slider}
+                minimumValue={MIN_BREAK}
+                maximumValue={MAX_BREAK}
+                step={STEP}
+                value={breakDurationMinutes}
+                onValueChange={handleDurationChange}
+                minimumTrackTintColor="#5D4037"
+                maximumTrackTintColor="#D5CCC0"
+                thumbTintColor="#FFF"
+              />
+            </View>
 
             {/* Start Another Session Link */}
             <Pressable
@@ -162,7 +155,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 28,
     width: '100%',
-    maxWidth: 320,
+    maxWidth: 340,
     alignItems: 'center',
     shadowColor: '#5D4037',
     shadowOffset: { width: 0, height: 8 },
@@ -173,56 +166,35 @@ const styles = StyleSheet.create({
     borderColor: '#DDD5C7',
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FFF',
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#DDD5C7',
   },
   icon: {
-    fontSize: 28,
+    fontSize: 32,
   },
   timerDisplay: {
-    fontSize: 72,
+    fontSize: 80,
     fontWeight: '700',
-    color: '#3D3D3D',
-    fontVariant: ['tabular-nums'],
-    marginBottom: 20,
-  },
-  durationScroll: {
-    maxHeight: 56,
-    marginBottom: 20,
-  },
-  durationPicker: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 4,
-  },
-  durationOption: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#DDD5C7',
-  },
-  durationOptionSelected: {
-    backgroundColor: '#4A9B8C',
-    borderColor: '#3D857A',
-  },
-  durationOptionText: {
-    fontSize: 16,
-    fontWeight: '600',
     color: '#5D4037',
+    fontVariant: ['tabular-nums'],
+    marginTop: 20,
+    marginBottom: 16,
   },
-  durationOptionTextSelected: {
-    color: '#FFF',
+  sliderContainer: {
+    width: '100%',
+    paddingHorizontal: 8,
+    marginBottom: 24,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
   },
   linkButton: {
     marginBottom: 20,
@@ -234,9 +206,9 @@ const styles = StyleSheet.create({
   },
   mainButton: {
     backgroundColor: '#4A9B8C',
-    paddingVertical: 16,
+    paddingVertical: 18,
     paddingHorizontal: 48,
-    borderRadius: 16,
+    borderRadius: 20,
     width: '100%',
     alignItems: 'center',
     shadowColor: '#2D6A5E',
@@ -251,7 +223,7 @@ const styles = StyleSheet.create({
   },
   mainButtonText: {
     color: '#FFF',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
   },
 });

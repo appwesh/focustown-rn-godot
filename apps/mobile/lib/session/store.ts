@@ -159,6 +159,9 @@ interface SessionState {
   breakDurationMinutes: number;
   showingAbandonConfirm: boolean;
   
+  // Track if user has done at least one session this sitting (for showing break option)
+  hasCompletedAnySession: boolean;
+  
   // Firebase integration
   firebaseSessionId: string | null;
   currentLocation: SessionLocation | null;
@@ -227,6 +230,8 @@ let backgroundStartTimeRef: number | null = null;
 let onGodotStartSession: (() => void) | null = null;
 let onGodotEndSession: (() => void) | null = null;
 let onGodotCancelSetup: (() => void) | null = null;
+let onGodotStartBreak: (() => void) | null = null;
+let onGodotEndBreak: (() => void) | null = null;
 
 /**
  * Set Godot callbacks for session events
@@ -236,10 +241,14 @@ export function setGodotCallbacks(callbacks: {
   onStartSession?: () => void;
   onEndSession?: () => void;
   onCancelSetup?: () => void;
+  onStartBreak?: () => void;
+  onEndBreak?: () => void;
 }) {
   onGodotStartSession = callbacks.onStartSession ?? null;
   onGodotEndSession = callbacks.onEndSession ?? null;
   onGodotCancelSetup = callbacks.onCancelSetup ?? null;
+  onGodotStartBreak = callbacks.onStartBreak ?? null;
+  onGodotEndBreak = callbacks.onEndBreak ?? null;
 }
 
 /**
@@ -249,6 +258,8 @@ export function clearGodotCallbacks() {
   onGodotStartSession = null;
   onGodotEndSession = null;
   onGodotCancelSetup = null;
+  onGodotStartBreak = null;
+  onGodotEndBreak = null;
 }
 
 // ============================================================================
@@ -266,6 +277,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   breakSession: null,
   breakDurationMinutes: 5,
   showingAbandonConfirm: false,
+  hasCompletedAnySession: false,
   firebaseSessionId: null,
   currentLocation: null,
   currentUser: null,
@@ -415,6 +427,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       activeSession: null,
       firebaseSessionId: null,
       currentLocation: null,
+      hasCompletedAnySession: true,
       phase: 'complete',
     });
     
@@ -474,6 +487,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       activeSession: null,
       firebaseSessionId: null,
       currentLocation: null,
+      hasCompletedAnySession: true,
       phase: 'abandoned',
     });
     
@@ -486,12 +500,12 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   
   goHome: () => {
     console.log('[SessionStore] Going home');
-    set({ completedSession: null, phase: 'idle' });
+    set({ completedSession: null, hasCompletedAnySession: false, phase: 'idle' });
   },
   
   goHomeFromAbandoned: () => {
     console.log('[SessionStore] Going home from abandoned');
-    set({ _isAbandoning: false, phase: 'idle' });
+    set({ _isAbandoning: false, hasCompletedAnySession: false, phase: 'idle' });
   },
   
   continueFromAbandoned: () => {
@@ -521,6 +535,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       },
     });
     
+    // Notify Godot to switch camera to overview
+    onGodotStartBreak?.();
+    
     // Start break countdown (simple decrement for breaks)
     if (timerRef) clearInterval(timerRef);
     timerRef = setInterval(() => {
@@ -535,6 +552,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
           timerRef = null;
         }
         set({ breakSession: null, phase: 'setup' });
+        onGodotEndBreak?.();
       } else {
         set({
           breakSession: { ...state.breakSession, remainingSeconds: newRemaining },
@@ -552,6 +570,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     }
     
     set({ breakSession: null, phase: 'setup' });
+    onGodotEndBreak?.();
   },
   
   startAnotherSession: () => {
@@ -635,6 +654,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       activeSession: null,
       firebaseSessionId: null,
       currentLocation: null,
+      hasCompletedAnySession: true,
       phase: 'abandoned',
     });
     
@@ -683,6 +703,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       activeSession: null,
       firebaseSessionId: null,
       currentLocation: null,
+      hasCompletedAnySession: true,
       phase: 'complete',
     });
     
@@ -820,6 +841,7 @@ export const selectShowingAbandonConfirm = (state: SessionStore) => state.showin
 export const selectCurrentLocation = (state: SessionStore) => state.currentLocation;
 export const selectGroupSessionId = (state: SessionStore) => state.groupSessionId;
 export const selectIsGroupSession = (state: SessionStore) => state.isGroupSession;
+export const selectHasCompletedAnySession = (state: SessionStore) => state.hasCompletedAnySession;
 
 // ============================================================================
 // Helper: Format seconds to MM:SS

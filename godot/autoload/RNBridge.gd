@@ -25,6 +25,10 @@ var _player_position_callback: Callable
 ## Callback when user taps outside during a focus session (to show confirm end popup)
 var _session_tap_outside_callback: Callable
 
+## Callback for break events (tick, ended)
+var _break_tick_callback: Callable
+var _break_ended_callback: Callable
+
 ## Reference to the camera rig for camera control
 var _camera_rig: CinematicCameraRig = null
 
@@ -58,6 +62,10 @@ func _ready() -> void:
 	
 	# Connect to session events
 	FocusSessionManager.session_ended.connect(_on_session_ended)
+	
+	# Connect to break events
+	FocusSessionManager.break_tick.connect(_on_break_tick)
+	FocusSessionManager.break_ended.connect(_on_break_ended)
 
 
 ## Create a version label in the corner of the screen
@@ -105,6 +113,18 @@ func set_player_position_callback(callback: Callable) -> void:
 func set_session_tap_outside_callback(callback: Callable) -> void:
 	_session_tap_outside_callback = callback
 	print("[RNBridge] Session tap outside callback registered")
+
+
+## Register callback from RN for break time updates
+func set_break_tick_callback(callback: Callable) -> void:
+	_break_tick_callback = callback
+	print("[RNBridge] Break tick callback registered")
+
+
+## Register callback from RN for when break ends
+func set_break_ended_callback(callback: Callable) -> void:
+	_break_ended_callback = callback
+	print("[RNBridge] Break ended callback registered")
 
 
 ## Start position sync (sends player position to RN periodically)
@@ -257,12 +277,27 @@ func cancel_session_setup() -> void:
 ## Called when session ends - calls the RN callback
 func _on_session_ended(duration_seconds: int, coins_earned: int) -> void:
 	print("[RNBridge] Session ended: ", duration_seconds, "s, ", coins_earned, " coins")
-	_current_seated_spot = null
+	# Note: Don't clear _current_seated_spot here - user might start a break or another session
 	if _session_complete_callback.is_valid():
 		_session_complete_callback.call(duration_seconds, coins_earned)
 		print("[RNBridge] Callback invoked")
 	else:
 		print("[RNBridge] No callback registered")
+
+
+## Called on each break tick - notifies RN of elapsed break time
+func _on_break_tick(elapsed_seconds: int) -> void:
+	if _break_tick_callback.is_valid():
+		_break_tick_callback.call(elapsed_seconds)
+
+
+## Called when break ends - notifies RN
+func _on_break_ended(duration_seconds: int) -> void:
+	print("[RNBridge] Break ended: ", duration_seconds, "s")
+	_current_seated_spot = null
+	if _break_ended_callback.is_valid():
+		_break_ended_callback.call(duration_seconds)
+		print("[RNBridge] Break ended callback invoked")
 
 
 func is_embedded() -> bool:
@@ -287,9 +322,13 @@ func trigger_interact() -> void:
 ## Get current session state for RN
 func get_session_state() -> Dictionary:
 	return {
+		"state": FocusSessionManager.get_state_name(),
 		"is_focusing": FocusSessionManager.is_focusing(),
+		"is_on_break": FocusSessionManager.is_on_break(),
 		"elapsed_seconds": FocusSessionManager.get_elapsed_seconds(),
-		"formatted_time": FocusSessionManager.get_formatted_time()
+		"formatted_time": FocusSessionManager.get_formatted_time(),
+		"break_elapsed_seconds": FocusSessionManager.get_break_elapsed_seconds(),
+		"formatted_break_time": FocusSessionManager.get_formatted_break_time()
 	}
 
 
@@ -304,6 +343,47 @@ func end_session() -> Dictionary:
 		"success": true,
 		"duration": duration,
 		"coins_earned": coins
+	}
+
+
+# =============================================================================
+# Break Control (called from RN)
+# =============================================================================
+
+## Start a break after ending a focus session
+## Camera automatically switches to overview mode
+func start_break() -> Dictionary:
+	if FocusSessionManager.is_focusing():
+		return {"success": false, "reason": "session_still_active"}
+	
+	FocusSessionManager.start_break()
+	
+	# Switch camera to overview (zoomed out) for break
+	switch_to_overview_camera()
+	
+	print("[RNBridge] Break started, camera switched to overview")
+	return {"success": true}
+
+
+## End the current break
+func end_break() -> Dictionary:
+	if not FocusSessionManager.is_on_break():
+		return {"success": false, "reason": "not_on_break"}
+	
+	var duration := FocusSessionManager.end_break()
+	print("[RNBridge] Break ended, duration: ", duration, "s")
+	return {
+		"success": true,
+		"duration": duration
+	}
+
+
+## Get break state for RN
+func get_break_state() -> Dictionary:
+	return {
+		"is_on_break": FocusSessionManager.is_on_break(),
+		"elapsed_seconds": FocusSessionManager.get_break_elapsed_seconds(),
+		"formatted_time": FocusSessionManager.get_formatted_break_time()
 	}
 
 

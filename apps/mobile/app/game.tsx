@@ -22,6 +22,8 @@ import {
   updateRemotePlayerState,
   removeRemotePlayer,
   isGodotReady,
+  switchToOverviewCamera,
+  switchToSeatedCamera,
   type SpotLocation,
 } from '@/lib/godot';
 import {
@@ -300,6 +302,8 @@ export default function GameScreen() {
       onStartSession: startGodotSession,
       onEndSession: endGodotSession,
       onCancelSetup: cancelGodotSetup,
+      onStartBreak: switchToOverviewCamera,
+      onEndBreak: switchToSeatedCamera,
     });
 
     return () => {
