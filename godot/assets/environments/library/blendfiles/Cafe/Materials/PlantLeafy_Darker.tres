@@ -1,0 +1,23 @@
+[gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://wloww3m7mk0a"]
+
+[ext_resource type="Texture2D" uid="uid://d2rptrpy700ig" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_BaseColor_Darker.png" id="1_f54xk"]
+[ext_resource type="Texture2D" uid="uid://cijok5kwuekd2" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_Emission.png" id="2_ex1eo"]
+[ext_resource type="Texture2D" uid="uid://c2wepaa1v5w4p" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_Metallic.png" id="3_7xv8s"]
+[ext_resource type="Texture2D" uid="uid://dcin2cc2ag8yc" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_Normal.png" id="4_mx0qd"]
+[ext_resource type="Texture2D" uid="uid://cytf8n8n4rrju" path="res://assets/environments/library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_Roughness.png" id="5_1yhps"]
+
+[resource]
+resource_name = "PlantLeafy"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_f54xk")
+metallic = 1.0
+metallic_texture = ExtResource("3_7xv8s")
+metallic_texture_channel = 2
+roughness = 0.0
+roughness_texture = ExtResource("5_1yhps")
+roughness_texture_channel = 1
+emission_enabled = true
+emission_texture = ExtResource("2_ex1eo")
+normal_enabled = true
+normal_texture = ExtResource("4_mx0qd")

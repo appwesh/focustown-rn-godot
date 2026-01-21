@@ -1,7 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://clexbd78x14ah"]
+[gd_scene load_steps=15 format=3 uid="uid://clexbd78x14ah"]
 
 [ext_resource type="PackedScene" uid="uid://cey1ja8kg6h6" path="res://assets/environments/library/blendfiles/Cafe/Phase 2 CafeteriaSet.blend" id="1_eat8h"]
 [ext_resource type="PackedScene" path="res://scenes/characters/cinematic_character.tscn" id="2_bpjeq"]
+[ext_resource type="Material" uid="uid://wloww3m7mk0a" path="res://assets/environments/library/blendfiles/Cafe/Materials/PlantLeafy_Darker.tres" id="2_el2lr"]
 [ext_resource type="PackedScene" uid="uid://b3utl0mrf8ui" path="res://assets/environments/library/tree-oak.glb" id="2_peehc"]
 [ext_resource type="Script" uid="uid://c3charpreset" path="res://scripts/characters/character_preset.gd" id="3_w5xe0"]
 
@@ -15,25 +16,23 @@ ambient_light_color = Color(0.5495961, 0.42998666, 0.46748686, 1)
 ambient_light_energy = 2.01
 tonemap_mode = 4
 glow_enabled = true
-glow_intensity = 0.75
-glow_bloom = 0.1
-glow_hdr_threshold = 0.77
+glow_intensity = 0.31
+glow_bloom = 0.22
 fog_enabled = true
 fog_mode = 1
 fog_light_color = Color(0.10264205, 0.2365481, 0.40110278, 1)
 fog_light_energy = 0.15
-fog_density = 0.91
+fog_density = 0.425
 fog_sky_affect = 0.0
 fog_height = 1.0
 fog_height_density = -0.3
 fog_depth_curve = 1.1892081
 fog_depth_begin = 13.0
-fog_depth_end = 15.0
+fog_depth_end = 35.0
 volumetric_fog_density = 0.4064
 adjustment_enabled = true
-adjustment_brightness = 0.97
-adjustment_contrast = 1.1
-adjustment_saturation = 1.1
+adjustment_contrast = 1.05
+adjustment_saturation = 1.2
 
 [sub_resource type="Resource" id="Resource_w5xe0"]
 script = ExtResource("3_w5xe0")
@@ -134,31 +133,31 @@ transform = Transform3D(17.232714, 0, 0, 0, 17.232714, 0, 0, 0, 17.232714, -6.66
 [node name="Shelf" parent="Phase 2 CafeteriaSet" index="4"]
 transform = Transform3D(0.7330414, 0, 0, 0, 0.905712, 0, 0, 0, 0.7330414, -4.1185713, 2.143248, -8.658625)
 
-[node name="ThickBook_008" parent="Phase 2 CafeteriaSet" index="51"]
+[node name="ThickBook_008" parent="Phase 2 CafeteriaSet" index="49"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.111149, 2.158829, -8.441959)
 
-[node name="Book_008" parent="Phase 2 CafeteriaSet" index="52"]
+[node name="Book_008" parent="Phase 2 CafeteriaSet" index="50"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.1446915, 2.1623223, -8.619329)
 
-[node name="BookSmall_007" parent="Phase 2 CafeteriaSet" index="53"]
+[node name="BookSmall_007" parent="Phase 2 CafeteriaSet" index="51"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.137109, 2.1173105, -8.534544)
 
-[node name="ThickBook_009" parent="Phase 2 CafeteriaSet" index="54"]
+[node name="ThickBook_009" parent="Phase 2 CafeteriaSet" index="52"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.111149, 2.158829, -8.709212)
 
-[node name="Book_009" parent="Phase 2 CafeteriaSet" index="55"]
+[node name="Book_009" parent="Phase 2 CafeteriaSet" index="53"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.1446915, 2.1623223, -8.886582)
 
-[node name="BookSmall_008" parent="Phase 2 CafeteriaSet" index="56"]
+[node name="BookSmall_008" parent="Phase 2 CafeteriaSet" index="54"]
 transform = Transform3D(0.955549, 0, 0, 0, 0.955549, 0, 0, 0, 0.955549, -4.137109, 2.1173105, -8.801797)
 
-[node name="Mirror_001" parent="Phase 2 CafeteriaSet" index="60"]
+[node name="Mirror_001" parent="Phase 2 CafeteriaSet" index="57"]
 transform = Transform3D(0.48137644, 0.008402467, 0, 0, 0, -0.48144972, -0.008402467, 0.48137644, 0, -10.532374, 3.1242244, -16.132196)
 
-[node name="Plant Canvas" parent="Phase 2 CafeteriaSet" index="99"]
+[node name="Plant Canvas" parent="Phase 2 CafeteriaSet" index="95"]
 transform = Transform3D(-3.9703176, 0, -9.4691124e-08, 0, 3.9703176, 0, 9.4691124e-08, 0, -3.9703176, -11.2243, 2.156457, -14.407993)
 
-[node name="Crystal Cage_001" parent="Phase 2 CafeteriaSet" index="102"]
+[node name="Crystal Cage_001" parent="Phase 2 CafeteriaSet" index="98"]
 transform = Transform3D(4.0862966e-07, 0, 1.1426114, 0, 1.1426114, 0, -1.1426114, 0, 4.0862966e-07, -8.200892, 3.0050788, -15.924562)
 
 [node name="PastryGlass" parent="Phase 2 CafeteriaSet" index="123"]
@@ -173,14 +172,27 @@ transform = Transform3D(0.46389684, 0, 0.08179754, 0, 0.4710532, 0, -0.08179754,
 [node name="Plants2_003" parent="Phase 2 CafeteriaSet" index="142"]
 transform = Transform3D(0.67952967, 0, 0.1198194, 0, 0.69001234, 0, -0.1198194, 0, 0.67952967, -4.3496246, 0.012746453, -9.726553)
 
+[node name="Plants2_004" parent="Phase 2 CafeteriaSet" index="143"]
+surface_material_override/0 = ExtResource("2_el2lr")
+
 [node name="Plants2_005" parent="Phase 2 CafeteriaSet" index="144"]
 transform = Transform3D(0.61773205, 0, 0.10892283, 0, 0.6272614, 0, -0.10892283, 0, 0.61773205, -4.314972, 0.36531115, -11.292411)
+
+[node name="Plants2_006" parent="Phase 2 CafeteriaSet" index="145"]
+surface_material_override/0 = ExtResource("2_el2lr")
+
+[node name="Plants2_007" parent="Phase 2 CafeteriaSet" index="146"]
+surface_material_override/0 = ExtResource("2_el2lr")
 
 [node name="Plants2_008" parent="Phase 2 CafeteriaSet" index="147"]
 transform = Transform3D(0.42887175, 0, -0.3591121, 0, 0.55936784, 0, 0.3591121, 0, 0.42887175, -4.257572, 0.32607207, -7.783331)
 
+[node name="Plants2_009" parent="Phase 2 CafeteriaSet" index="148"]
+surface_material_override/0 = ExtResource("2_el2lr")
+
 [node name="Plants2_010" parent="Phase 2 CafeteriaSet" index="149"]
 transform = Transform3D(1.243286, 0, -0.021560641, 0, 1.2434728, 0, 0.021560641, 0, 1.243286, -11.099703, 0.843887, -8.031099)
+surface_material_override/0 = ExtResource("2_el2lr")
 
 [node name="Window" parent="Phase 2 CafeteriaSet" index="151"]
 sorting_offset = 5.0
@@ -190,6 +202,7 @@ transform = Transform3D(0.53420717, 0.27899107, 0.7979891, -0.83098435, -3.63234
 light_energy = 0.1
 shadow_enabled = true
 shadow_normal_bias = 5.823
+shadow_opacity = 0.47
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_peehc")
@@ -202,27 +215,27 @@ initial_preset = SubResource("Resource_w5xe0")
 default_animation = "BoredIdle_02"
 
 [node name="CinematicCharacter2" parent="Characters" instance=ExtResource("2_bpjeq")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.825141, 0.12386644, -8.820202)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.825141, 0.12386644, -10.175232)
 initial_preset = SubResource("Resource_tidwg")
 default_animation = "Idle_Sitting_01"
 
 [node name="CinematicCharacter4" parent="Characters" instance=ExtResource("2_bpjeq")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -4.9234476, 0.12386644, -10.805848)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -4.9234476, 0.12386644, -10.215757)
 initial_preset = SubResource("Resource_el2lr")
 default_animation = "Idle_Sitting_01"
 
 [node name="CinematicCharacter5" parent="Characters" instance=ExtResource("2_bpjeq")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5225554, 0.12386644, -10.858799)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5225554, 0.12386644, -10.268708)
 initial_preset = SubResource("Resource_imc3a")
 default_animation = "Idle_Sitting_01"
 
 [node name="CinematicCharacter6" parent="Characters" instance=ExtResource("2_bpjeq")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -4.9234476, 0.12386644, -6.6993203)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -4.9234476, 0.12386644, -7.3565297)
 initial_preset = SubResource("Resource_r1k85")
 default_animation = "Idle_Sitting_01"
 
 [node name="CinematicCharacter7" parent="Characters" instance=ExtResource("2_bpjeq")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5225554, 0.12386644, -6.752271)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5225554, 0.12386644, -7.3684516)
 initial_preset = SubResource("Resource_bw4dr")
 default_animation = "Idle_Sitting_01"
 
@@ -265,9 +278,16 @@ omni_range = 10.769
 omni_attenuation = 1.087
 
 [node name="AmbientLight" type="DirectionalLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.4013243, 4.1479425, -8.795971)
-light_color = Color(0.89, 0.74048, 0.5696, 1)
-light_energy = 0.3
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -7.4013243, 4.1479425, -8.795971)
+light_color = Color(0.7718152, 0.49567097, 0.28910458, 1)
+light_energy = 0.5
+light_specular = 7.026
+sky_mode = 1
+
+[node name="AmbientLight2" type="DirectionalLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -0.55484444, 0.8319541, 0, -0.8319541, -0.55484444, -7.4013243, 4.1479425, -8.795971)
+light_color = Color(0.592808, 0.571514, 0.48865938, 1)
+light_energy = 1.049
 light_specular = 7.026
 sky_mode = 1
 
@@ -275,69 +295,84 @@ sky_mode = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1261253, 1.4156951, -10.68306)
 
 [node name="CozyLight_01" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, 0.0554837, 3.9044466)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, -0.0673455, 3.27429)
 light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
 light_energy = 4.461
-omni_range = 1.828648
+omni_range = 1.093
 
 [node name="CozyLight_02" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, 0.0554837, 1.836668)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, -0.0673455, 0.61990356)
 light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
 light_energy = 4.461
-omni_range = 1.828648
+omni_range = 1.093
 
 [node name="CozyLight_03" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, 0.0554837, 0.015655518)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, -0.0673455, -1.9022093)
 light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
 light_energy = 4.461
-omni_range = 1.828648
-
-[node name="CozyLight_04" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, 0.0554837, -1.9180775)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 4.461
-omni_range = 1.828648
+omni_range = 1.093
 
 [node name="CozyLight_05" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, 0.0554837, 3.9044466)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, -0.0673455, 3.27429)
 light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
 light_energy = 4.461
-omni_range = 1.828648
+omni_range = 1.093
 
 [node name="CozyLight_06" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, 0.0554837, 1.836668)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, -0.0673455, 0.61990356)
 light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
 light_energy = 4.461
-omni_range = 1.828648
+omni_range = 1.093
 
 [node name="CozyLight_07" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, 0.0554837, 0.015655518)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, -0.0673455, -1.9022093)
 light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
 light_energy = 4.461
-omni_range = 1.828648
-
-[node name="CozyLight_08" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, 0.0554837, -1.9180775)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 4.461
-omni_range = 1.828648
+omni_range = 1.093
 
 [node name="SpotLight3D" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.963731, 4.928073, -6.1898584)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.4014444, 4.928073, -6.1898584)
 light_color = Color(0.98310894, 0.7664608, 0.5546548, 1)
-light_energy = 7.424
+light_energy = 2.929
 shadow_opacity = 0.72
-spot_range = 8.011
-spot_attenuation = 0.36
+spot_range = 11.442
+spot_attenuation = 1.03
+spot_angle = 41.21
+
+[node name="SpotLight3D3" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.899818, 4.928073, -10.519374)
+light_color = Color(0.98310894, 0.7664608, 0.5546548, 1)
+light_energy = 2.929
+shadow_opacity = 0.72
+spot_range = 11.442
+spot_attenuation = 1.03
+spot_angle = 41.21
+
+[node name="SpotLight3D5" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -9.072023, 4.928073, -6.7621064)
+light_color = Color(0.98310894, 0.7664608, 0.5546548, 1)
+light_energy = 2.929
+shadow_opacity = 0.72
+spot_range = 11.442
+spot_attenuation = 1.03
+spot_angle = 41.21
+
+[node name="SpotLight3D4" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -10.102623, 4.928073, -13.750191)
+light_color = Color(0.98310894, 0.7664608, 0.5546548, 1)
+light_energy = 2.929
+shadow_opacity = 0.72
+spot_range = 11.442
+spot_attenuation = 1.03
 spot_angle = 41.21
 
 [node name="SpotLight3D2" type="SpotLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.321951, 4.928073, -14.767876)
 light_color = Color(0.9111108, 0.5765293, 0.3033289, 1)
-light_energy = 7.957
+light_energy = 2.929
 shadow_opacity = 0.72
-spot_range = 10.16
-spot_attenuation = 0.75
+spot_range = 11.442
+spot_attenuation = 1.03
 spot_angle = 51.501816
 
 [node name="Trees" type="Node3D" parent="."]
