@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://collectiblegift001"]
+[gd_scene load_steps=3 format=3 uid="uid://8tvcwyko7bto"]
 
 [ext_resource type="Script" path="res://scripts/world/collectible_gift.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://assets/models/present-a-cube.glb" id="2_model"]

@@ -41,12 +41,12 @@ _subresources={
 "materials": {
 "OakTreeBase": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/materials/OakTreeBase.tres",
+"use_external/fallback_path": "res://assets/materials/Trees/OakTreeBase.tres",
 "use_external/path": "uid://dq8fbcvtm6rlb"
 },
 "OakTreeLeaves": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/materials/OakTreeLeaves.tres",
+"use_external/fallback_path": "res://assets/materials/Trees/OakTreeLeaves.tres",
 "use_external/path": "uid://dhdjnq1uhrdni"
 }
 }
