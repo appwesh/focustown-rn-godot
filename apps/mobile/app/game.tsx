@@ -17,10 +17,13 @@ import {
   useGodotSession,
   usePlayerSeated,
   useSessionControls,
+  useSessionTapOutside,
   spawnRemotePlayer,
   updateRemotePlayerState,
   removeRemotePlayer,
   isGodotReady,
+  switchToOverviewCamera,
+  switchToSeatedCamera,
   type SpotLocation,
 } from '@/lib/godot';
 import {
@@ -299,6 +302,8 @@ export default function GameScreen() {
       onStartSession: startGodotSession,
       onEndSession: endGodotSession,
       onCancelSetup: cancelGodotSetup,
+      onStartBreak: switchToOverviewCamera,
+      onEndBreak: switchToSeatedCamera,
     });
 
     return () => {
@@ -337,9 +342,19 @@ export default function GameScreen() {
     [onPlayerSeated, groupSessionId, isGroupSession, user, userDoc]
   );
 
+  // Handle tap outside during session - show abandon confirm
+  const handleSessionTapOutside = useCallback(() => {
+    console.log('[Game] Session tap outside detected');
+    const currentPhase = useSessionStore.getState().phase;
+    if (currentPhase === 'active') {
+      requestAbandonSession();
+    }
+  }, [requestAbandonSession]);
+
   // Register Godot callbacks
   useGodotSession(handleSessionComplete);
   usePlayerSeated(handlePlayerSeated);
+  useSessionTapOutside(handleSessionTapOutside);
 
   // Hide top bar during modals
   const showTopBar = (phase === 'idle' || phase === 'active') && !showingAbandonConfirm;

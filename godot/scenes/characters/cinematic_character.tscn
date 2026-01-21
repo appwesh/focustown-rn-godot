@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3cinematic_char"]
+
+[ext_resource type="Script" path="res://scripts/characters/cinematic_character.gd" id="1_script"]
+
+[node name="CinematicCharacter" type="Node3D"]
+script = ExtResource("1_script")

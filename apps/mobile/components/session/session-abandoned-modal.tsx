@@ -23,12 +23,18 @@ interface SessionAbandonedModalProps {
 export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
   const router = useRouter();
   const goHomeFromAbandoned = useSessionStore((s) => s.goHomeFromAbandoned);
-  const continueFromAbandoned = useSessionStore((s) => s.continueFromAbandoned);
+  const showBreakSetup = useSessionStore((s) => s.showBreakSetup);
 
   const handleGoHome = useCallback(() => {
     goHomeFromAbandoned();
     router.dismissTo('/home');
   }, [goHomeFromAbandoned, router]);
+
+  const handleContinue = useCallback(() => {
+    // Clear the abandoned state, then go to break setup (like success modal)
+    goHomeFromAbandoned();
+    showBreakSetup();
+  }, [goHomeFromAbandoned, showBreakSetup]);
 
   return (
     <Modal
@@ -59,7 +65,7 @@ export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
                 styles.continueButton,
                 pressed && styles.buttonPressed,
               ]}
-              onPress={continueFromAbandoned}
+              onPress={handleContinue}
             >
               <Text style={styles.continueButtonText}>Continue</Text>
             </Pressable>

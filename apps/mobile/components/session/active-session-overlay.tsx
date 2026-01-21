@@ -3,9 +3,10 @@
  * 
  * Minimal timer display during an active focus session.
  * Shows at the bottom of the screen without blocking the game view.
+ * Includes camera toggle button to switch between zoomed and overview.
  */
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,6 +15,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSessionStore, formatTime } from '@/lib/session';
+import { useCameraControls } from '@/lib/godot';
 
 interface ActiveSessionOverlayProps {
   visible: boolean;
@@ -24,6 +26,15 @@ export function ActiveSessionOverlay({ visible, onEndEarly }: ActiveSessionOverl
   const insets = useSafeAreaInsets();
   const activeSession = useSessionStore((s) => s.activeSession);
   const config = useSessionStore((s) => s.config);
+  const { toggleCamera } = useCameraControls();
+  
+  // Track camera state locally (starts in zoomed/seated view)
+  const [isZoomed, setIsZoomed] = useState(true);
+
+  const handleToggleCamera = useCallback(() => {
+    toggleCamera();
+    setIsZoomed((prev) => !prev);
+  }, [toggleCamera]);
 
   if (!visible || !activeSession) return null;
 
@@ -33,6 +44,17 @@ export function ActiveSessionOverlay({ visible, onEndEarly }: ActiveSessionOverl
 
   return (
     <View style={[styles.container, { bottom: insets.bottom + 24 }]}>
+      {/* Camera Toggle Button */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.cameraButton,
+          pressed && styles.cameraButtonPressed,
+        ]}
+        onPress={handleToggleCamera}
+      >
+        <Text style={styles.cameraButtonText}>{isZoomed ? '🔍' : '👁'}</Text>
+      </Pressable>
+
       <View style={styles.timerCard}>
         {/* Timer Icon */}
         <Text style={styles.icon}>⏱️</Text>
@@ -83,6 +105,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     zIndex: 10,
+  },
+  cameraButton: {
+    backgroundColor: '#FFF8E7',
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#5D4037',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 2,
+    borderColor: '#DDD5C7',
+  },
+  cameraButtonPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.95 }],
+  },
+  cameraButtonText: {
+    fontSize: 22,
   },
   timerCard: {
     flex: 1,

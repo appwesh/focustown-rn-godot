@@ -1,5 +1,6 @@
 extends Control
 ## Timer UI that floats above the player during focus sessions
+## Note: Camera toggle and end session confirmation are handled by React Native
 
 @onready var timer_label: Label = $Panel/TimerLabel
 @onready var panel: Panel = $Panel

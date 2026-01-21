@@ -42,6 +42,20 @@ export {
   registerPlayerPositionCallback,
   startPositionSync,
   stopPositionSync,
+  // Session tap outside
+  setSessionTapOutsideHandler,
+  registerSessionTapOutsideCallback,
+  // Camera control
+  toggleSessionCamera,
+  switchToSeatedCamera,
+  switchToOverviewCamera,
+  // Break control
+  setBreakTickHandler,
+  setBreakEndedHandler,
+  registerBreakTickCallback,
+  registerBreakEndedCallback,
+  startGodotBreak,
+  endGodotBreak,
 } from './bridge';
 
 // React hooks (recommended)
@@ -53,4 +67,8 @@ export {
   usePlayerSeated,
   useSessionControls,
   usePositionSync,
+  useSessionTapOutside,
+  useCameraControls,
+  useBreakControls,
+  useBreakCallbacks,
 } from './hooks';

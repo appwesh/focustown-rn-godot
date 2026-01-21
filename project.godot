@@ -18,9 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 DialogManager="*res://scripts/dialog/dialog_manager.gd"
-InventoryManager="*res://scripts/systems/inventory_manager.gd"
-QuestManager="*res://scripts/systems/quest_manager.gd"
-GameManager="*res://scripts/systems/game_manager.gd"
+FocusSessionManager="*res://scripts/systems/focus_session_manager.gd"
+RNBridge="*res://autoload/RNBridge.gd"
 
 [display]
 
