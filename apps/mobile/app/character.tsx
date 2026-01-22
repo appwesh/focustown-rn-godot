@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
@@ -20,23 +20,36 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLUMNS = 3;
 const GRID_ITEM_SIZE = (SCREEN_WIDTH - 64) / GRID_COLUMNS;
 
-// Face preview images (map to available files, handle missing face2)
+// Face preview images (face1really.png through face15really.png)
 const FACE_IMAGES: Record<number, any> = {
-  0: require('@/assets/ui/faces/face0.png'),
-  1: require('@/assets/ui/faces/face1.png'),
-  // face2 is missing, will use placeholder
-  3: require('@/assets/ui/faces/face3.png'),
-  4: require('@/assets/ui/faces/face4.png'),
-  5: require('@/assets/ui/faces/face5.png'),
-  6: require('@/assets/ui/faces/face6.png'),
-  7: require('@/assets/ui/faces/face7.png'),
-  8: require('@/assets/ui/faces/face8.png'),
-  9: require('@/assets/ui/faces/face9.png'),
-  10: require('@/assets/ui/faces/face10.png'),
-  11: require('@/assets/ui/faces/face11.png'),
-  12: require('@/assets/ui/faces/face12.png'),
-  13: require('@/assets/ui/faces/face13.png'),
-  14: require('@/assets/ui/faces/face14.png'),
+  0: require('@/assets/ui/faces/face1really.png'),
+  1: require('@/assets/ui/faces/face2really.png'),
+  2: require('@/assets/ui/faces/face3realy.png'),  // Note: typo in filename
+  3: require('@/assets/ui/faces/face4really.png'),
+  4: require('@/assets/ui/faces/face5really.png'),
+  5: require('@/assets/ui/faces/face6really.png'),
+  6: require('@/assets/ui/faces/face7really.png'),
+  7: require('@/assets/ui/faces/face8really.png'),
+  8: require('@/assets/ui/faces/face9really.png'),
+  9: require('@/assets/ui/faces/face10really.png'),
+  10: require('@/assets/ui/faces/face11really.png'),
+  11: require('@/assets/ui/faces/face12really.png'),
+  12: require('@/assets/ui/faces/face13really.png'),
+  13: require('@/assets/ui/faces/face14really.png'),
+  14: require('@/assets/ui/faces/face15really.png'),
+};
+
+// Hair preview images
+const HAIR_IMAGES: Record<number, any> = {
+  0: require('@/assets/ui/hair/none.png'),           // None
+  1: require('@/assets/ui/hair/Afro.png'),           // Afro
+  2: require('@/assets/ui/hair/babybangs.png'),      // BabyBangs
+  3: require('@/assets/ui/hair/longWavy.png'),       // LongWavy
+  4: require('@/assets/ui/hair/messyknotbun.png'),   // MessyKnotBun
+  5: require('@/assets/ui/hair/messySpiky.png'),     // MessySpiky
+  6: require('@/assets/ui/hair/mullet.png'),         // Mullet
+  7: require('@/assets/ui/hair/starbuns.png'),       // StarBuns
+  8: require('@/assets/ui/hair/wavymiddlepart.png'), // WavyMiddlePart
 };
 
 // Part definitions matching Godot's ModularCharacter
@@ -111,42 +124,49 @@ export default function CharacterScreen() {
   // Current selection for active subcategory
   const currentSelection = character[activeSubcategory] ?? 0;
 
-  // Switch to home_showcase scene when screen loads
-  useEffect(() => {
-    let cancelled = false;
-    
-    const attemptSceneChange = () => {
-      if (cancelled) return;
+  // Switch to home_showcase scene when screen is focused
+  // Uses useFocusEffect to properly handle navigation (same pattern as home.tsx)
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
       
-      if (!isGodotReady()) {
-        console.log('[Character] Godot not ready yet, waiting...');
-        setTimeout(attemptSceneChange, 300);
-        return;
-      }
+      // Show transition overlay when screen becomes active
+      setSceneTransitioning(true);
       
-      console.log('[Character] Switching to home_showcase scene');
-      changeScene('home_showcase');
-      
-      // Wait for scene change, then apply character and hide overlay
-      setTimeout(() => {
+      const attemptSceneChange = () => {
         if (cancelled) return;
-        setUserCharacter(character);
         
+        if (!isGodotReady()) {
+          console.log('[Character] Godot not ready yet, waiting...');
+          setTimeout(attemptSceneChange, 300);
+          return;
+        }
+        
+        console.log('[Character] Switching to home_showcase scene');
+        changeScene('home_showcase');
+        
+        // Wait for scene change, then apply character and hide overlay
         setTimeout(() => {
-          if (!cancelled) {
-            setSceneTransitioning(false);
-          }
-        }, 100);
-      }, 350);
-    };
-    
-    const timer = setTimeout(attemptSceneChange, 200);
-    
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, []);
+          if (cancelled) return;
+          setUserCharacter(character);
+          
+          setTimeout(() => {
+            if (!cancelled) {
+              setSceneTransitioning(false);
+            }
+          }, 100);
+        }, 350);
+      };
+      
+      // Start scene change after a brief delay
+      const timer = setTimeout(attemptSceneChange, 200);
+      
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
+    }, [character])
+  );
 
   // Update character in Godot when selections change
   const updateCharacter = useCallback((category: PartCategory, index: number) => {
@@ -269,8 +289,11 @@ export default function CharacterScreen() {
           showsVerticalScrollIndicator={false}
         >
           {options.map((option, index) => {
-            // Get preview image for Face category
-            const hasFaceImage = activeSubcategory === 'Face' && FACE_IMAGES[index];
+            // Get preview image for Face or Hair category
+            const previewImage = 
+              activeSubcategory === 'Face' ? FACE_IMAGES[index] :
+              activeSubcategory === 'Hair' ? HAIR_IMAGES[index] :
+              null;
             
             return (
               <Pressable
@@ -285,9 +308,9 @@ export default function CharacterScreen() {
                   styles.optionPreview,
                   currentSelection === index && styles.optionPreviewSelected,
                 ]}>
-                  {hasFaceImage ? (
+                  {previewImage ? (
                     <Image 
-                      source={FACE_IMAGES[index]} 
+                      source={previewImage} 
                       style={styles.optionImage}
                       resizeMode="cover"
                     />
