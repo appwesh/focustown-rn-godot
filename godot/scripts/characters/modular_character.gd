@@ -168,7 +168,7 @@ const GLASSES := ["", "SM_MISC_Glasses_Round.fbx", "SM_MISC_Glasses_Aviator.fbx"
 ## Part definitions for UI
 const PARTS := {
 	"SkinTone": ["Skin 1", "Skin 2", "Skin 3", "Skin 4", "Skin 5", "Skin 6", "Skin 7", "Skin 8", "Skin 9", "Skin 10"],
-	"Face": ["Face 1", "Face 2", "Face 3", "Face 4", "Face 5", "Face 6", "Face 7", "Face 8", "Face 9", "Face 10", "Face 11", "Face 12", "Face 13", "Face 14", "Face 15"],
+	"Face": ["Human_01", "Human_02", "Human_03", "Human_04", "Human_05", "Human_06", "Human_07", "Human_08", "Human_09", "Human_10", "Human_11", "Human_12", "Human_13", "Human_14", "Human_15"],
 	"EyeColor": EYE_COLORS,
 	"Hair": ["None", "Afro", "BabyBangs", "LongWavy", "MessyKnotBun", "MessySpiky", "Mullet", "StarBuns", "WavyMiddlePart"],
 	"HairColor": HAIR_COLORS,
