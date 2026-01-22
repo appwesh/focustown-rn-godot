@@ -1,9 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bhb5fb7buds6x"]
-
-[ext_resource type="Texture2D" uid="uid://cyb0xujdwibxg" path="res://assets/environments/costalScene/textures/mReBody_Alb.png" id="1_bbyu1"]
-
-[resource]
-resource_name = "mReBody.004"
-cull_mode = 2
-albedo_texture = ExtResource("1_bbyu1")
-roughness = 0.5
+version https://git-lfs.github.com/spec/v1
+oid sha256:3e3110d9d38e3f7871966316192acf8d1cdfee3b814c49ba095bee2df3e25a6b
+size 342

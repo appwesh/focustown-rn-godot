@@ -1,11 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://cn1o2cnc4y7mx"]
-
-[ext_resource type="Texture2D" uid="uid://dumo3pl37n1s" path="res://assets/environments/costalScene/textures/image.png" id="1_ohioo"]
-
-[resource]
-resource_name = "image"
-transparency = 4
-cull_mode = 2
-shading_mode = 0
-albedo_texture = ExtResource("1_ohioo")
-texture_repeat = false
+version https://git-lfs.github.com/spec/v1
+oid sha256:86eb248b1975772470dc068830b88203e2544635d652f497b5465f098f45872c
+size 370

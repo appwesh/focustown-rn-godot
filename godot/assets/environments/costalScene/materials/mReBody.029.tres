@@ -1,16 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://4w7m5sd1rpw4"]
-
-[ext_resource type="Texture2D" uid="uid://cyb0xujdwibxg" path="res://assets/environments/costalScene/textures/mReBody_Alb.png" id="1_x3elx"]
-[ext_resource type="Texture2D" uid="uid://drfwghvtqc24p" path="res://assets/environments/costalScene/textures/mReBody_Emi.png" id="2_0cbl4"]
-[ext_resource type="Texture2D" uid="uid://cilhllruiq7gw" path="res://assets/environments/costalScene/textures/mReBody_Mix.png" id="3_68nxn"]
-
-[resource]
-resource_name = "mReBody.029"
-cull_mode = 2
-albedo_texture = ExtResource("1_x3elx")
-metallic_texture = ExtResource("3_68nxn")
-metallic_texture_channel = 2
-roughness_texture = ExtResource("3_68nxn")
-roughness_texture_channel = 1
-emission_enabled = true
-emission_texture = ExtResource("2_0cbl4")
+version https://git-lfs.github.com/spec/v1
+oid sha256:f3fa39687b975858d83c02f427ab9d50d938be8b6000357bdcb3e343d3f1f01c
+size 817

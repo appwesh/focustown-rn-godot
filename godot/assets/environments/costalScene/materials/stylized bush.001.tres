@@ -1,9 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dw8v27hbw644y"]
-
-[ext_resource type="Texture2D" uid="uid://b85r05375cge4" path="res://assets/environments/costalScene/textures/image (1).png" id="1_1bcdy"]
-
-[resource]
-resource_name = "stylized bush.001"
-transparency = 4
-cull_mode = 2
-albedo_texture = ExtResource("1_1bcdy")
+version https://git-lfs.github.com/spec/v1
+oid sha256:26dca5a1cc4f5055df69261856f53d2edc67f7f81c14a759314c3b6d65a7ef45
+size 347

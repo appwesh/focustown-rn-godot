@@ -1,12 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://cnl3aqtoba3yh"]
-
-[ext_resource type="Texture2D" uid="uid://snvnt38t02ui" path="res://assets/Environments/Library/Library4_old_wood-roughness.png" id="1_0xsdh"]
-
-[resource]
-resource_name = "Stylized Wood.002"
-cull_mode = 2
-albedo_color = Color(0.36708254, 0.2237638, 0.13970603, 1)
-metallic_texture = ExtResource("1_0xsdh")
-metallic_texture_channel = 2
-roughness_texture = ExtResource("1_0xsdh")
-roughness_texture_channel = 1
+version https://git-lfs.github.com/spec/v1
+oid sha256:3900484aead6ad04a9c995a76ee6c8718fd57121373ce7a071e57e00642d1ff5
+size 497

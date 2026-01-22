@@ -1,20 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://dwqsaqlbsxmja"]
-
-[ext_resource type="Texture2D" uid="uid://ca7ekulrt5gg1" path="res://assets/environments/costalScene/textures/CoastalCafe-Table2_DefaultMaterial_BaseColor.png" id="1_pl35g"]
-[ext_resource type="Texture2D" uid="uid://bnv5vybhrf1s4" path="res://assets/environments/costalScene/textures/CoastalCafe-Table2_DefaultMaterial_Emissive.png" id="2_p3inb"]
-[ext_resource type="Texture2D" uid="uid://y56qbjgkbdnb" path="res://assets/environments/costalScene/textures/CoastalCafe-Table2_DefaultMaterial_Roughness.png" id="3_xly8e"]
-[ext_resource type="Texture2D" uid="uid://bcjp25670oyph" path="res://assets/environments/costalScene/textures/CoastalCafe-Table2_DefaultMaterial_Normal.png" id="4_f432t"]
-
-[resource]
-resource_name = "Table2"
-cull_mode = 2
-albedo_texture = ExtResource("1_pl35g")
-metallic = 1.0
-metallic_texture = ExtResource("3_xly8e")
-metallic_texture_channel = 2
-roughness_texture = ExtResource("3_xly8e")
-roughness_texture_channel = 1
-emission_enabled = true
-emission_texture = ExtResource("2_p3inb")
-normal_enabled = true
-normal_texture = ExtResource("4_f432t")
+version https://git-lfs.github.com/spec/v1
+oid sha256:5fa1676064d8f5a3462f9965dfbca955e373d6609f080d01a45dd1167e0deedd
+size 1158

@@ -1,20 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://yeywfesjtxqk"]
-
-[ext_resource type="Texture2D" uid="uid://btqjynuiekikk" path="res://assets/environments/costalScene/textures/Sign_DefaultMaterial_BaseColor.png" id="1_gsxd5"]
-[ext_resource type="Texture2D" uid="uid://buwtjt1qg60au" path="res://assets/environments/costalScene/textures/Sign_DefaultMaterial_Emissive.png" id="2_8yui1"]
-[ext_resource type="Texture2D" uid="uid://cs5adalksts5r" path="res://assets/environments/costalScene/textures/Sign_DefaultMaterial_Roughness.png" id="3_2tkjl"]
-[ext_resource type="Texture2D" uid="uid://c308io0djfiuf" path="res://assets/environments/costalScene/textures/Sign_DefaultMaterial_Normal.png" id="4_3cpj8"]
-
-[resource]
-resource_name = "Sign"
-cull_mode = 2
-albedo_texture = ExtResource("1_gsxd5")
-metallic = 1.0
-metallic_texture = ExtResource("3_2tkjl")
-metallic_texture_channel = 2
-roughness_texture = ExtResource("3_2tkjl")
-roughness_texture_channel = 1
-emission_enabled = true
-emission_texture = ExtResource("2_8yui1")
-normal_enabled = true
-normal_texture = ExtResource("4_3cpj8")
+version https://git-lfs.github.com/spec/v1
+oid sha256:3edf588387dbbdcb25a4730014cf92f87c6459b6b4a13deb1a79f4301ac10c10
+size 1100

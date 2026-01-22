@@ -1,11 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://d3gmh4ur43mbs"]
-
-[ext_resource type="Texture2D" uid="uid://be0j0ikal8671" path="res://assets/environments/costalScene/textures/Leaf-1.png" id="1_k1m6r"]
-
-[resource]
-resource_name = "Leaf-1"
-transparency = 4
-cull_mode = 2
-albedo_texture = ExtResource("1_k1m6r")
-roughness = 0.5
-texture_repeat = false
+version https://git-lfs.github.com/spec/v1
+oid sha256:1d21976d91851caad7935a91528eae0eaf366e5aa803ee63eedbb8cae6805f47
+size 372
