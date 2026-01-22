@@ -1,8 +1,7 @@
-[gd_scene load_steps=15 format=3 uid="uid://clexbd78x14ah"]
+[gd_scene load_steps=14 format=3 uid="uid://clexbd78x14ah"]
 
 [ext_resource type="PackedScene" uid="uid://cey1ja8kg6h6" path="res://assets/environments/library/blendfiles/Cafe/Phase 2 CafeteriaSet.blend" id="1_eat8h"]
 [ext_resource type="PackedScene" path="res://scenes/characters/cinematic_character.tscn" id="2_bpjeq"]
-[ext_resource type="Material" uid="uid://wloww3m7mk0a" path="res://assets/environments/library/blendfiles/Cafe/Materials/PlantLeafy_Darker.tres" id="2_el2lr"]
 [ext_resource type="PackedScene" uid="uid://b3utl0mrf8ui" path="res://assets/environments/library/tree-oak.glb" id="2_peehc"]
 [ext_resource type="Script" uid="uid://c3charpreset" path="res://scripts/characters/character_preset.gd" id="3_w5xe0"]
 
@@ -12,26 +11,34 @@
 background_energy_multiplier = 0.0
 sky = SubResource("Sky_eat8h")
 ambient_light_source = 2
-ambient_light_color = Color(0.64189446, 0.51926774, 0.55564064, 1)
-ambient_light_energy = 2.41
+ambient_light_color = Color(0.7350558, 0.6200164, 0.5539225, 1)
+ambient_light_energy = 0.89
 tonemap_mode = 4
 glow_enabled = true
 glow_intensity = 0.31
 glow_bloom = 0.22
 fog_enabled = true
 fog_mode = 1
-fog_light_color = Color(0.10264205, 0.2365481, 0.40110278, 1)
-fog_light_energy = 0.15
-fog_density = 0.425
+fog_light_color = Color(0.23715368, 0.30156255, 0.35115212, 1)
+fog_light_energy = 1.16
+fog_density = 0.305
 fog_sky_affect = 0.0
-fog_height = 1.0
-fog_height_density = -0.3
-fog_depth_curve = 1.1892081
-fog_depth_begin = 13.0
-fog_depth_end = 35.0
-volumetric_fog_density = 0.4064
+fog_height = 2.0
+fog_height_density = -0.5
+fog_depth_curve = 0.4352755
+fog_depth_begin = 0.0
+fog_depth_end = 15.0
+volumetric_fog_density = 0.5514
+volumetric_fog_emission = Color(0.24790192, 0.40506464, 0.78814626, 1)
+volumetric_fog_emission_energy = 350.24
+volumetric_fog_gi_inject = 2.11
+volumetric_fog_anisotropy = -0.9
+volumetric_fog_length = 0.01
+volumetric_fog_detail_spread = 0.7578582
+volumetric_fog_ambient_inject = 9.2
 adjustment_enabled = true
 adjustment_contrast = 1.05
+adjustment_saturation = 1.04
 
 [sub_resource type="Resource" id="Resource_w5xe0"]
 script = ExtResource("3_w5xe0")
@@ -174,36 +181,28 @@ transform = Transform3D(0.59444565, 0, 0.10481681, 0, 0.6036159, 0, -0.10481681,
 [node name="Plants2_003" parent="Phase 2 CafeteriaSet" index="142"]
 transform = Transform3D(0.67952967, 0, 0.1198194, 0, 0.69001234, 0, -0.1198194, 0, 0.67952967, -4.3496246, 0.012746453, -9.726553)
 
-[node name="Plants2_004" parent="Phase 2 CafeteriaSet" index="143"]
-surface_material_override/0 = ExtResource("2_el2lr")
-
 [node name="Plants2_005" parent="Phase 2 CafeteriaSet" index="144"]
 transform = Transform3D(0.61773205, 0, 0.10892283, 0, 0.6272614, 0, -0.10892283, 0, 0.61773205, -4.314972, 0.36531115, -11.292411)
-
-[node name="Plants2_006" parent="Phase 2 CafeteriaSet" index="145"]
-surface_material_override/0 = ExtResource("2_el2lr")
-
-[node name="Plants2_007" parent="Phase 2 CafeteriaSet" index="146"]
-surface_material_override/0 = ExtResource("2_el2lr")
 
 [node name="Plants2_008" parent="Phase 2 CafeteriaSet" index="147"]
 transform = Transform3D(0.42887175, 0, -0.3591121, 0, 0.55936784, 0, 0.3591121, 0, 0.42887175, -4.257572, 0.32607207, -7.783331)
 
 [node name="Plants2_009" parent="Phase 2 CafeteriaSet" index="148"]
-surface_material_override/0 = ExtResource("2_el2lr")
+transform = Transform3D(0.47991973, 0, 0.076927476, 0, 0.48604596, 0, -0.076927476, 0, 0.47991973, -4.194583, -0.0025954247, -12.425676)
 
 [node name="Plants2_010" parent="Phase 2 CafeteriaSet" index="149"]
 transform = Transform3D(1.243286, 0, -0.021560641, 0, 1.2434728, 0, 0.021560641, 0, 1.243286, -11.099703, 0.843887, -8.031099)
-surface_material_override/0 = ExtResource("2_el2lr")
 
 [node name="Window" parent="Phase 2 CafeteriaSet" index="151"]
 sorting_offset = 5.0
 
 [node name="Sun" parent="Phase 2 CafeteriaSet" index="154"]
 transform = Transform3D(0.53420717, 0.27899107, 0.7979891, -0.83098435, -3.632348e-08, 0.5562955, 0.15520154, -0.9602936, 0.2318372, 13.203803, 15.750857, -2.622426)
-light_energy = 0.1
+light_color = Color(0.8289088, 0.8157036, 0.8214682, 1)
+light_energy = 0.305
 shadow_enabled = true
 shadow_normal_bias = 5.823
+shadow_blur = 3.451
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_peehc")
@@ -251,122 +250,72 @@ default_animation = "Idle_Sitting_01"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013583183, -0.008878231, -0.007125616)
 
 [node name="CeilingLight_01" type="OmniLight3D" parent="Lights/CeilingLigths"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.011788, 4.8738704, -8.530569)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 0.929
-omni_range = 10.769
-omni_attenuation = 1.087
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.011788, 4.0260234, -8.530569)
+light_color = Color(0.74674517, 0.68739957, 0.64742863, 1)
+light_energy = 0.396
+omni_range = 10.768
+omni_attenuation = -0.143
 
 [node name="CeilingLight_02" type="OmniLight3D" parent="Lights/CeilingLigths"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -5.3674455, 4.8547335, -10.794323)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 0.929
-omni_range = 10.769
-omni_attenuation = 1.087
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -5.3674455, 4.0068865, -10.794323)
+light_color = Color(0.7933676, 0.67781705, 0.5344989, 1)
+light_energy = 1.463
+light_indirect_energy = 1.381
+omni_range = 8.161
+omni_attenuation = -0.143
 
 [node name="CeilingLight_03" type="OmniLight3D" parent="Lights/CeilingLigths"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -10.281446, 4.8738704, -14.757459)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 0.929
-omni_range = 10.769
-omni_attenuation = 1.087
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.41725, 3.6608362, -8.165216)
+visible = false
+light_color = Color(0.817356, 0.67149174, 0.48089707, 1)
+light_energy = 0.252
+omni_range = 16.0
+omni_attenuation = -0.143
 
 [node name="CeilingLight_04" type="OmniLight3D" parent="Lights/CeilingLigths"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.284027, 4.9008646, -14.976282)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 0.929
-omni_range = 10.769
-omni_attenuation = 1.087
-
-[node name="AmbientLight2" type="DirectionalLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, -0.55484444, 0.8319541, 0, -0.8319541, -0.55484444, -7.4013243, 4.1479425, -8.795971)
-light_color = Color(0.592808, 0.571514, 0.48865938, 1)
-light_energy = 1.755
-light_specular = 7.026
-sky_mode = 1
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.9159265, 4.0530176, -15.088066)
+light_color = Color(0.8695891, 0.64229584, 0.49510664, 1)
+light_energy = 1.728
+omni_range = 3.154
+omni_attenuation = 0.524
 
 [node name="Node3D" type="Node3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1261253, 1.4156951, -10.68306)
 
-[node name="CozyLight_01" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, -0.0673455, 3.27429)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 5.451
-omni_range = 1.183
-
-[node name="CozyLight_02" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, -0.0673455, 0.61990356)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 5.451
-omni_range = 1.183
-
-[node name="CozyLight_03" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 1.3442082, -0.0673455, -1.9022093)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 5.451
-omni_range = 1.183
-
-[node name="CozyLight_05" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, -0.0673455, 3.27429)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 5.451
-omni_range = 1.183
-
-[node name="CozyLight_06" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, -0.0673455, 0.61990356)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 5.451
-omni_range = 1.183
-
-[node name="CozyLight_07" type="OmniLight3D" parent="Lights/Node3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4851685, -0.0673455, -1.9022093)
-light_color = Color(0.8625456, 0.66300607, 0.30493927, 1)
-light_energy = 5.451
-omni_range = 1.183
-
-[node name="SpotLight3D" type="SpotLight3D" parent="."]
+[node name="SpotLight3D" type="SpotLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.4014444, 4.928073, -6.1898584)
-light_color = Color(0.98310894, 0.7664608, 0.5546548, 1)
-light_energy = 0.836
+light_color = Color(0.76988226, 0.82669765, 0.8130877, 1)
+light_energy = 2.588
 shadow_enabled = true
 shadow_opacity = 0.72
 spot_range = 11.442
 spot_attenuation = 1.03
 spot_angle = 41.21
 
-[node name="SpotLight3D3" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.899818, 4.928073, -10.519374)
-light_color = Color(0.98310894, 0.7664608, 0.5546548, 1)
-light_energy = 7.424
-shadow_opacity = 0.72
-spot_range = 11.442
-spot_attenuation = 1.03
-spot_angle = 41.21
-
-[node name="SpotLight3D5" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -9.072023, 4.928073, -6.7621064)
-light_color = Color(0.98310894, 0.7664608, 0.5546548, 1)
-light_energy = 0.6
+[node name="SpotLight3D5" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.4628935, 5.176056, -7.993769)
+light_color = Color(0.76988226, 0.82669765, 0.8130877, 1)
+light_energy = 1.255
 shadow_enabled = true
 shadow_opacity = 0.72
 spot_range = 11.442
 spot_attenuation = 1.03
 spot_angle = 41.21
 
-[node name="SpotLight3D4" type="SpotLight3D" parent="."]
+[node name="SpotLight3D4" type="SpotLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -10.102623, 4.928073, -13.750191)
-light_color = Color(0.98310894, 0.7664608, 0.5546548, 1)
-light_energy = 0.444
+light_color = Color(0.76988226, 0.82669765, 0.8130877, 1)
+light_energy = 2.588
 shadow_enabled = true
 shadow_opacity = 0.72
 spot_range = 11.442
 spot_attenuation = 1.03
 spot_angle = 41.21
 
-[node name="SpotLight3D2" type="SpotLight3D" parent="."]
+[node name="SpotLight3D2" type="SpotLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.321951, 4.928073, -14.767876)
-light_color = Color(0.9111108, 0.5765293, 0.3033289, 1)
-light_energy = 1.385
+light_color = Color(0.76988226, 0.82669765, 0.8130877, 1)
+light_energy = 2.588
 shadow_enabled = true
 shadow_opacity = 0.72
 spot_range = 11.442

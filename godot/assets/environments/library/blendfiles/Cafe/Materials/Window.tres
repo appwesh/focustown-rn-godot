@@ -4,9 +4,9 @@
 resource_name = "Window"
 transparency = 1
 cull_mode = 2
-albedo_color = Color(0.7254317, 0.8986089, 0.95700294, 0.15686275)
+albedo_color = Color(0.25114858, 0.25114858, 0.93273467, 0.15686275)
 roughness = 0.19230768
 emission_enabled = true
 emission = Color(0.66192317, 0.78879625, 1, 1)
-emission_energy_multiplier = 1.07
+emission_energy_multiplier = 0.83
 rim_tint = 1.0

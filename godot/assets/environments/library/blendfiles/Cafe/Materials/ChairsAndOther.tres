@@ -10,7 +10,7 @@
 [resource]
 resource_name = "ChairsAndOther"
 albedo_texture = ExtResource("1_cjr83")
-metallic = 1.0
+metallic = 0.54
 metallic_texture = ExtResource("5_sgsbg")
 metallic_texture_channel = 2
 roughness_texture = ExtResource("6_b1da0")

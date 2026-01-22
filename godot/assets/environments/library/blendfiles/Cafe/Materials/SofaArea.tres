@@ -10,9 +10,9 @@
 resource_name = "SofaArea"
 transparency = 4
 cull_mode = 2
-albedo_color = Color(0.8, 0.57573336, 0.33600003, 1)
+albedo_color = Color(1, 0.97, 0.97, 1)
 albedo_texture = ExtResource("1_7efld")
-metallic = 1.0
+metallic = 0.43
 metallic_texture = ExtResource("3_pehlj")
 metallic_texture_channel = 2
 roughness_texture = ExtResource("5_mk80b")
