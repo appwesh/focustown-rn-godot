@@ -12,6 +12,10 @@ interface GodotGameProps {
 
 const PCK_FILENAME = 'main.pck';
 const LOCAL_PCK_URI = FileSystem.documentDirectory + PCK_FILENAME;
+const LOCAL_PCK_COMPLETE_URI = FileSystem.documentDirectory + PCK_FILENAME + '.complete';
+
+// Keep a handle to any active download so we can pause it during Fast Refresh / teardown.
+let activeDownloadResumable: ReturnType<typeof FileSystem.createDownloadResumable> | null = null;
 
 // Strip file:// prefix for Godot (it expects raw filesystem path)
 function uriToPath(uri: string): string {
@@ -34,10 +38,15 @@ async function downloadPck(
   
   // Check if already downloaded
   const fileInfo = await FileSystem.getInfoAsync(LOCAL_PCK_URI);
-  if (fileInfo.exists && fileInfo.size && fileInfo.size > 0) {
+  const completeInfo = await FileSystem.getInfoAsync(LOCAL_PCK_COMPLETE_URI);
+  if (fileInfo.exists && fileInfo.size && fileInfo.size > 0 && completeInfo.exists) {
     const path = uriToPath(LOCAL_PCK_URI);
     console.log('[GodotGame] Using cached PCK:', path, `(${(fileInfo.size / 1024 / 1024).toFixed(1)} MB)`);
     return path;
+  }
+  // If we have a partial PCK without a completion marker, discard it to avoid booting a corrupted pack.
+  if (fileInfo.exists && !completeInfo.exists) {
+    await FileSystem.deleteAsync(LOCAL_PCK_URI, { idempotent: true });
   }
 
   console.log('[GodotGame] Downloading PCK from:', url);
@@ -63,6 +72,7 @@ async function downloadPck(
       onProgress?.(progress);
     }
   );
+  activeDownloadResumable = downloadResumable;
 
   try {
     const result = await downloadResumable.downloadAsync();
@@ -74,6 +84,9 @@ async function downloadPck(
     if (result.status !== 200) {
       throw new Error(`Failed to download PCK: HTTP ${result.status}`);
     }
+
+    // Mark as fully downloaded so we never treat a partial file as "cached".
+    await FileSystem.writeAsStringAsync(LOCAL_PCK_COMPLETE_URI, 'ok');
     
     const path = uriToPath(LOCAL_PCK_URI);
     console.log('[GodotGame] Downloaded PCK to:', path);
@@ -83,9 +96,14 @@ async function downloadPck(
     const partialFile = await FileSystem.getInfoAsync(LOCAL_PCK_URI);
     if (partialFile.exists) {
       await FileSystem.deleteAsync(LOCAL_PCK_URI, { idempotent: true });
+      await FileSystem.deleteAsync(LOCAL_PCK_COMPLETE_URI, { idempotent: true });
       console.log('[GodotGame] Cleaned up partial download');
     }
     throw error;
+  } finally {
+    if (activeDownloadResumable === downloadResumable) {
+      activeDownloadResumable = null;
+    }
   }
 }
 
@@ -230,6 +248,29 @@ export function GodotGame({ style, pckUrl }: GodotGameProps) {
 
     setup();
 
+    // During Fast Refresh / teardown, the JS runtime can be briefly unavailable while native downloads
+    // still emit progress events. Pause + cleanup to avoid noisy native warnings.
+    return () => {
+      void (async () => {
+        try {
+          if (activeDownloadResumable) {
+            await activeDownloadResumable.pauseAsync();
+            activeDownloadResumable = null;
+          }
+        } catch {
+          // ignore
+        } finally {
+          // Best-effort: if a partial file exists, remove it so we don't cache a corrupt pack.
+          try {
+            await FileSystem.deleteAsync(LOCAL_PCK_COMPLETE_URI, { idempotent: true });
+            await FileSystem.deleteAsync(LOCAL_PCK_URI, { idempotent: true });
+          } catch {
+            // ignore
+          }
+        }
+      })();
+    };
+
     // NOTE: We intentionally do NOT destroy Godot on unmount
     // The Godot instance is shared between screens (home showcase and game)
     // Destroying it when one screen unmounts would break the other screen
@@ -275,6 +316,7 @@ export async function clearPckCache(): Promise<void> {
   const fileInfo = await FileSystem.getInfoAsync(LOCAL_PCK_URI);
   if (fileInfo.exists) {
     await FileSystem.deleteAsync(LOCAL_PCK_URI);
+    await FileSystem.deleteAsync(LOCAL_PCK_COMPLETE_URI, { idempotent: true });
     console.log('[GodotGame] Cleared PCK cache');
   }
 }
