@@ -1,11 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
-import { StyleSheet, View, Pressable, Image } from 'react-native';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { StyleSheet, View, Text, Pressable, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
 import { DebugModal } from '@/components/debug-modal';
-import { BeanCounter } from '@/components/ui';
 import {
   SessionSetupModal,
   SessionCompleteModal,
@@ -25,6 +24,8 @@ import {
   isGodotReady,
   switchToOverviewCamera,
   switchToSeatedCamera,
+  switchToSetupCamera,
+  switchToThirdPersonCamera,
   changeScene,
   type SpotLocation,
 } from '@/lib/godot';
@@ -37,9 +38,6 @@ import { useAuth, groupsService } from '@/lib/firebase';
 import { useSocialStore } from '@/lib/social';
 import { PCK_URL } from '@/constants/game';
 
-// Assets
-const homeIcon = require('@/assets/ui/home.png');
-const settingsIcon = require('@/assets/ui/settings.png');
 
 /**
  * Main game screen with focus session management
@@ -49,6 +47,28 @@ export default function GameScreen() {
   const insets = useSafeAreaInsets();
   const [debugVisible, setDebugVisible] = useState(false);
   const [sceneTransitioning, setSceneTransitioning] = useState(true); // Start with transition visible
+  
+  // Pulsing animation for "pick your spot" text
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 0.5,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [pulseAnim]);
 
   const { recordSession, userDoc, user } = useAuth();
 
@@ -343,7 +363,7 @@ export default function GameScreen() {
       onEndSession: endGodotSession,
       onCancelSetup: cancelGodotSetup,
       onStartBreak: switchToOverviewCamera,
-      onEndBreak: switchToSeatedCamera,
+      onEndBreak: switchToSetupCamera,
     });
 
     return () => {
@@ -416,38 +436,28 @@ export default function GameScreen() {
         onEndEarly={requestAbandonSession}
       />
 
-      {/* Top Bar - hide during modals */}
-      {showTopBar && (
-        <View style={[styles.topBar, { top: insets.top + 12 }]}>
-          {/* Home Button - hide during active session */}
-          {phase === 'idle' && (
-            <Pressable
-              style={({ pressed }) => [
-                styles.iconButton,
-                pressed && styles.iconButtonPressed,
-              ]}
-              onPress={() => router.dismissTo('/home')}
-            >
-              <Image source={homeIcon} style={styles.homeIcon} />
-            </Pressable>
-          )}
-
-          {/* Settings Button */}
+      {/* Idle UI - "pick your spot" header */}
+      {showTopBar && phase === 'idle' && (
+        <>
+          {/* Back Button */}
           <Pressable
             style={({ pressed }) => [
-              styles.iconButton,
-              pressed && styles.iconButtonPressed,
+              styles.backButton,
+              { top: insets.top + 12 },
+              pressed && styles.backButtonPressed,
             ]}
-            onPress={() => router.push('/settings')}
+            onPress={() => router.dismissTo('/home')}
             onLongPress={__DEV__ ? () => setDebugVisible(true) : undefined}
             delayLongPress={800}
           >
-            <Image source={settingsIcon} style={styles.settingsIcon} />
+            <Text style={styles.backArrow}>←</Text>
           </Pressable>
 
-          {/* Coin Counter */}
-          <BeanCounter size="small" style={styles.beanCounter} />
-        </View>
+          {/* Pick your spot text */}
+          <Animated.Text style={[styles.pickSpotText, { top: insets.top + 80, opacity: pulseAnim }]}>
+            pick your spot
+          </Animated.Text>
+        </>
       )}
 
       {/* Session Modals */}
@@ -477,18 +487,13 @@ const styles = StyleSheet.create({
   game: {
     flex: 1,
   },
-  topBar: {
+  backButton: {
     position: 'absolute',
-    right: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    zIndex: 2,
-    gap: 8,
-  },
-  iconButton: {
+    left: 16,
     backgroundColor: '#FFF8E7',
-    padding: 8,
-    borderRadius: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 100,
     shadowColor: '#5D4037',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
@@ -496,23 +501,25 @@ const styles = StyleSheet.create({
     elevation: 4,
     borderWidth: 2,
     borderColor: '#DDD5C7',
+    zIndex: 2,
   },
-  iconButtonPressed: {
+  backButtonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.95 }],
   },
-  homeIcon: {
-    width: 32,
-    height: 32,
-    resizeMode: 'contain',
+  backArrow: {
+    fontSize: 24,
+    color: '#5D4037',
+    fontWeight: '600',
   },
-  settingsIcon: {
-    width: 32,
-    height: 32,
-    resizeMode: 'contain',
-  },
-  beanCounter: {
-    borderWidth: 2,
-    borderColor: '#DDD5C7',
+  pickSpotText: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+    fontSize: 32,
+    fontFamily: 'Poppins_700Bold',
+    color: 'white',
+    zIndex: 2,
   },
 });

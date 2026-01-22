@@ -96,6 +96,9 @@ var _current_spot_node: Node3D = null
 ## Is player currently seated (blocks navigation)
 var _is_player_seated: bool = false
 
+## Track spawned NPC characters
+var _npc_characters: Array[CinematicCharacter] = []
+
 
 func _ready() -> void:
 	_character_scene = preload("res://scenes/characters/cinematic_character.tscn")
@@ -368,6 +371,18 @@ func switch_to_first_person() -> void:
 		camera_rig.switch_to_first_person()
 
 
+## Switch to setup camera (front-facing for session setup)
+func switch_to_setup() -> void:
+	if camera_rig:
+		camera_rig.switch_to_setup()
+
+
+## Switch to seated camera (called when focus session actually starts)
+func switch_to_seated() -> void:
+	if camera_rig:
+		camera_rig.switch_to_seated()
+
+
 ## Cycle through camera modes
 func cycle_camera() -> void:
 	if camera_rig:
@@ -502,7 +517,7 @@ func _on_character_arrived() -> void:
 
 
 func _trigger_session_at_spot(spot: Dictionary) -> void:
-	## Player arrived at study spot - trigger focus session
+	## Player arrived at study spot - trigger focus session setup
 	print("[LibraryCinematic] Arrived at study spot: %s" % spot.get("name", "Unknown"))
 	
 	# Player is now seated - disable navigation
@@ -515,9 +530,9 @@ func _trigger_session_at_spot(spot: Dictionary) -> void:
 	# Play sitting/studying animation
 	_character.transition_to_animation(sitting_animation)
 	
-	# Switch camera to seated view (zoomed top view)
+	# Switch camera to setup view (front-facing, shows player's face for setup modal)
 	if camera_rig:
-		camera_rig.switch_to_seated()
+		camera_rig.switch_to_setup()
 	
 	# Emit signal
 	session_triggered.emit(spot.get("position", Vector3.ZERO))
@@ -593,6 +608,7 @@ func _spawn_single_npc(config: Dictionary) -> CinematicCharacter:
 	var pos: Vector3 = config.get("position", Vector3.ZERO)
 	var rot: float = config.get("rotation", 0.0)
 	var anim: String = config.get("animation", idle_animation)
+	var is_seated: bool = anim.contains("Sitting")
 	
 	var npc := _character_scene.instantiate() as CinematicCharacter
 	npc.name = "NPC_" + preset_name.capitalize()
@@ -603,10 +619,28 @@ func _spawn_single_npc(config: Dictionary) -> CinematicCharacter:
 	
 	add_child(npc)
 	
+	# Track NPC
+	_npc_characters.append(npc)
+	
 	# Apply preset after character is fully initialized (need to wait for ModularCharacter)
 	_apply_npc_preset_deferred(npc, preset_name)
 	
+	# Add study bubble for seated NPCs
+	if is_seated:
+		_add_study_bubble_deferred(npc)
+	
 	return npc
+
+
+func _add_study_bubble_deferred(npc: CinematicCharacter) -> void:
+	## Add a study timer bubble above the NPC after a short delay
+	# Wait for character to be positioned
+	await get_tree().create_timer(0.5).timeout
+	
+	var bubble := NPCStudyBubble.new()
+	bubble.name = "StudyBubble"
+	npc.add_child(bubble)
+	print("[LibraryCinematic] Added study bubble to: %s" % npc.name)
 
 
 func _apply_npc_preset_deferred(npc: CinematicCharacter, preset_name: String) -> void:

@@ -14,8 +14,10 @@ import {
   StyleSheet,
   Switch,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import { useSessionStore } from '@/lib/session';
+import { Button } from '@/components/ui/button';
 
 interface SessionSetupModalProps {
   visible: boolean;
@@ -27,6 +29,7 @@ const MAX_DURATION = 60;
 const STEP = 5;
 
 export function SessionSetupModal({ visible }: SessionSetupModalProps) {
+  const insets = useSafeAreaInsets();
   const config = useSessionStore((s) => s.config);
   const updateConfig = useSessionStore((s) => s.updateConfig);
   const startSession = useSessionStore((s) => s.startSession);
@@ -49,7 +52,7 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
       transparent
       animationType="fade"
     >
-      <View style={styles.backdrop}>
+      <View style={[styles.backdrop, { paddingTop: insets.top + 16 }]}>
         <View style={styles.container}>
           {/* Timer Icon */}
           <View style={styles.iconContainer}>
@@ -99,15 +102,11 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
           )}
 
           {/* Start Button */}
-          <Pressable
-            style={({ pressed }) => [
-              styles.startButton,
-              pressed && styles.startButtonPressed,
-            ]}
+          <Button
+            title="Start Session"
             onPress={startSession}
-          >
-            <Text style={styles.startButtonText}>Start Session</Text>
-          </Pressable>
+            style={styles.startButton}
+          />
         </View>
       </View>
     </Modal>
@@ -117,10 +116,10 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 24,
+    paddingHorizontal: 24,
   },
   container: {
     backgroundColor: '#FFF8E7',
@@ -153,9 +152,8 @@ const styles = StyleSheet.create({
   },
   timerDisplay: {
     fontSize: 80,
-    fontWeight: '700',
+    fontFamily: 'Poppins_700Bold',
     color: '#5D4037',
-    fontVariant: ['tabular-nums'],
     marginTop: 20,
     marginBottom: 16,
   },
@@ -188,25 +186,6 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   startButton: {
-    backgroundColor: '#5B9BD5',
-    paddingVertical: 18,
-    paddingHorizontal: 48,
-    borderRadius: 20,
     width: '100%',
-    alignItems: 'center',
-    shadowColor: '#3D7AB8',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  startButtonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  startButtonText: {
-    color: '#FFF',
-    fontSize: 20,
-    fontWeight: '700',
   },
 });

@@ -11,10 +11,10 @@ import {
   Modal,
   View,
   Text,
-  Pressable,
   StyleSheet,
 } from 'react-native';
 import { useSessionStore } from '@/lib/session';
+import { Button } from '@/components/ui/button';
 
 interface AbandonConfirmModalProps {
   visible: boolean;
@@ -33,11 +33,6 @@ export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
     >
       <View style={styles.backdrop}>
         <View style={styles.container}>
-          {/* Warning Icon */}
-          <View style={styles.iconContainer}>
-            <Text style={styles.icon}>{isGroupSession ? '👥' : '⚠️'}</Text>
-          </View>
-
           {/* Title */}
           <Text style={styles.title}>End Session Early?</Text>
 
@@ -50,29 +45,19 @@ export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
 
           {/* Buttons */}
           <View style={styles.buttonRow}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                styles.cancelButton,
-                pressed && styles.buttonPressed,
-              ]}
+            <Button
+              title="Keep Going"
               onPress={cancelAbandonSession}
-            >
-              <Text style={styles.cancelButtonText}>Keep Going</Text>
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                styles.confirmButton,
-                pressed && styles.buttonPressed,
-              ]}
+              size="small"
+              style={styles.button}
+            />
+            <Button
+              title={isGroupSession ? 'End for All' : 'End Session'}
               onPress={confirmAbandonSession}
-            >
-              <Text style={styles.confirmButtonText}>
-                {isGroupSession ? 'End for All' : 'End Session'}
-              </Text>
-            </Pressable>
+              variant="muted"
+              size="small"
+              style={styles.button}
+            />
           </View>
         </View>
       </View>
@@ -103,24 +88,10 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#DDD5C7',
   },
-  iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#FFF3E0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#FFB74D',
-  },
-  icon: {
-    fontSize: 32,
-  },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#3D3D3D',
+    fontSize: 24,
+    fontFamily: 'Poppins_700Bold',
+    color: '#5D4037',
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -138,36 +109,6 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 14,
-    alignItems: 'center',
-  },
-  buttonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  cancelButton: {
-    backgroundColor: '#4A7C59',
-    shadowColor: '#2D4A35',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  cancelButtonText: {
-    color: '#FFF',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  confirmButton: {
-    backgroundColor: '#E8E0D5',
-    borderWidth: 2,
-    borderColor: '#D5CCC0',
-  },
-  confirmButtonText: {
-    color: '#8B7355',
-    fontSize: 15,
-    fontWeight: '600',
   },
 });
 

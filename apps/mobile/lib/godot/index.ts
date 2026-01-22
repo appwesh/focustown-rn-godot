@@ -50,6 +50,8 @@ export {
   toggleSessionCamera,
   switchToSeatedCamera,
   switchToOverviewCamera,
+  switchToSetupCamera,
+  switchToThirdPersonCamera,
   // Break control
   setBreakTickHandler,
   setBreakEndedHandler,

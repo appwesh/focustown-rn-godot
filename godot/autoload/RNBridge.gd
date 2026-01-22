@@ -264,6 +264,11 @@ func start_session_from_rn() -> void:
 	if _current_seated_spot:
 		print("[RNBridge] Starting session from RN")
 		FocusSessionManager.start_session(_current_seated_spot)
+		
+		# Switch to third person camera now that session is starting
+		_ensure_camera_rig()
+		if _camera_rig:
+			_camera_rig.switch_to_third_person()
 	else:
 		print("[RNBridge] Cannot start session - no seated spot")
 
@@ -346,6 +351,12 @@ func end_session() -> Dictionary:
 	
 	var duration := FocusSessionManager.get_elapsed_seconds()
 	var coins := FocusSessionManager.end_session()
+	
+	# Switch to setup camera (front-facing) for complete/abandoned modal
+	_ensure_camera_rig()
+	if _camera_rig:
+		_camera_rig.switch_to_setup()
+	
 	return {
 		"success": true,
 		"duration": duration,
@@ -378,6 +389,12 @@ func end_break() -> Dictionary:
 		return {"success": false, "reason": "not_on_break"}
 	
 	var duration := FocusSessionManager.end_break()
+	
+	# Switch to setup camera (front-facing) for next session setup
+	_ensure_camera_rig()
+	if _camera_rig:
+		_camera_rig.switch_to_setup()
+	
 	print("[RNBridge] Break ended, duration: ", duration, "s")
 	return {
 		"success": true,
@@ -398,7 +415,7 @@ func get_break_state() -> Dictionary:
 # Camera Control (called from RN)
 # =============================================================================
 
-## Toggle camera between zoomed (seated) and overview during focus session
+## Toggle camera between third person and overview during focus session
 ## Called from RN when user presses camera toggle button
 func toggle_session_camera() -> void:
 	_ensure_camera_rig()
@@ -421,6 +438,22 @@ func switch_to_overview_camera() -> void:
 	if _camera_rig:
 		_camera_rig.switch_to_overview()
 		print("[RNBridge] Switched to overview camera")
+
+
+## Switch to setup camera (front-facing for modals)
+func switch_to_setup_camera() -> void:
+	_ensure_camera_rig()
+	if _camera_rig:
+		_camera_rig.switch_to_setup()
+		print("[RNBridge] Switched to setup camera")
+
+
+## Switch to third person camera
+func switch_to_third_person_camera() -> void:
+	_ensure_camera_rig()
+	if _camera_rig:
+		_camera_rig.switch_to_third_person()
+		print("[RNBridge] Switched to third person camera")
 
 
 ## Get current camera mode

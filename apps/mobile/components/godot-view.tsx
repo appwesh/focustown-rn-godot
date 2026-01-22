@@ -8,6 +8,8 @@ interface GodotGameProps {
   style?: object;
   /** URL to fetch the .pck file from */
   pckUrl: string;
+  /** Callback when loading state changes - receives isLoading and optional download progress (0-1) */
+  onLoadingChange?: (isLoading: boolean, downloadProgress?: number) => void;
 }
 
 const PCK_FILENAME = 'main.pck';
@@ -198,11 +200,16 @@ function destroyGodot() {
  * For controlling the game (joystick, interact), use hooks from @/lib/godot:
  *   import { useJoystick, useInteract } from '@/lib/godot';
  */
-export function GodotGame({ style, pckUrl }: GodotGameProps) {
+export function GodotGame({ style, pckUrl, onLoadingChange }: GodotGameProps) {
   const initialized = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Notify parent of loading state changes
+  useEffect(() => {
+    onLoadingChange?.(isLoading, downloadProgress ?? undefined);
+  }, [isLoading, downloadProgress, onLoadingChange]);
 
   useEffect(() => {
     if (initialized.current) return;

@@ -522,7 +522,7 @@ export function endGodotBreak(): void {
 // ============================================================================
 
 /**
- * Toggle camera between zoomed (seated) and overview during focus session
+ * Toggle camera between third person and overview during focus session
  */
 export function toggleSessionCamera(): void {
   runOnGodotThread(() => {
@@ -586,6 +586,52 @@ export function switchToOverviewCamera(): void {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (rnBridge as any).switch_to_overview_camera();
       console.log('[Bridge] Switched to overview camera');
+    }
+  });
+}
+
+/**
+ * Switch to setup camera view (front-facing, for modals)
+ */
+export function switchToSetupCamera(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).switch_to_setup_camera();
+      console.log('[Bridge] Switched to setup camera');
+    }
+  });
+}
+
+/**
+ * Switch to third person camera view
+ */
+export function switchToThirdPersonCamera(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).switch_to_third_person_camera();
+      console.log('[Bridge] Switched to third person camera');
     }
   });
 }

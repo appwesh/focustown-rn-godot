@@ -10,17 +10,19 @@ import {
   Modal,
   View,
   Text,
-  Pressable,
   StyleSheet,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSessionStore } from '@/lib/session';
+import { Button } from '@/components/ui/button';
 
 interface SessionAbandonedModalProps {
   visible: boolean;
 }
 
 export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const goHomeFromAbandoned = useSessionStore((s) => s.goHomeFromAbandoned);
   const showBreakSetup = useSessionStore((s) => s.showBreakSetup);
@@ -42,13 +44,8 @@ export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
       transparent
       animationType="fade"
     >
-      <View style={styles.backdrop}>
+      <View style={[styles.backdrop, { paddingTop: insets.top + 16 }]}>
         <View style={styles.container}>
-          {/* Icon */}
-          <View style={styles.iconContainer}>
-            <Text style={styles.icon}>📚</Text>
-          </View>
-
           {/* Title */}
           <Text style={styles.title}>Session Ended Early</Text>
 
@@ -59,27 +56,17 @@ export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
 
           {/* Buttons */}
           <View style={styles.buttonColumn}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                styles.continueButton,
-                pressed && styles.buttonPressed,
-              ]}
-              onPress={handleContinue}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                styles.homeButton,
-                pressed && styles.buttonPressed,
-              ]}
+            <Button
+              title="Leave Cafe"
               onPress={handleGoHome}
-            >
-              <Text style={styles.homeButtonText}>Go Home</Text>
-            </Pressable>
+              variant="muted"
+              style={styles.button}
+            />
+            <Button
+              title="Start Another"
+              onPress={handleContinue}
+              style={styles.button}
+            />
           </View>
         </View>
       </View>
@@ -90,10 +77,10 @@ export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 24,
+    paddingHorizontal: 24,
   },
   container: {
     backgroundColor: '#FFF8E7',
@@ -110,24 +97,10 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#DDD5C7',
   },
-  iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#DDD5C7',
-  },
-  icon: {
-    fontSize: 32,
-  },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#3D3D3D',
+    fontSize: 24,
+    fontFamily: 'Poppins_700Bold',
+    color: '#5D4037',
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -143,37 +116,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   button: {
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
     width: '100%',
-  },
-  buttonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  continueButton: {
-    backgroundColor: '#4A7C59',
-    shadowColor: '#2D4A35',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  continueButtonText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  homeButton: {
-    backgroundColor: '#E8E0D5',
-    borderWidth: 2,
-    borderColor: '#D5CCC0',
-  },
-  homeButtonText: {
-    color: '#8B7355',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
 

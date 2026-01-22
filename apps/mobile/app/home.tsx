@@ -7,6 +7,7 @@ import {
   Pressable,
   Dimensions,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -59,6 +60,8 @@ export default function HomeScreen() {
   const [showDebugModal, setShowDebugModal] = useState(false);
   const [showDurationModal, setShowDurationModal] = useState(false);
   const [sceneTransitioning, setSceneTransitioning] = useState(true); // Start with transition visible
+  const [pckLoading, setPckLoading] = useState(true);
+  const [pckDownloadProgress, setPckDownloadProgress] = useState<number | undefined>(undefined);
 
   const { user, userDoc } = useAuth();
 
@@ -244,11 +247,29 @@ export default function HomeScreen() {
     // Shop not implemented yet
   };
 
+  // Handle PCK loading state changes
+  const handlePckLoadingChange = useCallback((isLoading: boolean, downloadProgress?: number) => {
+    setPckLoading(isLoading);
+    setPckDownloadProgress(downloadProgress);
+  }, []);
+
   // Button state - simplified (group logic commented out)
   const currentCafe = CAFES[selectedCafe];
   const isLocked = currentCafe.locked;
-  const buttonText = isLocked ? 'Locked' : 'Go to cafe';
-  const buttonDisabled = isLocked;
+  const isDownloading = pckDownloadProgress !== undefined;
+  const downloadPercent = isDownloading ? Math.round(pckDownloadProgress * 100) : 0;
+  
+  // Button text and disabled state
+  let buttonText = 'Go to cafe';
+  let buttonDisabled = false;
+  
+  if (isLocked) {
+    buttonText = 'Locked';
+    buttonDisabled = true;
+  } else if (pckLoading) {
+    buttonText = isDownloading ? `Updating... ${downloadPercent}%` : 'Loading...';
+    buttonDisabled = true;
+  }
   
   // Group study logic - commented out for now
   // const hasReadyFriends = lobbySlots.slice(1).some(s => s.status === 'ready');
@@ -375,12 +396,30 @@ export default function HomeScreen() {
 
           {/* Godot Character Showcase */}
           <View style={styles.characterShowcase}>
-            <GodotGame style={styles.godotView} pckUrl={PCK_URL} />
+            <GodotGame 
+              style={styles.godotView} 
+              pckUrl={PCK_URL} 
+              onLoadingChange={handlePckLoadingChange}
+            />
             <SceneTransition 
               visible={sceneTransitioning} 
               backgroundColor="#ffefd6"
               fadeDuration={400}
             />
+            {/* Loading overlay for PCK download */}
+            {pckLoading && (
+              <View style={styles.showcaseLoading}>
+                <ActivityIndicator size="large" color="#8B7355" />
+                <Text style={styles.showcaseLoadingText}>
+                  {isDownloading ? `Updating... ${downloadPercent}%` : 'Loading...'}
+                </Text>
+                {isDownloading && (
+                  <View style={styles.progressBarContainer}>
+                    <View style={[styles.progressBar, { width: `${downloadPercent}%` }]} />
+                  </View>
+                )}
+              </View>
+            )}
             {/* "you" label at bottom */}
             <View style={styles.youLabelContainer}>
               <Text style={styles.youLabel}>you</Text>
@@ -678,6 +717,31 @@ const styles = StyleSheet.create({
   godotView: {
     flex: 1,
     backgroundColor: '#FCEFC5',
+  },
+  showcaseLoading: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#FCEFC5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  showcaseLoadingText: {
+    color: '#8B7355',
+    marginTop: 12,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  progressBarContainer: {
+    width: 160,
+    height: 4,
+    backgroundColor: '#E8DDD0',
+    borderRadius: 2,
+    marginTop: 10,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#8B7355',
+    borderRadius: 2,
   },
   goToCafeButton: {
     marginHorizontal: 20,

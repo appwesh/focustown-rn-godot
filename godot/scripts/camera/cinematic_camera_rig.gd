@@ -12,7 +12,8 @@ enum CameraMode {
 	OVERVIEW,
 	THIRD_PERSON,
 	FIRST_PERSON,
-	SEATED  # Zoomed-in top view for focus sessions
+	SETUP,  # Front-facing view for session setup (shows player face)
+	SEATED  # Zoomed-in top view for active focus sessions
 }
 
 @export_group("Cameras")
@@ -25,13 +26,15 @@ enum CameraMode {
 ## Distance behind the target
 @export var third_person_distance: float = 2.0
 ## Height above the target (pivot height)
-@export var third_person_height: float = 1.5
+@export var third_person_height: float = 2.2
 ## Vertical angle (looking down at character)
-@export var third_person_pitch: float = -20.0
+@export var third_person_pitch: float = -35.0
 ## Horizontal offset (0 = centered, positive = right)
-@export var third_person_offset: float = 0.5
+@export var third_person_offset: float = 0.0
 ## How smoothly the camera follows
 @export var follow_smoothing: float = 10.0
+## FOV for third person
+@export var third_person_fov: float = 70.0
 
 @export_group("Camera Collision")
 ## Collision margin for SpringArm
@@ -46,6 +49,16 @@ enum CameraMode {
 @export var first_person_forward: float = 0.1
 ## FOV for first person
 @export var first_person_fov: float = 70.0
+
+@export_group("Setup Camera Settings")
+## Distance in front of the target for setup view (faces the player)
+@export var setup_distance: float = 2.5
+## Height for setup view (roughly eye level)
+@export var setup_height: float = 1.4
+## Vertical angle (slight look down at character)
+@export var setup_pitch: float = -5.0
+## FOV for setup view
+@export var setup_fov: float = 50.0
 
 @export_group("Seated Camera Settings")
 ## Height above the target for seated view (zoomed top view)
@@ -64,6 +77,18 @@ enum CameraMode {
 @export var transition_ease: Tween.EaseType = Tween.EASE_IN_OUT
 @export var transition_trans: Tween.TransitionType = Tween.TRANS_CUBIC
 
+@export_group("Fade Transition")
+## Enable fade to black during transitions
+@export var use_fade_transition: bool = true
+## Skip fade for third person <-> overview (use smooth interpolation instead)
+@export var skip_fade_for_gameplay_toggle: bool = false
+## Duration of fade out (to black)
+@export var fade_out_duration: float = 0.25
+## Duration of fade in (from black)
+@export var fade_in_duration: float = 0.35
+## Color to fade to
+@export var fade_color: Color = Color.BLACK
+
 ## The target node to follow (usually the player character)
 var _target: Node3D
 ## Current camera mode
@@ -76,16 +101,39 @@ var _spring_arm: SpringArm3D
 var _third_person_camera: Camera3D
 ## First person camera instance
 var _first_person_camera: Camera3D
+## Setup camera instance (front-facing for session setup)
+var _setup_camera: Camera3D
+## Setup camera pivot (in front of player)
+var _setup_pivot: Node3D
 ## Seated camera instance (zoomed top view)
 var _seated_camera: Camera3D
 ## Seated camera pivot (follows player from above)
 var _seated_pivot: Node3D
-## Active transition tween
-var _transition_tween: Tween
 ## Is currently transitioning
 var _is_transitioning: bool = false
 ## Interpolation camera for smooth transitions
 var _interp_camera: Camera3D
+## Transition progress (0 to 1)
+var _transition_progress: float = 0.0
+## Target mode during transition
+var _transition_target_mode: CameraMode
+## Starting transform for transition
+var _transition_start_transform: Transform3D
+## Starting FOV for transition
+var _transition_start_fov: float
+## Fade overlay canvas layer
+var _fade_canvas: CanvasLayer
+## Fade overlay color rect
+var _fade_rect: ColorRect
+## Current fade state
+enum FadeState { NONE, FADING_OUT, HOLDING, FADING_IN }
+var _fade_state: FadeState = FadeState.NONE
+## Fade progress (0 to 1)
+var _fade_progress: float = 0.0
+## Pending camera transition (waiting for fade out)
+var _pending_transition_to_name: String = ""
+## Whether the current transition uses fade
+var _current_transition_uses_fade: bool = false
 
 
 func _ready() -> void:
@@ -100,7 +148,18 @@ func _physics_process(delta: float) -> void:
 	# Update camera positions based on target
 	_update_third_person_camera(delta)
 	_update_first_person_camera()
+	_update_setup_camera(delta)
 	_update_seated_camera(delta)
+	
+	# Update fade transition
+	if _fade_state != FadeState.NONE:
+		_update_fade(delta)
+	
+	# Update camera interpolation:
+	# - If this transition doesn't use fade: always interpolate
+	# - If this transition uses fade: only interpolate during HOLDING phase (black screen)
+	if _is_transitioning and (not _current_transition_uses_fade or _fade_state == FadeState.HOLDING):
+		_update_transition(delta)
 
 
 func _setup_cameras() -> void:
@@ -128,6 +187,7 @@ func _setup_cameras() -> void:
 	# Create third person camera at end of spring arm
 	_third_person_camera = Camera3D.new()
 	_third_person_camera.name = "ThirdPersonCamera"
+	_third_person_camera.fov = third_person_fov
 	_third_person_camera.current = false
 	_spring_arm.add_child(_third_person_camera)
 	
@@ -137,6 +197,18 @@ func _setup_cameras() -> void:
 	_first_person_camera.fov = first_person_fov
 	_first_person_camera.current = false
 	add_child(_first_person_camera)
+	
+	# Create setup camera pivot (front-facing for session setup)
+	_setup_pivot = Node3D.new()
+	_setup_pivot.name = "SetupPivot"
+	add_child(_setup_pivot)
+	
+	# Create setup camera (faces the player)
+	_setup_camera = Camera3D.new()
+	_setup_camera.name = "SetupCamera"
+	_setup_camera.fov = setup_fov
+	_setup_camera.current = false
+	_setup_pivot.add_child(_setup_camera)
 	
 	# Create seated camera pivot (zoomed top view for focus sessions)
 	_seated_pivot = Node3D.new()
@@ -156,7 +228,27 @@ func _setup_cameras() -> void:
 	_interp_camera.current = false
 	add_child(_interp_camera)
 	
+	# Create fade overlay for transitions
+	_setup_fade_overlay()
+	
 	print("[CameraRig] Cameras initialized with SpringArm3D")
+
+
+func _setup_fade_overlay() -> void:
+	## Create a CanvasLayer with ColorRect for fade transitions
+	_fade_canvas = CanvasLayer.new()
+	_fade_canvas.name = "FadeCanvas"
+	_fade_canvas.layer = 100  # High layer to be on top of everything
+	add_child(_fade_canvas)
+	
+	_fade_rect = ColorRect.new()
+	_fade_rect.name = "FadeRect"
+	_fade_rect.color = Color(fade_color.r, fade_color.g, fade_color.b, 0.0)  # Start transparent
+	_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block input
+	_fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)  # Cover entire screen
+	_fade_canvas.add_child(_fade_rect)
+	
+	print("[CameraRig] Fade overlay initialized")
 
 
 ## Set the target node for the cameras to follow
@@ -164,10 +256,12 @@ func set_target(target: Node3D) -> void:
 	_target = target
 	print("[CameraRig] Target set to: %s" % target.name if target else "null")
 	
-	# Initialize camera positions immediately
+	# Initialize ALL camera positions immediately (delta=0 means instant snap)
 	if _target:
 		_update_third_person_camera(0)
 		_update_first_person_camera()
+		_update_setup_camera(0)
+		_update_seated_camera(0)
 
 
 ## Get current camera mode
@@ -181,6 +275,7 @@ func get_current_mode_name() -> String:
 		CameraMode.OVERVIEW: return "overview"
 		CameraMode.THIRD_PERSON: return "third_person"
 		CameraMode.FIRST_PERSON: return "first_person"
+		CameraMode.SETUP: return "setup"
 		CameraMode.SEATED: return "seated"
 	return "unknown"
 
@@ -205,6 +300,11 @@ func switch_to_first_person(instant: bool = false) -> void:
 	_switch_to_mode(CameraMode.FIRST_PERSON, instant)
 
 
+## Switch to setup camera (front-facing for session setup)
+func switch_to_setup(instant: bool = false) -> void:
+	_switch_to_mode(CameraMode.SETUP, instant)
+
+
 ## Switch to seated camera (zoomed top view for focus sessions)
 func switch_to_seated(instant: bool = false) -> void:
 	_switch_to_mode(CameraMode.SEATED, instant)
@@ -225,73 +325,250 @@ func cycle_camera() -> void:
 	_switch_to_mode(next_mode)
 
 
-## Toggle between seated (zoomed) and overview during focus session
+## Toggle between third person and overview during focus session
 func toggle_session_camera() -> void:
-	if _current_mode == CameraMode.SEATED:
+	if _current_mode == CameraMode.THIRD_PERSON:
 		_switch_to_mode(CameraMode.OVERVIEW)
 	else:
-		_switch_to_mode(CameraMode.SEATED)
+		_switch_to_mode(CameraMode.THIRD_PERSON)
 
 
 func _switch_to_mode(new_mode: CameraMode, instant: bool = false) -> void:
-	if new_mode == _current_mode and not instant:
+	if new_mode == _current_mode and not instant and not _is_transitioning:
 		return
 	
 	var old_mode := _current_mode
 	_current_mode = new_mode
 	
-	var from_camera := _get_camera_for_mode(old_mode)
 	var to_camera := _get_camera_for_mode(new_mode)
 	
-	if not from_camera or not to_camera:
+	if not to_camera:
 		push_warning("[CameraRig] Missing camera for transition")
 		return
 	
-	var from_name := _mode_to_string(old_mode)
+	# Determine the "from" camera - if transitioning, use interp camera's current position
+	var from_camera: Camera3D
+	var effective_old_mode := old_mode
+	if _is_transitioning and _interp_camera:
+		from_camera = _interp_camera
+	else:
+		from_camera = _get_camera_for_mode(old_mode)
+	
+	if not from_camera:
+		from_camera = to_camera  # Fallback
+	
+	var from_name := _mode_to_string(old_mode) if not _is_transitioning else "transition"
 	var to_name := _mode_to_string(new_mode)
 	
 	print("[CameraRig] Switching from %s to %s" % [from_name, to_name])
 	transition_started.emit(from_name, to_name)
 	
 	if instant:
+		_is_transitioning = false
 		to_camera.current = true
 		camera_changed.emit(to_name)
 		transition_finished.emit(to_name)
 	else:
-		_animate_transition(from_camera, to_camera, to_name)
+		_animate_transition(from_camera, to_camera, to_name, effective_old_mode)
 
 
-func _animate_transition(from_camera: Camera3D, to_camera: Camera3D, to_name: String) -> void:
-	## Animate smooth transition between cameras
+func _animate_transition(from_camera: Camera3D, _to_camera: Camera3D, to_name: String, from_mode: CameraMode) -> void:
+	## Animate smooth transition between cameras using dynamic interpolation
+	## This follows the target camera in real-time instead of tweening to a static position
 	
-	# Kill existing transition
-	if _transition_tween and _transition_tween.is_valid():
-		_transition_tween.kill()
+	# Force update target camera position before transition starts
+	# This ensures we're transitioning to the correct position
+	_force_update_camera_for_mode(_current_mode)
 	
 	_is_transitioning = true
+	_transition_progress = 0.0
+	_transition_target_mode = _current_mode
+	_pending_transition_to_name = to_name
+	
+	# Store starting position
+	_transition_start_transform = from_camera.global_transform
+	_transition_start_fov = from_camera.fov
 	
 	# Use interpolation camera for smooth transition
-	_interp_camera.global_transform = from_camera.global_transform
-	_interp_camera.fov = from_camera.fov
+	_interp_camera.global_transform = _transition_start_transform
+	_interp_camera.fov = _transition_start_fov
 	_interp_camera.current = true
 	
-	# Create transition tween
-	_transition_tween = create_tween()
-	_transition_tween.set_ease(transition_ease)
-	_transition_tween.set_trans(transition_trans)
-	_transition_tween.set_parallel(true)
+	# Check if this specific transition should use fade
+	_current_transition_uses_fade = use_fade_transition and _should_use_fade(from_mode, _current_mode)
 	
-	# Tween transform and FOV
-	_transition_tween.tween_property(_interp_camera, "global_transform", to_camera.global_transform, transition_duration)
-	_transition_tween.tween_property(_interp_camera, "fov", to_camera.fov, transition_duration)
+	if _current_transition_uses_fade:
+		_start_fade_out()
+		print("[CameraRig] Starting fade transition to %s" % to_name)
+	else:
+		print("[CameraRig] Starting smooth transition to %s" % to_name)
+
+
+func _should_use_fade(from_mode: CameraMode, to_mode: CameraMode) -> bool:
+	## Determine if fade should be used for this specific transition
+	## Returns false for smooth transitions (no fade needed)
 	
-	# On complete, switch to actual target camera
-	_transition_tween.chain().tween_callback(func():
-		to_camera.current = true
-		_is_transitioning = false
-		camera_changed.emit(to_name)
-		transition_finished.emit(to_name)
-	)
+	# Optionally skip fade for third person <-> overview (gameplay camera toggle)
+	if skip_fade_for_gameplay_toggle:
+		if from_mode == CameraMode.THIRD_PERSON and to_mode == CameraMode.OVERVIEW:
+			return false
+		if from_mode == CameraMode.OVERVIEW and to_mode == CameraMode.THIRD_PERSON:
+			return false
+	
+	# All other transitions use fade
+	return true
+
+
+func _force_update_camera_for_mode(mode: CameraMode) -> void:
+	## Force update a specific camera to its correct position (instant, no smoothing)
+	match mode:
+		CameraMode.THIRD_PERSON:
+			_update_third_person_camera(0)
+		CameraMode.FIRST_PERSON:
+			_update_first_person_camera()
+		CameraMode.SETUP:
+			_update_setup_camera(0)
+		CameraMode.SEATED:
+			_update_seated_camera(0)
+
+
+func _update_transition(delta: float) -> void:
+	## Update the transition interpolation every frame
+	## This allows smooth following of moving target cameras
+	
+	if not _is_transitioning:
+		return
+	
+	# Advance progress
+	_transition_progress += delta / transition_duration
+	
+	# Apply easing
+	var eased_progress := _ease_in_out_cubic(_transition_progress)
+	
+	# Get current target camera position (may have moved since transition started)
+	var target_camera := _get_camera_for_mode(_transition_target_mode)
+	if not target_camera:
+		_finish_transition()
+		return
+	
+	# Interpolate position using slerp for rotation (smoother) and lerp for position
+	var start_pos := _transition_start_transform.origin
+	var target_pos := target_camera.global_transform.origin
+	var interp_pos := start_pos.lerp(target_pos, eased_progress)
+	
+	# Slerp for rotation (handles orientation much better)
+	var start_basis := _transition_start_transform.basis.get_rotation_quaternion()
+	var target_basis := target_camera.global_transform.basis.get_rotation_quaternion()
+	var interp_rotation := start_basis.slerp(target_basis, eased_progress)
+	
+	_interp_camera.global_transform = Transform3D(Basis(interp_rotation), interp_pos)
+	
+	# Lerp FOV
+	_interp_camera.fov = lerpf(_transition_start_fov, target_camera.fov, eased_progress)
+	
+	# Check if transition complete
+	if _transition_progress >= 1.0:
+		_finish_transition()
+
+
+func _finish_transition() -> void:
+	## Complete the transition and switch to the actual target camera
+	var target_camera := _get_camera_for_mode(_transition_target_mode)
+	if target_camera:
+		# Snap to final position to avoid any micro-jumps
+		_interp_camera.global_transform = target_camera.global_transform
+		_interp_camera.fov = target_camera.fov
+		target_camera.current = true
+	
+	_is_transitioning = false
+	_transition_progress = 0.0
+	_current_transition_uses_fade = false
+	
+	var mode_name := _mode_to_string(_transition_target_mode)
+	camera_changed.emit(mode_name)
+	transition_finished.emit(mode_name)
+	print("[CameraRig] Transition complete to %s" % mode_name)
+
+
+func _ease_in_out_cubic(t: float) -> float:
+	## Cubic ease-in-out function for smooth transitions
+	t = clampf(t, 0.0, 1.0)
+	if t < 0.5:
+		return 4.0 * t * t * t
+	else:
+		return 1.0 - pow(-2.0 * t + 2.0, 3.0) / 2.0
+
+
+# =============================================================================
+# Fade Transition Functions
+# =============================================================================
+
+func _start_fade_out() -> void:
+	## Start fading the screen to black
+	_fade_state = FadeState.FADING_OUT
+	_fade_progress = 0.0
+	print("[CameraRig] Fade out started")
+
+
+func _update_fade(delta: float) -> void:
+	## Update the fade overlay based on current state
+	if not _fade_rect:
+		return
+	
+	match _fade_state:
+		FadeState.FADING_OUT:
+			_fade_progress += delta / fade_out_duration
+			var alpha := _ease_in_out_cubic(_fade_progress)
+			_fade_rect.color.a = alpha
+			
+			if _fade_progress >= 1.0:
+				_fade_rect.color.a = 1.0
+				_on_fade_out_complete()
+		
+		FadeState.HOLDING:
+			# Camera transition happens during this phase
+			# Wait for camera transition to complete before fading in
+			if not _is_transitioning:
+				_start_fade_in()
+		
+		FadeState.FADING_IN:
+			_fade_progress += delta / fade_in_duration
+			var alpha := 1.0 - _ease_in_out_cubic(_fade_progress)
+			_fade_rect.color.a = alpha
+			
+			if _fade_progress >= 1.0:
+				_fade_rect.color.a = 0.0
+				_on_fade_in_complete()
+
+
+func _on_fade_out_complete() -> void:
+	## Called when screen is fully black - do the camera switch
+	print("[CameraRig] Fade out complete, switching camera")
+	_fade_state = FadeState.HOLDING
+	
+	# Snap the camera to target immediately (no smooth interpolation needed when black)
+	var target_camera := _get_camera_for_mode(_transition_target_mode)
+	if target_camera:
+		_interp_camera.global_transform = target_camera.global_transform
+		_interp_camera.fov = target_camera.fov
+	
+	# Complete the camera transition
+	_finish_transition()
+
+
+func _start_fade_in() -> void:
+	## Start fading back from black
+	_fade_state = FadeState.FADING_IN
+	_fade_progress = 0.0
+	print("[CameraRig] Fade in started")
+
+
+func _on_fade_in_complete() -> void:
+	## Called when fade is complete
+	_fade_state = FadeState.NONE
+	_fade_progress = 0.0
+	_pending_transition_to_name = ""
+	print("[CameraRig] Fade transition complete")
 
 
 func _get_camera_for_mode(mode: CameraMode) -> Camera3D:
@@ -302,6 +579,8 @@ func _get_camera_for_mode(mode: CameraMode) -> Camera3D:
 			return _third_person_camera
 		CameraMode.FIRST_PERSON:
 			return _first_person_camera
+		CameraMode.SETUP:
+			return _setup_camera
 		CameraMode.SEATED:
 			return _seated_camera
 	return null
@@ -312,6 +591,7 @@ func _mode_to_string(mode: CameraMode) -> String:
 		CameraMode.OVERVIEW: return "overview"
 		CameraMode.THIRD_PERSON: return "third_person"
 		CameraMode.FIRST_PERSON: return "first_person"
+		CameraMode.SETUP: return "setup"
 		CameraMode.SEATED: return "seated"
 	return "unknown"
 
@@ -361,6 +641,34 @@ func _update_first_person_camera() -> void:
 	_first_person_camera.global_position = head_pos
 	# Camera looks down -Z, so add PI to face the same direction as character
 	_first_person_camera.global_rotation.y = target_rotation + PI
+
+
+func _update_setup_camera(delta: float) -> void:
+	## Update setup camera (front-facing) to look at target's face
+	if not _setup_pivot or not _setup_camera or not _target:
+		return
+	
+	var target_pos := _target.global_position
+	var target_rotation := _target.global_rotation.y
+	
+	# Get the direction the character is facing
+	var forward_dir := Vector3(sin(target_rotation), 0, cos(target_rotation))
+	
+	# Position camera in front of the character
+	var desired_pivot_pos := target_pos + forward_dir * setup_distance + Vector3.UP * setup_height
+	
+	# Smooth follow for the pivot
+	if delta > 0:
+		_setup_pivot.global_position = _setup_pivot.global_position.lerp(
+			desired_pivot_pos,
+			follow_smoothing * delta
+		)
+	else:
+		_setup_pivot.global_position = desired_pivot_pos
+	
+	# Camera looks at the character's face
+	_setup_camera.global_position = _setup_pivot.global_position
+	_setup_camera.look_at(target_pos + Vector3.UP * 1.2)  # Look at roughly face height
 
 
 func _update_seated_camera(delta: float) -> void:

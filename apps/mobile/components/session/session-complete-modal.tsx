@@ -10,13 +10,14 @@ import {
   Modal,
   View,
   Text,
-  Pressable,
   StyleSheet,
   Animated,
   Easing,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSessionStore, formatDuration } from '@/lib/session';
+import { Button } from '@/components/ui/button';
 
 interface SessionCompleteModalProps {
   visible: boolean;
@@ -94,6 +95,7 @@ function ConfettiPiece({ delay, startX }: { delay: number; startX: number }) {
 }
 
 export function SessionCompleteModal({ visible }: SessionCompleteModalProps) {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const completedSession = useSessionStore((s) => s.completedSession);
   const goHome = useSessionStore((s) => s.goHome);
@@ -121,7 +123,7 @@ export function SessionCompleteModal({ visible }: SessionCompleteModalProps) {
       transparent
       animationType="fade"
     >
-      <View style={styles.backdrop}>
+      <View style={[styles.backdrop, { paddingTop: insets.top + 16 }]}>
         {/* Confetti */}
         <View style={styles.confettiContainer}>
           {confettiPieces.map((piece) => (
@@ -135,7 +137,7 @@ export function SessionCompleteModal({ visible }: SessionCompleteModalProps) {
 
         <View style={styles.container}>
           {/* Success Header */}
-          <Text style={styles.successText}>Success! 🎉</Text>
+          <Text style={styles.successText}>Success!</Text>
 
           {/* Stats */}
           <View style={styles.statsContainer}>
@@ -163,27 +165,17 @@ export function SessionCompleteModal({ visible }: SessionCompleteModalProps) {
 
           {/* Buttons */}
           <View style={styles.buttonContainer}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                styles.goHomeButton,
-                pressed && styles.buttonPressed,
-              ]}
+            <Button
+              title="Leave Cafe"
               onPress={handleGoHome}
-            >
-              <Text style={styles.goHomeButtonText}>Go Home</Text>
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                styles.continueButton,
-                pressed && styles.buttonPressed,
-              ]}
+              variant="muted"
+              style={styles.button}
+            />
+            <Button
+              title="Start Another"
               onPress={showBreakSetup}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </Pressable>
+              style={styles.button}
+            />
           </View>
         </View>
 
@@ -199,10 +191,10 @@ export function SessionCompleteModal({ visible }: SessionCompleteModalProps) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 24,
+    paddingHorizontal: 24,
   },
   confettiContainer: {
     ...StyleSheet.absoluteFillObject,
@@ -230,9 +222,9 @@ const styles = StyleSheet.create({
     borderColor: '#DDD5C7',
   },
   successText: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#4A7C59',
+    fontSize: 36,
+    fontFamily: 'Poppins_700Bold',
+    color: '#5D4037',
     marginBottom: 24,
   },
   statsContainer: {
@@ -268,30 +260,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   button: {
-    paddingVertical: 16,
-    borderRadius: 16,
     width: '100%',
-    alignItems: 'center',
-  },
-  buttonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  goHomeButton: {
-    backgroundColor: '#8B7355',
-  },
-  goHomeButtonText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  continueButton: {
-    backgroundColor: '#4A7C59',
-  },
-  continueButtonText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '700',
   },
   floatingBean: {
     position: 'absolute',

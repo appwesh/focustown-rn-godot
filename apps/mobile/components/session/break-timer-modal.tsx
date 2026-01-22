@@ -17,6 +17,7 @@ import {
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSessionStore, formatTime } from '@/lib/session';
+import { Button } from '@/components/ui/button';
 
 // Break duration range (minutes)
 const MIN_BREAK = 1;
@@ -48,7 +49,7 @@ export function BreakTimerModal({ visible }: BreakTimerModalProps) {
         transparent
         animationType="fade"
       >
-        <View style={styles.backdrop}>
+        <View style={[styles.backdrop, { paddingTop: insets.top + 16 }]}>
           <View style={styles.container}>
             {/* Rest Icon */}
             <View style={styles.iconContainer}>
@@ -84,15 +85,11 @@ export function BreakTimerModal({ visible }: BreakTimerModalProps) {
             </Pressable>
 
             {/* Start Break Button */}
-            <Pressable
-              style={({ pressed }) => [
-                styles.mainButton,
-                pressed && styles.mainButtonPressed,
-              ]}
+            <Button
+              title="Start Break"
               onPress={startBreak}
-            >
-              <Text style={styles.mainButtonText}>Start Break</Text>
-            </Pressable>
+              style={styles.mainButton}
+            />
           </View>
         </View>
       </Modal>
@@ -100,43 +97,26 @@ export function BreakTimerModal({ visible }: BreakTimerModalProps) {
   }
 
   // Break in progress - show bottom overlay (same style as active session)
-  const { durationSeconds, remainingSeconds } = breakSession;
-  const progress = 1 - remainingSeconds / durationSeconds;
+  const { remainingSeconds } = breakSession;
 
   if (!visible) return null;
 
   return (
     <View style={[overlayStyles.container, { bottom: insets.bottom + 24 }]}>
-      <View style={overlayStyles.timerCard}>
-        {/* Break Icon */}
-        <Text style={overlayStyles.icon}>🌴</Text>
-
-        {/* Timer Display */}
-        <Text style={overlayStyles.timerText}>{formatTime(remainingSeconds)}</Text>
-
-        {/* Progress Bar */}
-        <View style={overlayStyles.progressContainer}>
-          <View style={overlayStyles.progressBackground}>
-            <View
-              style={[
-                overlayStyles.progressFill,
-                { width: `${progress * 100}%` },
-              ]}
-            />
-          </View>
+      <View style={overlayStyles.card}>
+        {/* Timer and Label */}
+        <View style={overlayStyles.timerSection}>
+          <Text style={overlayStyles.timerText}>{formatTime(remainingSeconds)}</Text>
+          <Text style={overlayStyles.label}>Break</Text>
         </View>
-      </View>
 
-      {/* End Break Button */}
-      <Pressable
-        style={({ pressed }) => [
-          overlayStyles.endButton,
-          pressed && overlayStyles.endButtonPressed,
-        ]}
-        onPress={endBreak}
-      >
-        <Text style={overlayStyles.endButtonText}>End</Text>
-      </Pressable>
+        {/* End Break Button */}
+        <Button
+          title="End Break"
+          onPress={endBreak}
+          size="small"
+        />
+      </View>
     </View>
   );
 }
@@ -145,10 +125,10 @@ export function BreakTimerModal({ visible }: BreakTimerModalProps) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 24,
+    paddingHorizontal: 24,
   },
   container: {
     backgroundColor: '#FFF8E7',
@@ -181,9 +161,8 @@ const styles = StyleSheet.create({
   },
   timerDisplay: {
     fontSize: 80,
-    fontWeight: '700',
+    fontFamily: 'Poppins_700Bold',
     color: '#5D4037',
-    fontVariant: ['tabular-nums'],
     marginTop: 20,
     marginBottom: 16,
   },
@@ -205,26 +184,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   mainButton: {
-    backgroundColor: '#4A9B8C',
-    paddingVertical: 18,
-    paddingHorizontal: 48,
-    borderRadius: 20,
     width: '100%',
-    alignItems: 'center',
-    shadowColor: '#2D6A5E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  mainButtonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  mainButtonText: {
-    color: '#FFF',
-    fontSize: 20,
-    fontWeight: '700',
   },
 });
 
@@ -232,71 +192,38 @@ const styles = StyleSheet.create({
 const overlayStyles = StyleSheet.create({
   container: {
     position: 'absolute',
-    left: 12,
-    right: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    left: 16,
+    right: 16,
     zIndex: 10,
   },
-  timerCard: {
-    flex: 1,
+  card: {
     backgroundColor: '#FFF8E7',
-    borderRadius: 16,
-    padding: 12,
+    borderRadius: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'space-between',
     shadowColor: '#5D4037',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-    borderWidth: 2,
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 3,
     borderColor: '#DDD5C7',
   },
-  icon: {
-    fontSize: 20,
+  timerSection: {
+    flexDirection: 'column',
   },
   timerText: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 32,
+    fontFamily: 'Poppins_700Bold',
     color: '#3D3D3D',
-    fontVariant: ['tabular-nums'],
   },
-  progressContainer: {
-    flex: 1,
-    marginLeft: 4,
-  },
-  progressBackground: {
-    height: 6,
-    backgroundColor: '#DDD5C7',
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#4A9B8C',
-    borderRadius: 3,
-  },
-  endButton: {
-    backgroundColor: '#8B7355',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  endButtonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  endButtonText: {
-    color: '#FFF',
-    fontSize: 14,
-    fontWeight: '700',
+  label: {
+    fontSize: 16,
+    fontFamily: 'Poppins_500Medium',
+    color: '#8B7355',
+    marginTop: -4,
   },
 });
