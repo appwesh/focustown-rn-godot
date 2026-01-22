@@ -126,6 +126,7 @@ export default function CharacterScreen() {
 
   // Switch to home_showcase scene when screen is focused
   // Uses useFocusEffect to properly handle navigation (same pattern as home.tsx)
+  // Note: Empty dependency array - scene change only happens on focus, not on character changes
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
@@ -145,17 +146,13 @@ export default function CharacterScreen() {
         console.log('[Character] Switching to home_showcase scene');
         changeScene('home_showcase');
         
-        // Wait for scene change, then apply character and hide overlay
+        // Wait for scene change, then hide overlay
+        // Character updates happen separately via updateCharacter()
         setTimeout(() => {
-          if (cancelled) return;
-          setUserCharacter(character);
-          
-          setTimeout(() => {
-            if (!cancelled) {
-              setSceneTransitioning(false);
-            }
-          }, 100);
-        }, 350);
+          if (!cancelled) {
+            setSceneTransitioning(false);
+          }
+        }, 450);
       };
       
       // Start scene change after a brief delay
@@ -165,7 +162,7 @@ export default function CharacterScreen() {
         cancelled = true;
         clearTimeout(timer);
       };
-    }, [character])
+    }, [])
   );
 
   // Update character in Godot when selections change
