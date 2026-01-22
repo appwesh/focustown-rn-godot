@@ -4,11 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://cfpm1mqq25vjg"
-valid=false
+path="res://.godot/imported/SM_HAIR_MessySpiky.fbx-363379a46c8c6fb525e1d43fca3c06ec.scn"
 
 [deps]
 
 source_file="res://assets/characters/cozylife/hairs/MessySpiky/SM_HAIR_MessySpiky.fbx"
+dest_files=["res://.godot/imported/SM_HAIR_MessySpiky.fbx-363379a46c8c6fb525e1d43fca3c06ec.scn"]
 
 [params]
 

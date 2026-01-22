@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://tg34s4tn8mip"
-path="res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-6e750eb40714f798263ac5c00aeb6d94.ctex"
+path="res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-548f67de42c1715d5b3011a388ef0be2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library_direct_export/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg"
-dest_files=["res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-6e750eb40714f798263ac5c00aeb6d94.ctex"]
+source_file="res://assets/Environments/library_direct_export/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg"
+dest_files=["res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-548f67de42c1715d5b3011a388ef0be2.ctex"]
 
 [params]
 
