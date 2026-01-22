@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_HAIR_MessyKnotBun_Pink_D.tga-6062a74e52c0b4
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

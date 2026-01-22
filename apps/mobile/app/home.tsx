@@ -1,42 +1,51 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Image,
   Pressable,
-  ScrollView,
   Dimensions,
+  ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth, groupsService } from '@/lib/firebase';
 import { useSocialStore, type LobbySlot } from '@/lib/social';
-import { BeanCounter } from '@/components/ui';
+import { BeanCounter, Button } from '@/components/ui';
 import { FriendPickerModal, InviteReceivedModal, LobbyDurationModal } from '@/components/social';
 import { DebugModal } from '@/components/debug-modal';
+import { GodotGame } from '@/components/godot-view';
+import { SceneTransition } from '@/components/scene-transition';
+import { isGodotReady, changeScene, setUserCharacter } from '@/lib/godot';
+import { PCK_URL } from '@/constants/game';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CAROUSEL_ITEM_WIDTH = SCREEN_WIDTH * 0.55;
-const CAROUSEL_ITEM_SPACING = 12;
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const CAROUSEL_ITEM_WIDTH = SCREEN_WIDTH * 0.65;
+const CAROUSEL_ITEM_SPACING = 16;
 
 // Cafe data
 const CAFES = [
   {
-    id: 'korea-cafe',
-    name: 'cafe in korea',
-    buildingId: 'cafe',
-    buildingName: 'Brooklyn Cafe',
-    image: require('@/assets/ui/koreacafe.png'),
-    locked: false,
-  },
-  {
     id: 'boston-library',
     name: 'boston library',
+    flag: '🇺🇸',
     buildingId: 'library',
     buildingName: 'Boston Library',
     image: require('@/assets/ui/bostonlibrary.png'),
+    locked: false,
+    studyingNow: 512,
+  },
+  {
+    id: 'korea-cafe',
+    name: 'lofi seoul cafe',
+    flag: '🇰🇷',
+    buildingId: 'cafe',
+    buildingName: 'Brooklyn Cafe',
+    image: require('@/assets/ui/koreacafe.png'),
     locked: true,
+    studyingNow: 1024,
   },
 ];
 
@@ -49,6 +58,7 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<NavTab>('main');
   const [showDebugModal, setShowDebugModal] = useState(false);
   const [showDurationModal, setShowDurationModal] = useState(false);
+  const [sceneTransitioning, setSceneTransitioning] = useState(true); // Start with transition visible
 
   const { user, userDoc } = useAuth();
 
@@ -79,6 +89,62 @@ export default function HomeScreen() {
     }
   }, [user, initialize]);
 
+  // Switch to home showcase scene when screen is focused
+  // Shows transition overlay while scene changes
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      
+      // Show transition overlay when screen becomes active
+      setSceneTransitioning(true);
+      
+      const attemptSceneChange = () => {
+        if (cancelled) return;
+        
+        if (!isGodotReady()) {
+          console.log('[Home] Godot not ready yet, waiting...');
+          setTimeout(attemptSceneChange, 300);
+          return;
+        }
+        
+        console.log('[Home] Switching to home_showcase scene');
+        changeScene('home_showcase');
+        
+        // Wait for scene change to complete, then set character and hide overlay
+        setTimeout(() => {
+          if (cancelled) return;
+          
+          // Set user character
+          setUserCharacter({
+            SkinTone: 4,
+            Face: 7,
+            EyeColor: 1,
+            Hair: 2,
+            HairColor: 2,
+            Top: 1,
+            Bottom: 2,
+            Shoes: 1,
+          });
+          
+          // Hide transition overlay after scene is ready
+          setTimeout(() => {
+            if (!cancelled) {
+              setSceneTransitioning(false);
+            }
+          }, 100);
+        }, 350);
+      };
+      
+      // Start scene change after a brief delay
+      const timer = setTimeout(attemptSceneChange, 200);
+      
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
+    }, [])
+  );
+
   // Auto-navigate to game when group session starts (for invited users)
   useEffect(() => {
     if (groupSessionStarted) {
@@ -91,12 +157,6 @@ export default function HomeScreen() {
   // Note: We intentionally DON'T cancel the lobby when navigating away
   // because the user might be going to the game screen for a group session.
   // The lobby will be cleaned up when the session ends or is explicitly cancelled.
-
-  // Get user's display name (first name only for UI)
-  const userName = useMemo(() => {
-    if (!userDoc?.displayName) return 'You';
-    return userDoc.displayName.split(' ')[0];
-  }, [userDoc?.displayName]);
 
   // Handle add friend slot tap
   const handleAddFriendSlot = useCallback(async () => {
@@ -139,31 +199,42 @@ export default function HomeScreen() {
     setShowingFriendPicker(true);
   }, [user, userDoc, selectedCafe, createLobby, setShowingFriendPicker]);
 
-  // Handle slot long press to cancel invite
-  const handleSlotLongPress = useCallback((index: number) => {
-    const slot = lobbySlots[index];
-    if (slot.status === 'pending' || slot.status === 'ready') {
-      cancelInvite(index);
-    }
-  }, [lobbySlots, cancelInvite]);
-
   const handleGoToCafe = useCallback(async () => {
     if (CAFES[selectedCafe].locked) return;
 
-    // If we have a lobby with ready friends, start the group session first
-    const hasReadyFriends = lobbySlots.slice(1).some(s => s.status === 'ready');
-    if (lobbyGroupId && lobbyHostId && hasReadyFriends) {
-      try {
-        await groupsService.startGroupSession(lobbyGroupId, lobbyHostId);
-        console.log('[Home] Started group session:', lobbyGroupId);
-      } catch (error) {
-        console.error('[Home] Failed to start group session:', error);
-        // Continue anyway - will be a solo session
-      }
-    }
+    // Group session logic - commented out for now
+    // const hasReadyFriends = lobbySlots.slice(1).some(s => s.status === 'ready');
+    // if (lobbyGroupId && lobbyHostId && hasReadyFriends) {
+    //   try {
+    //     await groupsService.startGroupSession(lobbyGroupId, lobbyHostId);
+    //     console.log('[Home] Started group session:', lobbyGroupId);
+    //   } catch (error) {
+    //     console.error('[Home] Failed to start group session:', error);
+    //   }
+    // }
 
     router.push('/game');
-  }, [selectedCafe, router, lobbyGroupId, lobbyHostId, lobbySlots]);
+  }, [selectedCafe, router]);
+
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const handleScrollEnd = useCallback((event: any) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / (CAROUSEL_ITEM_WIDTH + CAROUSEL_ITEM_SPACING));
+    setSelectedCafe(Math.max(0, Math.min(index, CAFES.length - 1)));
+  }, []);
+
+  const navigateCarousel = useCallback((direction: 'prev' | 'next') => {
+    const newIndex = direction === 'next' 
+      ? Math.min(selectedCafe + 1, CAFES.length - 1)
+      : Math.max(selectedCafe - 1, 0);
+    
+    setSelectedCafe(newIndex);
+    scrollViewRef.current?.scrollTo({
+      x: newIndex * (CAROUSEL_ITEM_WIDTH + CAROUSEL_ITEM_SPACING),
+      animated: true,
+    });
+  }, [selectedCafe]);
 
   const handleTabPress = (tab: NavTab) => {
     setActiveTab(tab);
@@ -173,199 +244,174 @@ export default function HomeScreen() {
     // Shop not implemented yet
   };
 
-  const renderCafeItem = (item: typeof CAFES[0], index: number) => {
-    const isSelected = selectedCafe === index;
-    
-    return (
-      <Pressable
-        key={item.id}
-        style={[
-          styles.cafeCard,
-          isSelected && styles.cafeCardSelected,
-        ]}
-        onPress={() => setSelectedCafe(index)}
-      >
-        <View style={styles.cafeImageContainer}>
-          <Image
-            source={item.image}
-            style={[styles.cafeImage, item.locked && styles.cafeImageLocked]}
-            resizeMode="contain"
-          />
-          {item.locked && (
-            <View style={styles.lockIconContainer}>
-              <Text style={styles.lockIcon}>🔒</Text>
-            </View>
-          )}
-        </View>
-        <Text style={styles.cafeName}>{item.name}</Text>
-      </Pressable>
-    );
-  };
-
-  const renderStudySlot = (slot: LobbySlot, index: number) => {
-    // First slot is always the user
-    if (index === 0) {
-      return (
-        <View key="user" style={styles.studySlot}>
-          <Text style={styles.slotName}>{userName.toLowerCase()}</Text>
-          <View style={styles.avatarContainer}>
-            <Text style={styles.avatarEmoji}>👦</Text>
-          </View>
-          <View style={styles.readyBadge}>
-            <Text style={styles.readyBadgeText}>✓</Text>
-          </View>
-        </View>
-      );
-    }
-
-    // Friend slots
-    if (slot.status === 'empty') {
-      return (
-        <Pressable
-          key={`slot-${index}`}
-          style={styles.studySlot}
-          onPress={handleAddFriendSlot}
-        >
-          <Text style={styles.addFriendText}>add friend</Text>
-          <View style={styles.addFriendIcon}>
-            <Text style={styles.plusIcon}>+</Text>
-          </View>
-        </Pressable>
-      );
-    }
-
-    // Pending or Ready friend
-    const isPending = slot.status === 'pending';
-    
-    return (
-      <View key={`slot-${index}`} style={styles.studySlot}>
-        <Text style={styles.slotName} numberOfLines={1}>
-          {slot.displayName?.split(' ')[0]?.toLowerCase() || 'friend'}
-        </Text>
-        <View style={styles.avatarContainer}>
-          <Text style={styles.avatarEmoji}>👤</Text>
-        </View>
-        <View style={[styles.statusBadge, isPending ? styles.pendingBadge : styles.readyBadge]}>
-          <Text style={styles.statusBadgeText}>
-            {isPending ? '⏳' : '✓'}
-          </Text>
-        </View>
-        {/* Remove button for pending/ready users */}
-        <Pressable
-          style={styles.removeSlotButton}
-          onPress={() => cancelInvite(index)}
-          hitSlop={8}
-        >
-          <Text style={styles.removeSlotText}>×</Text>
-        </Pressable>
-      </View>
-    );
-  };
-
-  // Check if user can start (needs at least 1 ready friend for group, or solo)
-  const hasReadyFriends = lobbySlots.slice(1).some(s => s.status === 'ready');
-  const hasAnyInvites = lobbySlots.slice(1).some(s => s.status !== 'empty');
+  // Button state - simplified (group logic commented out)
+  const currentCafe = CAFES[selectedCafe];
+  const isLocked = currentCafe.locked;
+  const buttonText = isLocked ? 'Locked' : 'Go to cafe';
+  const buttonDisabled = isLocked;
   
-  // Button state
-  const isLocked = CAFES[selectedCafe].locked;
-  const buttonText = isLocked
-    ? 'Locked'
-    : hasAnyInvites && !hasReadyFriends
-    ? 'Waiting...'
-    : 'Go to café';
-  const buttonDisabled = isLocked || (hasAnyInvites && !hasReadyFriends);
+  // Group study logic - commented out for now
+  // const hasReadyFriends = lobbySlots.slice(1).some(s => s.status === 'ready');
+  // const hasAnyInvites = lobbySlots.slice(1).some(s => s.status !== 'empty');
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <LinearGradient
+      colors={['#FEE2AA', '#F6F4E7','#F6F4E7']}
+      style={[styles.container, { paddingTop: insets.top }]}
+    >
+      {/* Plant decoration - top left */}
+      <Image
+        source={require('@/assets/ui/plant.png')}
+        style={styles.plantDecoration}
+        resizeMode="contain"
+      />
 
       {/* Header */}
       <View style={styles.header}>
+        <View style={styles.headerLeft} />
         <Pressable
-          style={({ pressed }) => [styles.headerButton, pressed && styles.headerButtonPressed]}
+          style={({ pressed }) => [styles.profilePill, pressed && styles.profilePillPressed]}
           onPress={() => router.push('/settings')}
           onLongPress={() => setShowDebugModal(true)}
           delayLongPress={500}
         >
-          <Image source={require('@/assets/ui/settings.png')} style={styles.headerIcon} />
+          {/* <Image 
+            source={require('@/assets/ui/settings.png')} 
+            style={styles.profileAvatar} 
+          /> */}
+          <BeanCounter size="small" />
         </Pressable>
-
-        <BeanCounter size="medium" />
       </View>
 
       {/* Main Content */}
       <View style={styles.content}>
         {/* Title */}
-        <Text style={styles.title}>Whats the vibe?</Text>
+        <Text style={styles.title}>Where do you{'\n'}want to go?</Text>
+
+        {/* Location Badge */}
+        <View style={styles.locationBadgeContainer}>
+          <View style={styles.locationBadge}>
+            <Text style={styles.locationFlag}>{currentCafe.flag}</Text>
+            <Text style={styles.locationName}>{currentCafe.name}</Text>
+          </View>
+        </View>
 
         {/* Cafe Carousel */}
         <View style={styles.carouselSection}>
+          {/* Left Arrow */}
+          {selectedCafe > 0 && (
+            <Pressable
+              style={[styles.carouselArrow, styles.carouselArrowLeft]}
+              onPress={() => navigateCarousel('prev')}
+            >
+              <Image 
+                source={require('@/assets/ui/chevron.png')} 
+                style={[styles.arrowIcon, styles.arrowIconLeft]} 
+              />
+            </Pressable>
+          )}
+
           <ScrollView
+            ref={scrollViewRef}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.carouselContent}
             snapToInterval={CAROUSEL_ITEM_WIDTH + CAROUSEL_ITEM_SPACING}
             decelerationRate="fast"
+            onMomentumScrollEnd={handleScrollEnd}
           >
-            {CAFES.map((cafe, index) => renderCafeItem(cafe, index))}
+            {CAFES.map((cafe, index) => {
+              const isSelected = selectedCafe === index;
+              const isCafeLocked = cafe.locked;
+              return (
+                <Pressable
+                  key={cafe.id}
+                  style={[
+                    styles.cafeCard,
+                    isSelected && styles.cafeCardSelected,
+                  ]}
+                  onPress={() => setSelectedCafe(index)}
+                >
+                  <View style={styles.cafeImageContainer}>
+                    <Image
+                      source={cafe.image}
+                      style={[styles.cafeImage, isCafeLocked && styles.cafeImageLocked]}
+                      resizeMode="contain"
+                    />
+                    {isCafeLocked && (
+                      <View style={styles.lockOverlay}>
+                        <Image source={require('@/assets/ui/lock.png')} style={styles.lockIcon} />
+                      </View>
+                    )}
+                  </View>
+                </Pressable>
+              );
+            })}
           </ScrollView>
+
+          {/* Right Arrow */}
+          {selectedCafe < CAFES.length - 1 && (
+            <Pressable
+              style={[styles.carouselArrow, styles.carouselArrowRight]}
+              onPress={() => navigateCarousel('next')}
+            >
+              <Image 
+                source={require('@/assets/ui/chevron.png')} 
+                style={styles.arrowIcon} 
+              />
+            </Pressable>
+          )}
         </View>
 
-        {/* Study Group Section */}
+        {/* Character Showcase Card */}
         <View style={styles.studyGroupCard}>
           <View style={styles.studyGroupHeader}>
-            <Text style={styles.studyGroupEmoji}>🌳</Text>
-            <Text style={styles.studyGroupTitle}>Study Group</Text>
-            {lobbyGroupId && (
-              <Pressable
-                style={({ pressed }) => [
-                  styles.cancelLobbyButton,
-                  pressed && styles.cancelLobbyButtonPressed,
-                ]}
-                onPress={cancelLobby}
-              >
-                <Text style={styles.cancelLobbyText}>Cancel</Text>
-              </Pressable>
-            )}
-          </View>
-          
-          <View style={styles.studySlots}>
-            {lobbySlots.map((slot, index) => renderStudySlot(slot, index))}
+            <Image source={require('@/assets/ui/leaf.png')} style={styles.studyGroupLeaf} />
+            <Text style={styles.studyGroupTitle}>
+              {currentCafe.studyingNow} studying now
+            </Text>
+            <Text style={styles.studyGroupSubtitle}> - join a table</Text>
           </View>
 
-          <Text style={styles.studyGroupHint}>
-            {hasAnyInvites && !hasReadyFriends
-              ? 'Waiting for friends to accept...'
-              : 'Earn bonus gems when studying with friends'}
-          </Text>
+          {/* Godot Character Showcase */}
+          <View style={styles.characterShowcase}>
+            <GodotGame style={styles.godotView} pckUrl={PCK_URL} />
+            <SceneTransition 
+              visible={sceneTransitioning} 
+              backgroundColor="#ffefd6"
+              fadeDuration={400}
+            />
+            {/* "you" label at bottom */}
+            <View style={styles.youLabelContainer}>
+              <Text style={styles.youLabel}>you</Text>
+            </View>
+          </View>
         </View>
 
         {/* Go to Cafe Button */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.goToCafeButton,
-            buttonDisabled && styles.goToCafeButtonDisabled,
-            pressed && !buttonDisabled && styles.goToCafeButtonPressed,
-          ]}
+        <Button
+          title={buttonText}
           onPress={handleGoToCafe}
           disabled={buttonDisabled}
-        >
-          <Text style={styles.goToCafeText}>{buttonText}</Text>
-        </Pressable>
+          style={styles.goToCafeButton}
+        />
       </View>
 
-      {/* Bottom Navigation */}
-      <View style={[styles.navbar, { paddingBottom: insets.bottom + 12 }]}>
-        <View style={styles.navButtonsContainer}>
+      {/* Bottom Floating Navbar */}
+      <View style={[styles.navbarContainer, { paddingBottom: insets.bottom }]}>
+        <LinearGradient
+          colors={['#F6F4E7', '#F1ECCC']}
+          style={styles.navbar}
+        >
           {/* Social Tab */}
           <Pressable
             style={({ pressed }) => [
               styles.navButton,
-              activeTab === 'social' && styles.navButtonActive,
               pressed && styles.navButtonPressed,
             ]}
             onPress={() => handleTabPress('social')}
           >
-            <Text style={styles.navButtonEmoji}>👥</Text>
+            <Image source={require('@/assets/ui/social.png')} style={styles.navIcon} />
             {pendingRequestsCount > 0 && (
               <View style={styles.navBadge}>
                 <Text style={styles.navBadgeText}>{pendingRequestsCount}</Text>
@@ -377,15 +423,11 @@ export default function HomeScreen() {
           <Pressable
             style={({ pressed }) => [
               styles.navButton,
-              activeTab === 'main' && styles.navButtonActive,
               pressed && styles.navButtonPressed,
             ]}
             onPress={() => handleTabPress('main')}
           >
-            <Image
-              source={require('@/assets/ui/home.png')}
-              style={styles.navButtonIcon}
-            />
+            <Image source={require('@/assets/ui/home.png')} style={styles.navIcon} />
           </Pressable>
 
           {/* Shop Tab */}
@@ -397,9 +439,9 @@ export default function HomeScreen() {
             ]}
             onPress={() => handleTabPress('shop')}
           >
-            <Text style={styles.navButtonEmoji}>🛒</Text>
+            <Image source={require('@/assets/ui/store.png')} style={styles.navIcon} />
           </Pressable>
-        </View>
+        </LinearGradient>
       </View>
 
       {/* Lobby Duration Modal - shown when creating a group lobby */}
@@ -427,62 +469,123 @@ export default function HomeScreen() {
         visible={showDebugModal}
         onClose={() => setShowDebugModal(false)}
       />
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5EDD8',
+  },
+  plantDecoration: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: SCREEN_WIDTH * 0.35,
+    height: SCREEN_HEIGHT * 0.25,
+    zIndex: 10,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 4,
+    zIndex: 5,
   },
-  headerButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: '#FFF8E7',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  headerLeft: {
+    flex: 1,
   },
-  headerButtonPressed: {
-    opacity: 0.8,
-    transform: [{ scale: 0.95 }],
+  profilePill: {
+    // flexDirection: 'row',
+    // alignItems: 'center',
+    // backgroundColor: '#F6F4E7',
+    // borderRadius: 30,
+    // paddingLeft: 6,
+    // paddingRight: 6,
+    // paddingVertical: 4,
+    // gap: 4,
   },
-  headerIcon: {
-    width: 28,
-    height: 28,
+  profilePillPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+  profileAvatar: {
+    width: 36,
+    height: 36,
+    padding: 2,
+    borderRadius: 20,
   },
   content: {
     flex: 1,
-    justifyContent: 'space-between',
-    paddingBottom: 16,
+    paddingBottom: 120,
   },
   title: {
-    fontSize: 28,
+    fontSize: 36,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#8F6930',
+    textAlign: 'right',
+    lineHeight: 42,
+    marginTop: 8,
+    paddingRight: 30,
+  },
+  locationBadgeContainer: {
+    alignItems: 'center',
+    marginTop: 18,
+  },
+  locationBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    opacity: 0.8,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 24,
+    shadowColor: '#8B7355',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  locationFlag: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  locationName: {
+    fontSize: 16,
     fontWeight: '700',
-    color: '#6B5344',
-    textAlign: 'center',
-    marginTop: 4,
-    fontFamily: 'ui-rounded',
+    color: '#000000',
   },
   carouselSection: {
     flex: 1,
     justifyContent: 'center',
+    position: 'relative',
+  },
+  carouselArrow: {
+    position: 'absolute',
+    top: '50%',
+    marginTop: -24,
+    zIndex: 10,
+    padding: 8,
+  },
+  carouselArrowLeft: {
+    left: 14,
+  },
+  carouselArrowRight: {
+    right: 14,
+  },
+  arrowIcon: {
+    width: 48,
+    height: 48,
+    resizeMode: 'contain',
+  },
+  arrowIconLeft: {
+    transform: [{ scaleX: -1 }],
   },
   carouselContent: {
     paddingHorizontal: (SCREEN_WIDTH - CAROUSEL_ITEM_WIDTH) / 2,
+    paddingBottom: 18,
     gap: CAROUSEL_ITEM_SPACING,
     alignItems: 'center',
   },
@@ -490,7 +593,6 @@ const styles = StyleSheet.create({
     width: CAROUSEL_ITEM_WIDTH,
     alignItems: 'center',
     padding: 8,
-    borderRadius: 16,
   },
   cafeCardSelected: {
     transform: [{ scale: 1.02 }],
@@ -509,242 +611,122 @@ const styles = StyleSheet.create({
   cafeImageLocked: {
     opacity: 0.4,
   },
-  lockIconContainer: {
+  lockOverlay: {
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
   },
   lockIcon: {
-    fontSize: 40,
-  },
-  cafeName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#5D4037',
-    marginTop: 4,
-    fontFamily: 'ui-rounded',
+    width: 48,
+    height: 48,
+    resizeMode: 'contain',
   },
   studyGroupCard: {
     marginHorizontal: 20,
-    backgroundColor: '#FFF8E7',
-    borderRadius: 20,
-    padding: 14,
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    backgroundColor: '#FFEFD6',
+    borderRadius: 24,
+    borderWidth: 3,
+    borderBottomWidth: 8,
+    borderColor: '#83715B',
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   studyGroupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
   },
-  studyGroupEmoji: {
-    fontSize: 24,
-    marginRight: 8,
+  studyGroupLeaf: {
+    width: 24,
+    height: 24,
+    marginTop: 4,
+    marginRight: 2,
   },
   studyGroupTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-    color: '#5D4037',
-    fontFamily: 'ui-rounded',
-    flex: 1,
+    color: '#822B00',
   },
-  cancelLobbyButton: {
-    backgroundColor: '#E57373',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+  studyGroupSubtitle: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#A89880',
   },
-  cancelLobbyButtonPressed: {
-    opacity: 0.8,
-  },
-  cancelLobbyText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FFF',
-  },
-  studySlots: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  studySlot: {
-    flex: 1,
-    backgroundColor: '#F5EDD8',
-    borderRadius: 12,
-    padding: 8,
+  youLabelContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     alignItems: 'center',
+  },
+  youLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4A4A4A',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  characterShowcase: {
+    height: 150,
+    backgroundColor: '#FFEFD6',
+    overflow: 'hidden',
     position: 'relative',
   },
-  slotName: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#5D4037',
-    marginBottom: 4,
-  },
-  avatarContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
-    backgroundColor: '#E8DBC4',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarEmoji: {
-    fontSize: 26,
-  },
-  addFriendText: {
-    fontSize: 10,
-    color: '#8B7355',
-    marginBottom: 4,
-  },
-  addFriendIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
-    backgroundColor: '#E8DBC4',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#D4C4A8',
-    borderStyle: 'dashed',
-  },
-  plusIcon: {
-    fontSize: 28,
-    color: '#A89880',
-    fontWeight: '300',
-  },
-  statusBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pendingBadge: {
-    backgroundColor: '#FFE4B5',
-  },
-  readyBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#90BE6D',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  readyBadgeText: {
-    fontSize: 12,
-    color: '#FFF',
-  },
-  statusBadgeText: {
-    fontSize: 10,
-  },
-  removeSlotButton: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: '#E57373',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  removeSlotText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFF',
-    marginTop: -1,
-  },
-  studyGroupHint: {
-    fontSize: 12,
-    color: '#8B7355',
-    marginTop: 12,
-    textAlign: 'left',
+  godotView: {
+    flex: 1,
+    backgroundColor: '#FCEFC5',
   },
   goToCafeButton: {
     marginHorizontal: 20,
-    marginTop: 16,
-    backgroundColor: '#90BE6D',
-    paddingVertical: 16,
-    borderRadius: 30,
+    marginTop: 12,
+  },
+  navbarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     alignItems: 'center',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  goToCafeButtonDisabled: {
-    backgroundColor: '#C4C4C4',
-  },
-  goToCafeButtonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  goToCafeText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    fontFamily: 'ui-rounded',
   },
   navbar: {
-    backgroundColor: '#EDE4CF',
-    paddingTop: 16,
-    paddingHorizontal: 24,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  navButtonsContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
+    backgroundColor: '#FFEFD6',
+    borderRadius: 100,
+    borderWidth: 2,
+    borderColor: '#83715B' + '40',
+    paddingVertical: 4,
+    paddingHorizontal: 24,
+    gap: 32,
   },
   navButton: {
-    width: 64,
-    height: 52,
+    width: 60,
+    height: 60,
     borderRadius: 16,
-    backgroundColor: '#F5E9B8',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
     position: 'relative',
   },
   navButtonActive: {
-    backgroundColor: '#F5E9B8',
+    backgroundColor: '#78ADFD',
+    borderRadius: 16,
   },
   navButtonPressed: {
-    opacity: 0.85,
+    opacity: 0.7,
     transform: [{ scale: 0.95 }],
   },
-  navButtonIcon: {
-    width: 36,
-    height: 36,
-  },
-  navButtonEmoji: {
-    fontSize: 28,
+  navIcon: {
+    width: 48,
+    height: 48,
+    resizeMode: 'contain',
   },
   navBadge: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: 0,
+    right: 0,
     backgroundColor: '#FF6B6B',
     borderRadius: 10,
     minWidth: 20,

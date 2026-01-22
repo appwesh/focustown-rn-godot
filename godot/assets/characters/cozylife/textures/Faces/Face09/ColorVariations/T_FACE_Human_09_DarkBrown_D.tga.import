@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_FACE_Human_09_DarkBrown_D.tga-85e5bdf95df7c
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

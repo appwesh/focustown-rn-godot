@@ -14,7 +14,7 @@ signal session_triggered(spot_position: Vector3)
 ## Character spawn configuration
 @export_group("Character Setup")
 @export var character_preset_name: String = "librarian"
-@export var character_spawn_position: Vector3 = Vector3.ZERO
+@export var character_spawn_position: Vector3 = Vector3(0, 0, 11)
 @export var character_spawn_rotation: float = 0.0  # Y rotation in degrees
 
 @export_group("Animation")
@@ -621,6 +621,7 @@ func _apply_npc_preset_deferred(npc: CinematicCharacter, preset_name: String) ->
 		push_warning("[LibraryCinematic] ModularCharacter not ready for: %s" % preset_name)
 		return
 	
+	# apply_preset_dict/randomize_appearance auto-shows the character
 	var data := CharacterPresets.get_preset(preset_name)
 	if not data.is_empty():
 		npc.apply_preset_dict(data, preset_name.capitalize())
@@ -839,7 +840,7 @@ func _apply_character_preset(preset_name: String) -> void:
 	for i in range(5):
 		await get_tree().process_frame
 	
-	# Try to get preset from CharacterPresets
+	# apply_preset_dict/randomize_appearance auto-shows the character
 	var preset_data := CharacterPresets.get_preset(preset_name)
 	if not preset_data.is_empty():
 		_character.apply_preset_dict(preset_data, preset_name.capitalize())
@@ -869,18 +870,25 @@ func spawn_characters(configs: Array[Dictionary]) -> Array[CinematicCharacter]:
 		
 		add_child(char_instance)
 		
-		# Apply preset on next frame
-		var preset_copy := preset  # Capture for lambda
-		char_instance.ready.connect(func():
-			await get_tree().process_frame
-			var data := CharacterPresets.get_preset(preset_copy)
-			if not data.is_empty():
-				char_instance.apply_preset_dict(data, preset_copy.capitalize())
-		)
+		# Apply preset deferred and show after
+		_apply_spawned_character_preset(char_instance, preset)
 		
 		characters.append(char_instance)
 	
 	return characters
+
+
+func _apply_spawned_character_preset(char_instance: CinematicCharacter, preset_name: String) -> void:
+	## Apply preset to a spawned character (auto-shows after)
+	for i in range(5):
+		await get_tree().process_frame
+	
+	# apply_preset_dict/randomize_appearance auto-shows the character
+	var data := CharacterPresets.get_preset(preset_name)
+	if not data.is_empty():
+		char_instance.apply_preset_dict(data, preset_name.capitalize())
+	else:
+		char_instance.randomize_appearance()
 
 
 ## Get the main character

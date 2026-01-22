@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_HAIR_BabyBangs_Pink_D.tga-81cc16b15f04bd5de
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

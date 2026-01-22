@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_BODY_Human_02_D.tga-ad725ae8a10c3d61f93e253
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_HAIR_HimeCut_Holo_D.tga-c21e7496010457e2405
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

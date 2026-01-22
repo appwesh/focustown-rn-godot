@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_HAIR_Afro_D.tga-b38e9e0097f7a1a0f68f1c00972
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

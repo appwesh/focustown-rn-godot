@@ -32,7 +32,7 @@ const SIZES = {
     fontSize: 14,
     paddingH: 10,
     paddingV: 6,
-    gap: 4,
+    gap: 2,
     borderRadius: 14,
   },
   medium: {
@@ -61,32 +61,47 @@ export function BeanCounter({ size = 'medium', style, onPress }: BeanCounterProp
   const content = (
     <View
       style={[
-        styles.container,
-        {
-          paddingHorizontal: sizeConfig.paddingH,
-          paddingVertical: sizeConfig.paddingV,
-          gap: sizeConfig.gap,
-          borderRadius: sizeConfig.borderRadius,
-        },
+        styles.outerContainer,
+        { borderRadius: sizeConfig.borderRadius },
         style,
       ]}
     >
-      <Image
-        source={beanIcon}
-        style={{
-          width: sizeConfig.iconSize,
-          height: sizeConfig.iconSize,
-          resizeMode: 'contain',
-        }}
-      />
-      <Text
+      {/* Inner shadow overlay - top/left darker edge */}
+      <View
         style={[
-          styles.text,
-          { fontSize: sizeConfig.fontSize },
+          styles.innerShadow,
+          { borderRadius: sizeConfig.borderRadius },
+        ]}
+        pointerEvents="none"
+      />
+      <View
+        style={[
+          styles.container,
+          {
+            paddingHorizontal: sizeConfig.paddingH,
+            paddingVertical: sizeConfig.paddingV,
+            gap: sizeConfig.gap,
+            borderRadius: sizeConfig.borderRadius,
+          },
         ]}
       >
-        {beans.toLocaleString()}
-      </Text>
+        <Image
+          source={beanIcon}
+          style={{
+            width: sizeConfig.iconSize,
+            height: sizeConfig.iconSize,
+            resizeMode: 'contain',
+          }}
+        />
+        <Text
+          style={[
+            styles.text,
+            { fontSize: sizeConfig.fontSize },
+          ]}
+        >
+          {beans.toLocaleString()}
+        </Text>
+      </View>
     </View>
   );
 
@@ -105,18 +120,26 @@ export function BeanCounter({ size = 'medium', style, onPress }: BeanCounterProp
 }
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    position: 'relative',
+    overflow: 'hidden',
+  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF8E7',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: '#F6F4E7',
+  },
+  innerShadow: {
+    ...StyleSheet.absoluteFillObject,
+    borderWidth: 2,
+    borderTopColor: 'rgba(0, 0, 0, 0.12)',
+    borderLeftColor: 'rgba(0, 0, 0, 0.08)',
+    borderRightColor: 'rgba(255, 255, 255, 0.3)',
+    borderBottomColor: 'rgba(255, 255, 255, 0.3)',
+    zIndex: 10,
   },
   text: {
-    fontWeight: '700',
+    fontWeight: '900',
     color: '#5D4037',
   },
   pressed: {
@@ -124,4 +147,3 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
 });
-

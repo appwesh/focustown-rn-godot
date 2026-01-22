@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_HAIR_LongWavy_Yellow_D.tga-8337b1385e804bee
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

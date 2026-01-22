@@ -6,12 +6,12 @@ type="CompressedTexture2D"
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/bptc_ldr=0
-compress/lossy_quality=0.5
+compress/lossy_quality=0.7
 compress/normal_map=2
 detect_3d/compress_to=0
 roughness/mode=1
 process/premult_alpha=0
 process/size_limit=2048
-mipmaps/generate=true
+mipmaps/generate=false

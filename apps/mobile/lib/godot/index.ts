@@ -18,6 +18,7 @@
 
 // Types
 export type { JoystickInput, SessionResult, SpotLocation } from './types';
+export type { CharacterSkin } from './bridge';
 
 // Bridge functions (for direct use)
 export {
@@ -56,6 +57,15 @@ export {
   registerBreakEndedCallback,
   startGodotBreak,
   endGodotBreak,
+  // Scene management
+  changeScene,
+  resetSceneTracking,
+  restartGodot,
+  forceSceneChange,
+  getPendingScene,
+  // Character customization
+  setUserCharacter,
+  refreshShowcaseNpcs,
 } from './bridge';
 
 // React hooks (recommended)

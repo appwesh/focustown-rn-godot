@@ -16,6 +16,7 @@ signal preset_applied(preset_name: String)
 signal movement_started(target: Vector3)
 signal movement_finished
 signal arrived_at_destination
+signal appearance_ready  ## Emitted when character appearance is fully loaded
 
 ## Character preset to apply on ready (can be set in editor or code)
 @export var initial_preset: CharacterPreset
@@ -76,19 +77,23 @@ func _setup_character() -> void:
 	
 	# Connect to animation changes
 	_modular_character.animation_changed.connect(_on_animation_changed)
+	
+	# Forward appearance_ready signal
+	_modular_character.appearance_ready.connect(func(): appearance_ready.emit())
 
 
-## Apply a character preset (skin)
+## Apply a character preset (skin) - automatically shows character after
 func apply_preset(preset: CharacterPreset) -> void:
 	if not _modular_character:
 		push_error("[CinematicCharacter] No modular character to apply preset to")
 		return
 	
 	_modular_character.load_from_dict(preset.to_dict())
+	_modular_character.show_character()
 	preset_applied.emit(preset.preset_name)
 
 
-## Apply preset from a dictionary (JSON-like data)
+## Apply preset from a dictionary (JSON-like data) - automatically shows character after
 func apply_preset_dict(data: Dictionary, name: String = "Custom") -> void:
 	var preset := CharacterPreset.create_from_dict(data, name)
 	apply_preset(preset)
@@ -238,16 +243,49 @@ func save_appearance() -> Dictionary:
 	return {}
 
 
-## Randomize character appearance
+## Randomize character appearance - automatically shows character after
 func randomize_appearance() -> void:
 	if _modular_character:
 		_modular_character.randomize_appearance()
+		_modular_character.show_character()
 
 
 ## Change a specific part
 func set_part(category: String, index: int) -> void:
 	if _modular_character:
 		_modular_character.set_part(category, index)
+
+
+## Check if character appearance is fully loaded and visible
+func is_appearance_ready() -> bool:
+	if _modular_character:
+		return _modular_character.is_appearance_ready()
+	return false
+
+
+## Show the character (call after appearance customization is complete)
+func show_character() -> void:
+	if _modular_character:
+		_modular_character.show_character()
+
+
+## Hide the character
+func hide_character() -> void:
+	if _modular_character:
+		_modular_character.hide_character()
+
+
+## Manually set character visibility
+func set_character_visible(is_visible: bool) -> void:
+	if _modular_character:
+		_modular_character.set_character_visible(is_visible)
+
+
+## Set color modulation (for darkening effect)
+## Use Color(0.7, 0.7, 0.7) for subtle darkening, Color(0.5, 0.5, 0.5) for more
+func set_color_modulate(color: Color) -> void:
+	if _modular_character:
+		_modular_character.set_color_modulate(color)
 
 
 func _find_animation_name(search_name: String) -> String:

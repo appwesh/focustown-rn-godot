@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_HAIR_StarBuns_White_D.tga-9540f6c7e606c0328
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

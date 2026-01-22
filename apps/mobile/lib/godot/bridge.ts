@@ -179,6 +179,68 @@ export function isGodotReady(): boolean {
 }
 
 /**
+ * Restart Godot engine completely
+ * Destroys the current instance and clears scene tracking
+ * The GodotGame component will reinitialize on next render
+ */
+export function restartGodot(): void {
+  console.log('[Bridge] Restarting Godot engine...');
+  
+  // Reset scene tracking
+  currentSceneName = null;
+  
+  // Destroy the instance on Godot thread
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (instance) {
+      RTNGodot.destroyInstance();
+      console.log('[Bridge] Godot instance destroyed');
+    }
+  });
+}
+
+/**
+ * Force scene change by restarting if needed
+ * This is more aggressive than changeScene() - use when regular scene change fails
+ */
+export function forceSceneChange(sceneName: 'library' | 'home_showcase'): void {
+  const scenePath = SCENE_PATHS[sceneName];
+  if (!scenePath) {
+    console.error('[Bridge] Unknown scene:', sceneName);
+    return;
+  }
+
+  console.log('[Bridge] Force changing to scene:', sceneName);
+  
+  // Reset scene tracking
+  currentSceneName = null;
+  
+  // Check if Godot is ready
+  if (!RTNGodot.getInstance()) {
+    console.log('[Bridge] No Godot instance, will use scene on init');
+    // Store the desired scene for when Godot initializes
+    pendingScene = sceneName;
+    return;
+  }
+
+  // Try the regular pause/change/resume approach
+  changeScene(sceneName);
+}
+
+// Store pending scene for when Godot initializes
+let pendingScene: 'library' | 'home_showcase' | null = null;
+
+/**
+ * Get and clear the pending scene (call after Godot init)
+ */
+export function getPendingScene(): 'library' | 'home_showcase' | null {
+  const scene = pendingScene;
+  pendingScene = null;
+  return scene;
+}
+
+/**
  * Register session callback with Godot
  * When session completes, fires callback that writes to Firebase
  */
@@ -779,6 +841,165 @@ export function removeRemotePlayer(odId: string): void {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (rnBridge as any).remove_remote_player(odId);
       console.log('[Bridge] Removed remote player:', odId);
+    }
+  });
+}
+
+// ============================================================================
+// Scene Management
+// ============================================================================
+
+// Scene paths mapping (must match project structure)
+const SCENE_PATHS: Record<string, string> = {
+  library: 'res://scenes/main/library_cinematic_with_character.tscn',
+  home_showcase: 'res://scenes/main/home_character_showcase.tscn',
+};
+
+// Track current scene to avoid unnecessary changes
+let currentSceneName: string | null = null;
+
+/**
+ * Change the current Godot scene safely
+ * Pauses the engine, changes scene, then resumes to avoid crashes during layout
+ * @param sceneName - 'library' or 'home_showcase'
+ */
+export function changeScene(sceneName: 'library' | 'home_showcase'): void {
+  const scenePath = SCENE_PATHS[sceneName];
+  if (!scenePath) {
+    console.error('[Bridge] Unknown scene:', sceneName);
+    return;
+  }
+
+  // Skip if already on this scene
+  if (currentSceneName === sceneName) {
+    console.log('[Bridge] Already on scene:', sceneName);
+    return;
+  }
+
+  console.log('[Bridge] Changing scene to:', sceneName);
+
+  // Step 1: Pause the engine to get a stable state
+  RTNGodot.pause();
+
+  // Step 2: Wait for pause to take effect, then change scene
+  setTimeout(() => {
+    runOnGodotThread(() => {
+      'worklet';
+      const instance = RTNGodot.getInstance();
+      if (!instance) {
+        console.error('[Bridge] No Godot instance for scene change');
+        return;
+      }
+
+      const Godot = RTNGodot.API();
+      const engine = Godot.Engine;
+      const sceneTree = engine.get_main_loop();
+
+      if (!sceneTree) {
+        console.error('[Bridge] No scene tree available');
+        return;
+      }
+
+      // Call change_scene_to_file directly on SceneTree
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const error = (sceneTree as any).change_scene_to_file(scenePath);
+      if (error !== 0) {
+        console.error('[Bridge] Failed to change scene, error:', error);
+      } else {
+        console.log('[Bridge] Scene change initiated:', sceneName);
+      }
+    });
+
+    // Step 3: Wait for scene change to process, then resume
+    setTimeout(() => {
+      RTNGodot.resume();
+      currentSceneName = sceneName;
+      console.log('[Bridge] Scene change complete, resumed:', sceneName);
+    }, 150);
+  }, 50);
+}
+
+/**
+ * Reset scene tracking (call when Godot is restarted)
+ */
+export function resetSceneTracking(): void {
+  currentSceneName = null;
+}
+
+// ============================================================================
+// Character Customization (for homescreen showcase)
+// ============================================================================
+
+/** Character appearance data matching Godot's CharacterPresets format */
+export interface CharacterSkin {
+  SkinTone?: number;
+  Face?: number;
+  EyeColor?: number;
+  Hair?: number;
+  HairColor?: number;
+  Top?: number;
+  Bottom?: number;
+  Shoes?: number;
+  Hat?: number;
+  Glasses?: number;
+}
+
+/**
+ * Set the user's character appearance in Godot
+ * Used by the homescreen character showcase
+ * @param skinData - Character appearance data
+ */
+export function setUserCharacter(skinData: CharacterSkin): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // Pass individual values - Godot will reconstruct the dictionary
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).set_user_character_values(
+        skinData.SkinTone ?? -1,
+        skinData.Face ?? -1,
+        skinData.EyeColor ?? -1,
+        skinData.Hair ?? -1,
+        skinData.HairColor ?? -1,
+        skinData.Top ?? -1,
+        skinData.Bottom ?? -1,
+        skinData.Shoes ?? -1,
+        skinData.Hat ?? -1,
+        skinData.Glasses ?? -1
+      );
+      console.log('[Bridge] Set user character');
+    }
+  });
+}
+
+/**
+ * Refresh the NPC characters in the homescreen showcase
+ */
+export function refreshShowcaseNpcs(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).refresh_showcase_npcs();
+      console.log('[Bridge] Refreshed showcase NPCs');
     }
   });
 }

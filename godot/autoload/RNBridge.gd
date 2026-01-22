@@ -88,6 +88,13 @@ func _create_version_label() -> void:
 	_version_label.position = Vector2(20, 150)
 	
 	canvas.add_child(_version_label)
+	_version_label.visible = false  # Hidden by default
+
+
+## Toggle version label visibility (for screenshots, recordings, etc.)
+func set_version_label_visible(visible: bool) -> void:
+	if _version_label:
+		_version_label.visible = visible
 
 
 ## Register callback from RN for session completion (following born docs pattern)
@@ -495,3 +502,112 @@ func remove_remote_player(od_id: String) -> void:
 		MultiplayerManager.remove_remote_player(od_id)
 	else:
 		push_warning("[RNBridge] MultiplayerManager not available")
+
+
+# =============================================================================
+# Homescreen Character Showcase
+# =============================================================================
+
+## Reference to the HomeCharacterShowcase scene (if active)
+var _home_showcase: HomeCharacterShowcase = null
+
+## Stored user character data (persisted until applied)
+var _user_character_data: Dictionary = {}
+
+## Scene paths for switching
+const SCENE_PATHS := {
+	"library": "res://scenes/main/library_cinematic_with_character.tscn",
+	"home_showcase": "res://scenes/main/home_character_showcase.tscn",
+}
+
+
+## Change the current scene
+## scene_name can be: "library", "home_showcase"
+func change_scene(scene_name: String) -> void:
+	var scene_path: String = SCENE_PATHS.get(scene_name, "")
+	if scene_path.is_empty():
+		push_error("[RNBridge] Unknown scene: %s" % scene_name)
+		return
+	
+	print("[RNBridge] Changing scene to: %s" % scene_name)
+	
+	# Clear cached references
+	_home_showcase = null
+	_camera_rig = null
+	
+	# Defer scene change to next frame to avoid crashes
+	call_deferred("_do_change_scene", scene_path)
+
+
+func _do_change_scene(scene_path: String) -> void:
+	## Actually perform the scene change (called deferred)
+	var error := get_tree().change_scene_to_file(scene_path)
+	if error != OK:
+		push_error("[RNBridge] Failed to change scene: %s (error %d)" % [scene_path, error])
+
+
+## Register the HomeCharacterShowcase scene with RNBridge
+## Called automatically by HomeCharacterShowcase._ready()
+func register_home_showcase(showcase: HomeCharacterShowcase) -> void:
+	_home_showcase = showcase
+	print("[RNBridge] HomeCharacterShowcase registered")
+	
+	# Apply any pending user character data
+	if not _user_character_data.is_empty():
+		_home_showcase.set_user_character(_user_character_data)
+
+
+## Set the user's character appearance from React Native
+## skin_data should be a Dictionary with keys like: SkinTone, Face, EyeColor, Hair, etc.
+## See CharacterPresets for the expected format
+func set_user_character(skin_data: Dictionary) -> void:
+	_user_character_data = skin_data
+	print("[RNBridge] User character data received: ", skin_data.keys())
+	
+	if _home_showcase:
+		_home_showcase.set_user_character(skin_data)
+	else:
+		print("[RNBridge] HomeCharacterShowcase not active, data stored for later")
+
+
+## Set user character from individual values (called from RN since Dictionary.create doesn't work)
+## Values of -1 are ignored (not set)
+func set_user_character_values(
+	skin_tone: int, face: int, eye_color: int, hair: int, hair_color: int,
+	top: int, bottom: int, shoes: int, hat: int, glasses: int
+) -> void:
+	var skin_data := {}
+	if skin_tone >= 0: skin_data["SkinTone"] = skin_tone
+	if face >= 0: skin_data["Face"] = face
+	if eye_color >= 0: skin_data["EyeColor"] = eye_color
+	if hair >= 0: skin_data["Hair"] = hair
+	if hair_color >= 0: skin_data["HairColor"] = hair_color
+	if top >= 0: skin_data["Top"] = top
+	if bottom >= 0: skin_data["Bottom"] = bottom
+	if shoes >= 0: skin_data["Shoes"] = shoes
+	if hat >= 0: skin_data["Hat"] = hat
+	if glasses >= 0: skin_data["Glasses"] = glasses
+	
+	set_user_character(skin_data)
+
+
+## Get the current user character data
+func get_user_character() -> Dictionary:
+	return _user_character_data
+
+
+## Refresh the NPC characters with new random appearances
+func refresh_showcase_npcs() -> void:
+	if _home_showcase:
+		_home_showcase.refresh_npcs()
+		print("[RNBridge] Showcase NPCs refreshed")
+	else:
+		push_warning("[RNBridge] HomeCharacterShowcase not active")
+
+
+## Set the user character's animation
+func set_user_character_animation(anim_name: String) -> void:
+	if _home_showcase:
+		_home_showcase.set_user_animation(anim_name)
+	else:
+		push_warning("[RNBridge] HomeCharacterShowcase not active")

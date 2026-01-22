@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_MISC_Hat_TopHat_Black_D.tga-9a2f4f00f1a806e
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

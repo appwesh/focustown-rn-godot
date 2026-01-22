@@ -3,21 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://be310a8pwr8f8"
-path.s3tc="res://.godot/imported/T_BOTTOM_Underwear_White_D.tga-ecf3b7edaa98d4204d1eb660b9fc7afb.s3tc.ctex"
-path.etc2="res://.godot/imported/T_BOTTOM_Underwear_White_D.tga-ecf3b7edaa98d4204d1eb660b9fc7afb.etc2.ctex"
+path="res://.godot/imported/T_BOTTOM_Underwear_White_D.tga-629082a4342b60f58e24d4e30ce62a0a.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/cozylife/clothes/Textures/T_BOTTOM_Underwear_White_D.tga"
-dest_files=["res://.godot/imported/T_BOTTOM_Underwear_White_D.tga-ecf3b7edaa98d4204d1eb660b9fc7afb.s3tc.ctex", "res://.godot/imported/T_BOTTOM_Underwear_White_D.tga-ecf3b7edaa98d4204d1eb660b9fc7afb.etc2.ctex"]
+source_file="res://assets/characters/cozylife/clothes/textures/T_BOTTOM_Underwear_White_D.tga"
+dest_files=["res://.godot/imported/T_BOTTOM_Underwear_White_D.tga-629082a4342b60f58e24d4e30ce62a0a.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -25,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

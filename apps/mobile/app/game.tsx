@@ -3,6 +3,7 @@ import { StyleSheet, View, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GodotGame } from '@/components/godot-view';
+import { SceneTransition } from '@/components/scene-transition';
 import { DebugModal } from '@/components/debug-modal';
 import { BeanCounter } from '@/components/ui';
 import {
@@ -24,6 +25,7 @@ import {
   isGodotReady,
   switchToOverviewCamera,
   switchToSeatedCamera,
+  changeScene,
   type SpotLocation,
 } from '@/lib/godot';
 import {
@@ -46,6 +48,7 @@ export default function GameScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [debugVisible, setDebugVisible] = useState(false);
+  const [sceneTransitioning, setSceneTransitioning] = useState(true); // Start with transition visible
 
   const { recordSession, userDoc, user } = useAuth();
 
@@ -80,6 +83,43 @@ export default function GameScreen() {
     const cleanup = initialize();
     return cleanup;
   }, [initialize]);
+
+  // Switch to library scene when game screen mounts
+  // Shows transition overlay while scene changes
+  useEffect(() => {
+    let cancelled = false;
+    
+    // Show transition overlay
+    setSceneTransitioning(true);
+    
+    const attemptSceneChange = () => {
+      if (cancelled) return;
+      
+      if (!isGodotReady()) {
+        console.log('[Game] Godot not ready yet, waiting...');
+        setTimeout(attemptSceneChange, 300);
+        return;
+      }
+      
+      console.log('[Game] Switching to library scene');
+      changeScene('library');
+      
+      // Hide transition after scene loads
+      setTimeout(() => {
+        if (!cancelled) {
+          setSceneTransitioning(false);
+        }
+      }, 400);
+    };
+    
+    // Start scene change after brief delay
+    const timer = setTimeout(attemptSceneChange, 200);
+    
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, []);
 
   // Set user in store when auth changes
   useEffect(() => {
@@ -362,6 +402,13 @@ export default function GameScreen() {
   return (
     <View style={styles.container}>
       <GodotGame style={styles.game} pckUrl={PCK_URL} />
+      
+      {/* Scene transition overlay - covers Godot during scene changes */}
+      <SceneTransition 
+        visible={sceneTransitioning} 
+        backgroundColor="#ffefd6"
+        fadeDuration={400}
+      />
 
       {/* Active Session Overlay - shows timer during focus session */}
       <ActiveSessionOverlay

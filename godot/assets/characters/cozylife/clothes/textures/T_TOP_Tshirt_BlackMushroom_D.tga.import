@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_TOP_Tshirt_BlackMushroom_D.tga-80272036b862
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -6,6 +6,7 @@ class_name ModularCharacter
 
 signal part_changed(category: String, index: int)
 signal animation_changed(animation_name: String)
+signal appearance_ready  ## Emitted when character appearance is fully loaded and ready to display
 
 const BASE_CHARACTER_PATH := "res://assets/characters/cozylife/SKM_Human.fbx"
 const ANIMATIONS_PATH := "res://assets/characters/cozylife/animations/"
@@ -215,17 +216,26 @@ var _current_selections: Dictionary = {}
 var _all_animations: Array[String] = []
 var _equipped_parts: Dictionary = {}  # category -> Node3D instance
 var _head_attachment: BoneAttachment3D
+var _is_appearance_ready: bool = false  ## Whether appearance has been fully loaded
+var _color_modulate: Color = Color.WHITE  ## Color modulation for darkening effect
 
 
 func _ready() -> void:
 	_current_selections = default_selections.duplicate()
 	_load_base_character()
+	
+	# Hide character until appearance is explicitly shown
+	# The parent (e.g., HomeCharacterShowcase) should call show_character() after applying appearance
+	if _base_model:
+		_base_model.visible = false
+	
 	_setup_materials()
 	_setup_bone_attachments()
 	_load_all_animations()
 	_apply_textures()
 	_apply_all_parts()
 	call_deferred("_play_default_animation")
+	# Don't auto-show - let parent control visibility after customization
 
 
 func _load_base_character() -> void:
@@ -712,6 +722,72 @@ func get_available_categories() -> Array[String]:
 	var categories: Array[String] = []
 	categories.assign(PARTS.keys())
 	return categories
+
+
+## Appearance Ready State
+
+func show_character() -> void:
+	## Call this after appearance customization is complete to show the character
+	_is_appearance_ready = true
+	if _base_model:
+		_base_model.visible = true
+	appearance_ready.emit()
+
+
+func hide_character() -> void:
+	## Hide the character (e.g., during appearance changes)
+	if _base_model:
+		_base_model.visible = false
+
+
+func is_appearance_ready() -> bool:
+	return _is_appearance_ready
+
+
+func set_character_visible(is_visible: bool) -> void:
+	if _base_model:
+		_base_model.visible = is_visible
+
+
+## Set color modulation (for darkening back row characters)
+## Uses a multiply shader to properly darken textured materials
+func set_color_modulate(color: Color) -> void:
+	_color_modulate = color
+	_apply_color_modulate()
+
+
+func _apply_color_modulate() -> void:
+	## Apply color modulation using next_pass shader for proper darkening
+	var darken_shader: Shader = preload("res://shaders/darken_overlay.gdshader")
+	var darken_material: ShaderMaterial = null
+	
+	# Only create the darken material if we're actually darkening (not white)
+	if _color_modulate != Color.WHITE:
+		darken_material = ShaderMaterial.new()
+		darken_material.shader = darken_shader
+		darken_material.set_shader_parameter("darken_color", _color_modulate)
+	
+	# Apply to body material
+	if _body_material:
+		_body_material.next_pass = darken_material
+	
+	# Apply to face materials - use albedo_color directly since faces have alpha transparency
+	# (next_pass doesn't work well with transparent materials)
+	if _mesh_instance:
+		var surface_count := _mesh_instance.get_surface_override_material_count()
+		for i in range(1, surface_count):
+			var mat := _mesh_instance.get_surface_override_material(i) as StandardMaterial3D
+			if mat:
+				# Face materials start as white, so multiply works correctly
+				mat.albedo_color = _color_modulate
+	
+	# Apply to equipped parts
+	for category in _equipped_parts:
+		var part := _equipped_parts[category] as MeshInstance3D
+		if part and part.material_override:
+			var mat := part.material_override as StandardMaterial3D
+			if mat:
+				mat.next_pass = darken_material
 
 
 ## Save/Load
