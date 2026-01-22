@@ -68,15 +68,28 @@ const PARTS = {
 
 type PartCategory = keyof typeof PARTS;
 
-// UI category tabs
+// UI category tabs - simplified to 3 main categories
 const UI_CATEGORIES = {
-  'Skin tone': ['SkinTone', 'Face', 'EyeColor'] as PartCategory[],
-  'Hair': ['Hair', 'HairColor'] as PartCategory[],
-  'Clothes': ['Top', 'Bottom', 'Shoes'] as PartCategory[],
-  'Accessories': ['Hat', 'Glasses'] as PartCategory[],
+  'Skin tone': ['SkinTone'] as PartCategory[],
+  'Face': ['Face'] as PartCategory[],
+  'Hair': ['Hair'] as PartCategory[],
 };
 
 type UICategory = keyof typeof UI_CATEGORIES;
+
+// Skin tone color swatches (matching the UI design)
+const SKIN_TONE_COLORS = [
+  '#F5F5F5', // 1 - Light/White
+  '#C9B896', // 2 - Tan/Olive
+  '#8DB255', // 3 - Green
+  '#D4847C', // 4 - Salmon/Pink
+  '#A4C45B', // 5 - Lime Green
+  '#E8D98A', // 6 - Light Yellow
+  '#9B8EBF', // 7 - Purple/Lavender
+  '#E8D98A', // 8 - Light Yellow
+  '#B5C94A', // 9 - Yellow-Green
+  '#C2A67C', // 10 - Tan
+];
 
 // Display names for subcategories
 const PART_DISPLAY_NAMES: Record<PartCategory, string> = {
@@ -115,9 +128,6 @@ export default function CharacterScreen() {
   const [activeSubcategory, setActiveSubcategory] = useState<PartCategory>('SkinTone');
   const [character, setCharacter] = useState<CharacterSkin>(DEFAULT_CHARACTER);
 
-  // Get subcategories for current tab
-  const subcategories = useMemo(() => UI_CATEGORIES[activeTab], [activeTab]);
-  
   // Get options for current subcategory
   const options = useMemo(() => PARTS[activeSubcategory], [activeSubcategory]);
   
@@ -185,13 +195,8 @@ export default function CharacterScreen() {
   // Handle tab change
   const handleTabChange = useCallback((tab: UICategory) => {
     setActiveTab(tab);
-    // Auto-select first subcategory of the tab
+    // Set subcategory to the tab's category
     setActiveSubcategory(UI_CATEGORIES[tab][0]);
-  }, []);
-
-  // Handle subcategory change
-  const handleSubcategoryChange = useCallback((subcategory: PartCategory) => {
-    setActiveSubcategory(subcategory);
   }, []);
 
   // Handle option selection
@@ -251,34 +256,6 @@ export default function CharacterScreen() {
           ))}
         </View>
 
-        {/* Subcategory Pills (if more than one) */}
-        {subcategories.length > 1 && (
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            style={styles.subcategoryContainer}
-            contentContainerStyle={styles.subcategoryContent}
-          >
-            {subcategories.map((sub) => (
-              <Pressable
-                key={sub}
-                style={[
-                  styles.subcategoryPill,
-                  activeSubcategory === sub && styles.subcategoryPillActive,
-                ]}
-                onPress={() => handleSubcategoryChange(sub)}
-              >
-                <Text style={[
-                  styles.subcategoryText,
-                  activeSubcategory === sub && styles.subcategoryTextActive,
-                ]}>
-                  {PART_DISPLAY_NAMES[sub]}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-        )}
-
         {/* Options Grid */}
         <ScrollView 
           style={styles.optionsScroll}
@@ -292,44 +269,72 @@ export default function CharacterScreen() {
               activeSubcategory === 'Hair' ? HAIR_IMAGES[index] :
               null;
             
+            // Check if this is a skin tone (colored circle)
+            const isSkinTone = activeSubcategory === 'SkinTone';
+            const skinToneColor = isSkinTone ? SKIN_TONE_COLORS[index] : null;
+            const isSelected = currentSelection === index;
+            
             return (
               <Pressable
                 key={`${activeSubcategory}-${index}`}
-                style={[
-                  styles.optionItem,
-                  currentSelection === index && styles.optionItemSelected,
-                ]}
+                style={styles.optionItem}
                 onPress={() => handleOptionSelect(index)}
               >
                 <View style={[
                   styles.optionPreview,
-                  currentSelection === index && styles.optionPreviewSelected,
+                  isSelected && !isSkinTone && styles.optionPreviewSelected,
                 ]}>
-                  {previewImage ? (
-                    <Image 
-                      source={previewImage} 
-                      style={styles.optionImage}
-                      resizeMode="cover"
-                    />
+                  {isSkinTone && skinToneColor ? (
+                    // Skin tone colored circle
+                    <View style={[styles.skinToneCircle, { backgroundColor: skinToneColor }]}>
+                      {isSelected && (
+                        <View style={styles.checkmarkBadge}>
+                          <Text style={styles.checkmarkText}>✓</Text>
+                        </View>
+                      )}
+                    </View>
+                  ) : previewImage ? (
+                    // Face or Hair image
+                    <>
+                      <Image 
+                        source={previewImage} 
+                        style={styles.optionImage}
+                        resizeMode="cover"
+                      />
+                      {isSelected && (
+                        <View style={styles.checkmarkBadge}>
+                          <Text style={styles.checkmarkText}>✓</Text>
+                        </View>
+                      )}
+                    </>
                   ) : (
+                    // Placeholder for items without images
                     <View style={styles.optionPlaceholder}>
                       <Text style={styles.optionPlaceholderText}>
-                        {index === 0 && activeSubcategory !== 'SkinTone' && activeSubcategory !== 'Face' && activeSubcategory !== 'EyeColor' 
+                        {index === 0 && activeSubcategory !== 'SkinTone' && activeSubcategory !== 'Face' 
                           ? '∅' 
                           : (index + 1).toString()}
                       </Text>
+                      {isSelected && (
+                        <View style={styles.checkmarkBadge}>
+                          <Text style={styles.checkmarkText}>✓</Text>
+                        </View>
+                      )}
                     </View>
                   )}
                 </View>
-                <Text 
-                  style={[
-                    styles.optionLabel,
-                    currentSelection === index && styles.optionLabelSelected,
-                  ]}
-                  numberOfLines={1}
-                >
-                  {option}
-                </Text>
+                {/* Only show label for non-skin-tone items */}
+                {!isSkinTone && (
+                  <Text 
+                    style={[
+                      styles.optionLabel,
+                      isSelected && styles.optionLabelSelected,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {option}
+                  </Text>
+                )}
               </Pressable>
             );
           })}
@@ -433,35 +438,6 @@ const styles = StyleSheet.create({
   tabTextActive: {
     color: '#5A4A3A',
   },
-  subcategoryContainer: {
-    maxHeight: 44,
-    marginBottom: 8,
-  },
-  subcategoryContent: {
-    paddingHorizontal: 16,
-    gap: 8,
-    alignItems: 'center',
-  },
-  subcategoryPill: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: '#F5EFE6',
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  subcategoryPillActive: {
-    backgroundColor: '#FFF',
-    borderColor: '#D4C4B0',
-  },
-  subcategoryText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#A89880',
-  },
-  subcategoryTextActive: {
-    color: '#5A4A3A',
-  },
   optionsScroll: {
     flex: 1,
   },
@@ -524,6 +500,33 @@ const styles = StyleSheet.create({
   optionLabelSelected: {
     color: '#5A4A3A',
     fontWeight: '600',
+  },
+  // Skin tone colored circle styles
+  skinToneCircle: {
+    width: '90%',
+    height: '90%',
+    borderRadius: 999,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Checkmark badge for selected items
+  checkmarkBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#5DADE2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  checkmarkText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
 
