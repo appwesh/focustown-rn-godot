@@ -1,0 +1,197 @@
+[gd_scene load_steps=9 format=3 uid="uid://k26qukf0klsf"]
+
+[ext_resource type="Script" uid="uid://biq48er78dlov" path="res://scripts/ui/character_gui.gd" id="1_gui"]
+[ext_resource type="Script" uid="uid://bwoca6noaa87b" path="res://scripts/characters/modular_character.gd" id="2_char"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_coin"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.831, 0.914, 0.969, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.961, 0.902, 0.827, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_unselected"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.91, 0.863, 0.784, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_selected"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.831, 0.769, 0.659, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scroll_bg"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="CharacterGUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gui")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.831, 0.914, 0.969, 1)
+
+[node name="CoinCounter" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 52.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_coin")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CoinCounter"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CoinIcon" type="ColorRect" parent="CoinCounter/HBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(1, 0.843, 0, 1)
+
+[node name="CoinLabel" type="Label" parent="CoinCounter/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 18
+text = "576"
+
+[node name="MainLayout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainCharacterView" type="SubViewportContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.55
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="MainLayout/MainCharacterView"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1080, 1053)
+render_target_update_mode = 4
+
+[node name="CharacterScene" type="Node3D" parent="MainLayout/MainCharacterView/SubViewport"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="MainLayout/MainCharacterView/SubViewport/CharacterScene"]
+environment = SubResource("Environment_main")
+
+[node name="Camera3D" type="Camera3D" parent="MainLayout/MainCharacterView/SubViewport/CharacterScene"]
+transform = Transform3D(1, 0, 0, 0, 0.97, 0.25, 0, -0.25, 0.97, 0, 1.2, 2.8)
+fov = 35.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="MainLayout/MainCharacterView/SubViewport/CharacterScene"]
+transform = Transform3D(0.866, -0.25, 0.433, 0, 0.866, 0.5, -0.5, -0.433, 0.75, 2, 3, 2)
+light_energy = 1.3
+shadow_enabled = true
+
+[node name="FillLight" type="DirectionalLight3D" parent="MainLayout/MainCharacterView/SubViewport/CharacterScene"]
+transform = Transform3D(0.866, 0.25, -0.433, 0, 0.866, 0.5, 0.5, -0.433, 0.75, -2, 2, -1)
+light_energy = 0.4
+
+[node name="MainCharacter" type="Node3D" parent="MainLayout/MainCharacterView/SubViewport/CharacterScene"]
+unique_name_in_owner = true
+script = ExtResource("2_char")
+
+[node name="BottomPanel" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.45
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainLayout/BottomPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TabBar" type="HBoxContainer" parent="MainLayout/BottomPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="SkinToneTab" type="Button" parent="MainLayout/BottomPanel/VBoxContainer/TabBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_tab_unselected")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tab_unselected")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tab_unselected")
+text = "Skin tone"
+flat = true
+
+[node name="HairTab1" type="Button" parent="MainLayout/BottomPanel/VBoxContainer/TabBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_tab_unselected")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tab_unselected")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tab_unselected")
+text = "Hair"
+flat = true
+
+[node name="HairTab2" type="Button" parent="MainLayout/BottomPanel/VBoxContainer/TabBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_tab_selected")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tab_selected")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tab_selected")
+text = "Hair"
+flat = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainLayout/BottomPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_scroll_bg")
+horizontal_scroll_mode = 0
+
+[node name="HairGrid" type="GridContainer" parent="MainLayout/BottomPanel/VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 3
