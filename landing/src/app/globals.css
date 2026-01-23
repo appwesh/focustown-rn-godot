@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F5E8D0;
+  --foreground: #3D352A;
+  --accent-blue: #78ADFD;
+  --border-brown: #83715B;
+  --card-bg: #FFEFD6;
+  --text-gray: #9C9C9C;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-poppins);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  min-height: 20vh;
+}
+
+/* Main header card - cream/beige with brown border */
+.card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  border: 4px solid var(--border-brown);
+  position: relative;
+  box-shadow: inset 0 -12px 0 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Input field with subtle border */
+.input-field {
+  background: white;
+  border: 3px solid var(--border-brown);
+  border-radius: 50px;
+  position: relative;
+  box-shadow: inset 0 -8px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+.input-field input {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-weight: 500;
+  font-size: 16px;
+  color: #000;
+  padding: 0 16px;
+}
+
+.input-field input::placeholder {
+  color: #9C9C9C;
+}
+
+/* Blue button with 3D depth effect */
+.btn-primary {
+  background: var(--accent-blue);
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 4px 0 0 #608ACA;
+  color: white;
+  font-weight: 700;
+  padding: 14px 28px;
+  font-size: 16px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 0 #608ACA;
+}
+
+.btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #608ACA;
+}
+
+/* Blue underline decoration */
+.underline-blue {
+  position: relative;
+  display: inline;
+  color: #3D352A;
+  background-image: linear-gradient(var(--accent-blue), var(--accent-blue));
+  background-size: 100% 0.3em;
+  background-repeat: no-repeat;
+  background-position: 0 95%;
+}

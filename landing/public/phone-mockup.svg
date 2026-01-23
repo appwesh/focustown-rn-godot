@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 640" width="320" height="640">
+  <!-- Phone frame -->
+  <rect x="10" y="10" width="300" height="620" rx="40" fill="#1a1a1a"/>
+  <rect x="20" y="50" width="280" height="540" rx="5" fill="#4a6741"/>
+
+  <!-- Status bar -->
+  <rect x="20" y="50" width="280" height="30" fill="#3a5735"/>
+  <text x="35" y="70" fill="#fff" font-family="Arial, sans-serif" font-size="12">23:00</text>
+
+  <!-- Notch -->
+  <rect x="100" y="15" width="120" height="25" rx="12" fill="#000"/>
+
+  <!-- Screen content -->
+  <text x="35" y="100" fill="#fff" font-family="Arial, sans-serif" font-size="18" font-weight="600">Devotional</text>
+
+  <!-- Trees background -->
+  <polygon points="80,280 120,200 160,280" fill="#2d5a27"/>
+  <polygon points="140,280 180,180 220,280" fill="#3a7a32"/>
+  <polygon points="200,280 240,210 280,280" fill="#2d5a27"/>
+
+  <!-- Character -->
+  <ellipse cx="160" cy="250" rx="35" ry="30" fill="#FFF8DC"/>
+  <circle cx="150" cy="245" r="4" fill="#333"/>
+  <circle cx="170" cy="245" r="4" fill="#333"/>
+  <ellipse cx="160" cy="260" rx="8" ry="5" fill="#FFB6C1"/>
+
+  <!-- Bible in hands -->
+  <rect x="140" y="275" width="40" height="30" rx="3" fill="#8B4513"/>
+  <text x="148" y="295" fill="#D4AF37" font-family="Arial, serif" font-size="8">HOLY</text>
+  <text x="147" y="303" fill="#D4AF37" font-family="Arial, serif" font-size="6">BIBLE</text>
+
+  <!-- Bottom card -->
+  <rect x="35" y="400" width="250" height="180" rx="15" fill="#fff"/>
+  <text x="50" y="430" fill="#333" font-family="Arial, sans-serif" font-size="14" font-weight="600">Light in Darkness</text>
+  <rect x="50" y="440" width="100" height="4" rx="2" fill="#FFA500"/>
+
+  <!-- Verse card -->
+  <rect x="50" y="460" width="220" height="100" rx="10" fill="#87CEEB"/>
+  <text x="65" y="485" fill="#333" font-family="Arial, sans-serif" font-size="12" font-weight="600">John 1:5</text>
+  <text x="65" y="500" fill="#555" font-family="Arial, sans-serif" font-size="10">Verse of the day</text>
+  <text x="65" y="525" fill="#333" font-family="Arial, sans-serif" font-size="9">The light shines in the darkness,</text>
+  <text x="65" y="540" fill="#333" font-family="Arial, sans-serif" font-size="9">and the darkness has not overcome it.</text>
+</svg>
