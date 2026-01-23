@@ -5,18 +5,25 @@
  * Displays session stats with confetti celebration.
  */
 
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import {
   Modal,
   View,
   Text,
   Pressable,
   StyleSheet,
-  Animated,
-  Easing,
   Image,
   Dimensions,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  withSequence,
+  Easing,
+  runOnJS,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSessionStore, formatDuration } from '@/lib/session';
@@ -25,6 +32,7 @@ import * as Bridge from '@/lib/godot/bridge';
 
 const beanIcon = require('@/assets/ui/bean.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CONFETTI_COLORS = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#DDA0DD'];
 
 interface SessionCompleteModalProps {
   visible: boolean;
@@ -32,71 +40,52 @@ interface SessionCompleteModalProps {
 }
 
 // Confetti piece component
-function ConfettiPiece({ delay, startX }: { delay: number; startX: number }) {
-  const translateY = useRef(new Animated.Value(-50)).current;
-  const translateX = useRef(new Animated.Value(0)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
+function ConfettiPiece({ delay, startX, color, driftX, rotateAmount }: { 
+  delay: number; 
+  startX: number;
+  color: string;
+  driftX: number;
+  rotateAmount: number;
+}) {
+  const translateY = useSharedValue(-50);
+  const translateX = useSharedValue(0);
+  const rotate = useSharedValue(0);
+  const opacity = useSharedValue(1);
 
   useEffect(() => {
-    const animate = () => {
-      translateY.setValue(-50);
-      translateX.setValue(0);
-      rotate.setValue(0);
-      opacity.setValue(1);
+    translateY.value = withDelay(
+      delay,
+      withTiming(400, { duration: 2500, easing: Easing.out(Easing.quad) })
+    );
+    translateX.value = withDelay(
+      delay,
+      withTiming(driftX, { duration: 2500, easing: Easing.linear })
+    );
+    rotate.value = withDelay(
+      delay,
+      withTiming(rotateAmount, { duration: 2500, easing: Easing.linear })
+    );
+    opacity.value = withDelay(
+      delay + 1500,
+      withTiming(0, { duration: 1000, easing: Easing.linear })
+    );
+  }, [delay, driftX, rotateAmount]);
 
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: 400,
-          duration: 2500,
-          delay,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateX, {
-          toValue: (Math.random() - 0.5) * 100,
-          duration: 2500,
-          delay,
-          useNativeDriver: true,
-        }),
-        Animated.timing(rotate, {
-          toValue: Math.random() * 4 - 2,
-          duration: 2500,
-          delay,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 2500,
-          delay: delay + 1500,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    };
-
-    animate();
-  }, [delay, translateY, translateX, rotate, opacity]);
-
-  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#DDA0DD'];
-  const color = colors[Math.floor(Math.random() * colors.length)];
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: translateY.value },
+      { translateX: translateX.value },
+      { rotate: `${rotate.value * 360}deg` },
+    ],
+    opacity: opacity.value,
+  }));
 
   return (
     <Animated.View
       style={[
         styles.confetti,
-        {
-          left: startX,
-          backgroundColor: color,
-          transform: [
-            { translateY },
-            { translateX },
-            { rotate: rotate.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['0deg', '360deg'],
-            })},
-          ],
-          opacity,
-        },
+        { left: startX, backgroundColor: color },
+        animatedStyle,
       ]}
     />
   );
@@ -113,56 +102,53 @@ interface FlyingBeanProps {
 }
 
 function FlyingBean({ delay, startX, startY, targetX, targetY, onComplete }: FlyingBeanProps) {
-  const translateX = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(0);
+
+  const deltaX = targetX - startX;
+  const deltaY = targetY - startY;
 
   useEffect(() => {
-    const deltaX = targetX - startX;
-    const deltaY = targetY - startY;
+    // Fade in after delay
+    opacity.value = withDelay(
+      delay,
+      withSequence(
+        // Fade in quickly
+        withTiming(1, { duration: 50 }),
+        // Stay visible during flight
+        withDelay(700, withTiming(0, { duration: 100 }))
+      )
+    );
 
-    // Appear, fly to target, then fade out
-    Animated.sequence([
-      // Initial delay
-      Animated.delay(delay),
-      // Fade in quickly
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      // Fly to target with curve
-      Animated.parallel([
-        Animated.timing(translateX, {
-          toValue: deltaX,
-          duration: 700,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateY, {
-          toValue: deltaY,
-          duration: 700,
-          easing: Easing.in(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scale, {
-          toValue: 0.5,
-          duration: 700,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-      ]),
-      // Fade out at destination
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      onComplete?.();
-    });
-  }, [delay, startX, startY, targetX, targetY, translateX, translateY, scale, opacity, onComplete]);
+    // Fly to target after delay + fade in
+    translateX.value = withDelay(
+      delay + 50,
+      withTiming(deltaX, { duration: 700, easing: Easing.out(Easing.cubic) })
+    );
+    translateY.value = withDelay(
+      delay + 50,
+      withTiming(deltaY, { duration: 700, easing: Easing.in(Easing.quad) })
+    );
+    scale.value = withDelay(
+      delay + 50,
+      withTiming(0.5, { duration: 700, easing: Easing.out(Easing.quad) }, (finished) => {
+        if (finished && onComplete) {
+          runOnJS(onComplete)();
+        }
+      })
+    );
+  }, [delay, deltaX, deltaY, onComplete]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
+    opacity: opacity.value,
+  }));
 
   return (
     <Animated.View
@@ -171,13 +157,8 @@ function FlyingBean({ delay, startX, startY, targetX, targetY, onComplete }: Fly
         {
           left: startX - 16, // Center the bean (half of 32px width)
           top: startY - 16,  // Center the bean (half of 32px height)
-          transform: [
-            { translateX },
-            { translateY },
-            { scale },
-          ],
-          opacity,
         },
+        animatedStyle,
       ]}
     >
       <Image source={beanIcon} style={styles.flyingBeanIcon} />
@@ -228,16 +209,20 @@ export function SessionCompleteModal({ visible, onTripleTap }: SessionCompleteMo
     }
   }, [visible, completedSession, measureBeanIcon]);
 
+  // Pre-compute random values for confetti pieces (memoized to prevent re-generation on re-renders)
+  const confettiPieces = useMemo(() => 
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      delay: Math.random() * 500,
+      startX: Math.random() * 300,
+      color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+      driftX: (Math.random() - 0.5) * 100,
+      rotateAmount: Math.random() * 4 - 2,
+    })), [visible]); // Regenerate when modal visibility changes
+
   if (!completedSession) return null;
 
   const { durationSeconds, coinsEarned, totalTimeToday } = completedSession;
-
-  // Generate confetti pieces
-  const confettiPieces = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    delay: Math.random() * 500,
-    startX: Math.random() * 300,
-  }));
 
   // Generate flying beans - start from measured bean icon position
   const numFlyingBeans = Math.min(coinsEarned, 10); // Cap at 10 beans for performance
@@ -270,6 +255,9 @@ export function SessionCompleteModal({ visible, onTripleTap }: SessionCompleteMo
               key={piece.id}
               delay={piece.delay}
               startX={piece.startX}
+              color={piece.color}
+              driftX={piece.driftX}
+              rotateAmount={piece.rotateAmount}
             />
           ))}
         </View>

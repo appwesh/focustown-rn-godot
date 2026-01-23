@@ -84,7 +84,7 @@ export function BreakTimerModal({ visible, onTripleTap }: BreakTimerModalProps) 
                 title="Start another session"
                 onPress={startAnotherSession}
                 variant="muted"
-                size="small"
+                size="medium"
               />
 
               {/* Start Break Button */}

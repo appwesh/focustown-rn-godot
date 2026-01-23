@@ -6,7 +6,7 @@
  * Animates smoothly when count changes.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import {
   Easing,
 } from 'react-native';
 import { useAuth } from '@/lib/firebase';
+import { useLayoutStore } from '@/lib/ui';
 
 const beanIcon = require('@/assets/ui/bean.png');
 
@@ -121,6 +122,29 @@ export function BeanCounter({ size = 'medium', style, onPress, incrementDelay = 
   const { userDoc } = useAuth();
   const beans = userDoc?.totalCoins ?? 0;
   const sizeConfig = SIZES[size];
+  const setBeanIconPosition = useLayoutStore((s) => s.setBeanIconPosition);
+  const beanIconRef = useRef<View>(null);
+  
+  // Measure and report bean icon position for flying beans animation
+  const measureBeanIcon = useCallback(() => {
+    if (beanIconRef.current) {
+      beanIconRef.current.measureInWindow((x, y, width, height) => {
+        if (x !== undefined && y !== undefined) {
+          setBeanIconPosition({ x, y, width, height });
+        }
+      });
+    }
+  }, [setBeanIconPosition]);
+  
+  // Measure on mount and clear on unmount
+  useEffect(() => {
+    // Small delay to ensure layout is complete
+    const timer = setTimeout(measureBeanIcon, 100);
+    return () => {
+      clearTimeout(timer);
+      setBeanIconPosition(null);
+    };
+  }, [measureBeanIcon, setBeanIconPosition]);
   
   // Animated count that smoothly transitions (with optional delay for flying beans sync)
   const displayBeans = useAnimatedCount(beans, 600, incrementDelay);
@@ -196,14 +220,16 @@ export function BeanCounter({ size = 'medium', style, onPress, incrementDelay = 
           },
         ]}
       >
-        <Image
-          source={beanIcon}
-          style={{
-            width: sizeConfig.iconSize,
-            height: sizeConfig.iconSize,
-            resizeMode: 'contain',
-          }}
-        />
+        <View ref={beanIconRef} onLayout={measureBeanIcon} collapsable={false}>
+          <Image
+            source={beanIcon}
+            style={{
+              width: sizeConfig.iconSize,
+              height: sizeConfig.iconSize,
+              resizeMode: 'contain',
+            }}
+          />
+        </View>
         <Text
           style={[
             styles.text,

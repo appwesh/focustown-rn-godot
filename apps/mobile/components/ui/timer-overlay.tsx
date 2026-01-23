@@ -4,9 +4,10 @@
  * Reusable timer card that displays at the bottom of the screen.
  * Used for both focus sessions and breaks.
  * In landscape mode, positions on the right side only.
+ * Animates in smoothly from the bottom.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +15,12 @@ import {
   StyleSheet,
   useWindowDimensions,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from './button';
 
@@ -40,8 +47,28 @@ export function TimerOverlay({
 }: TimerOverlayProps) {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-
   const isLandscape = width > height;
+
+  // Animation: slide up from bottom on appear
+  const translateY = useSharedValue(150);
+
+  useEffect(() => {
+    if (visible) {
+      // Reset to off-screen, then animate in
+      translateY.value = 150;
+      const timer = setTimeout(() => {
+        translateY.value = withTiming(0, {
+          duration: 300,
+          easing: Easing.out(Easing.cubic),
+        });
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   if (!visible) return null;
 
@@ -51,7 +78,7 @@ export function TimerOverlay({
     : { left: 16, right: 16, bottom: insets.bottom + 24 };
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <Animated.View style={[styles.container, containerStyle, animatedStyle]}>
       <Pressable style={styles.card} onPress={onTripleTap}>
         {/* Timer and Label */}
         <View style={styles.timerSection}>
@@ -67,7 +94,7 @@ export function TimerOverlay({
           variant={buttonVariant}
         />
       </Pressable>
-    </View>
+    </Animated.View>
   );
 }
 
