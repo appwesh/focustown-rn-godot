@@ -9,6 +9,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://focustown.com"),
   title: "FocusTown - Study with Friends",
   description: "Focusing feels better with friends. Study live with homies around the world.",
   icons: {
