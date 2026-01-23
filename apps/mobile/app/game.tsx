@@ -449,7 +449,7 @@ export default function GameScreen() {
       {/* Scene transition overlay - covers Godot during scene changes */}
       <SceneTransition 
         visible={sceneTransitioning} 
-        backgroundColor="#ffefd6"
+        backgroundColor="#000000"
         fadeDuration={400}
       />
 

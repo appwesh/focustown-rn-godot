@@ -21,7 +21,7 @@ import { FriendPickerModal, InviteReceivedModal, LobbyDurationModal } from '@/co
 import { DebugModal } from '@/components/debug-modal';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
-import { isGodotReady, changeScene, setUserCharacter } from '@/lib/godot';
+import { isGodotReady, changeScene, setUserCharacter, setSelectedCafe as setGodotCafe } from '@/lib/godot';
 import { PCK_URL } from '@/constants/game';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -38,18 +38,18 @@ const CAFES = [
     buildingName: 'Boston Library',
     image: require('@/assets/ui/cafeLibrary.png'),
     locked: false,
-    studyingNow: 512,
+    studyingNow: 2507, // most people here
   },
-  {
-    id: 'korea-cafe',
-    name: 'lofi seoul cafe',
-    flag: '🇰🇷',
-    buildingId: 'cafe',
-    buildingName: 'Brooklyn Cafe',
-    image: require('@/assets/ui/cafeCabin.png'),
-    locked: false,
-    studyingNow: 1024,
-  },
+  // {
+  //   id: 'korea-cafe',
+  //   name: 'lofi seoul cafe',
+  //   flag: '🇰🇷',
+  //   buildingId: 'cafe',
+  //   buildingName: 'Brooklyn Cafe',
+  //   image: require('@/assets/ui/cafeCabin.png'),
+  //   locked: false,
+  //   studyingNow: 1500,
+  // },
   {
     id: 'europe-cafe',
     name: 'stockholm cafe',
@@ -58,27 +58,27 @@ const CAFES = [
     buildingName: 'Stockholm Café',
     image: require('@/assets/ui/cafeEurope.png'),
     locked: false,
-    studyingNow: 847,
+    studyingNow: 802,
   },
   {
     id: 'ghibli-cafe',
-    name: 'forest hideaway',
-    flag: '🇯🇵',
+    name: 'ghibli café',
+    flag: '🌳',
     buildingId: 'ghibli',
     buildingName: 'Forest Hideaway',
     image: require('@/assets/ui/cafeGhibli.png'),
     locked: false,
-    studyingNow: 631,
+    studyingNow: 423,
   },
   {
     id: 'japan-cafe',
-    name: 'japanese cafe',
+    name: 'tokyo café',
     flag: '🇯🇵',
     buildingId: 'japan',
     buildingName: 'Japanese Cafe',
     image: require('@/assets/ui/cafeJapan.png'),
     locked: false,
-    studyingNow: 1024,
+    studyingNow: 137,
   },
 ];
 
@@ -258,6 +258,7 @@ export default function HomeScreen() {
   // because the user might be going to the game screen for a group session.
   // The lobby will be cleaned up when the session ends or is explicitly cancelled.
 
+
   // Handle add friend slot tap
   const handleAddFriendSlot = useCallback(async () => {
     // If no lobby exists, show duration modal first
@@ -317,13 +318,26 @@ export default function HomeScreen() {
   }, [selectedCafe, router]);
 
   const scrollViewRef = useRef<ScrollView>(null);
+  const lastGodotCafeRef = useRef<number>(0);
+
+  // Immediate Godot café update - just prevents duplicate calls
+  const updateGodotCafe = useCallback((index: number) => {
+    if (index !== lastGodotCafeRef.current) {
+      lastGodotCafeRef.current = index;
+      setGodotCafe(index);
+    }
+  }, []);
 
   const handleScroll = useCallback((event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / (CAROUSEL_ITEM_WIDTH + CAROUSEL_ITEM_SPACING));
     const clampedIndex = Math.max(0, Math.min(index, CAFES.length - 1));
-    setSelectedCafe(clampedIndex);
-  }, []);
+    if (clampedIndex !== selectedCafe) {
+      setSelectedCafe(clampedIndex);
+    }
+    // Sync with Godot immediately
+    updateGodotCafe(clampedIndex);
+  }, [selectedCafe, updateGodotCafe]);
 
   const navigateCarousel = useCallback((direction: 'prev' | 'next') => {
     const newIndex = direction === 'next' 
@@ -331,6 +345,7 @@ export default function HomeScreen() {
       : Math.max(selectedCafe - 1, 0);
     
     setSelectedCafe(newIndex);
+    // Let handleScroll trigger Godot update as the scroll animates
     scrollViewRef.current?.scrollTo({
       x: newIndex * (CAROUSEL_ITEM_WIDTH + CAROUSEL_ITEM_SPACING),
       animated: true,
@@ -445,7 +460,14 @@ export default function HomeScreen() {
                 key={cafe.id}
                 cafe={cafe}
                 isSelected={selectedCafe === index}
-                onPress={() => setSelectedCafe(index)}
+                onPress={() => {
+                  setSelectedCafe(index);
+                  // Scroll to center the card, handleScroll will trigger Godot update
+                  scrollViewRef.current?.scrollTo({
+                    x: index * (CAROUSEL_ITEM_WIDTH + CAROUSEL_ITEM_SPACING),
+                    animated: true,
+                  });
+                }}
               />
             ))}
           </ScrollView>

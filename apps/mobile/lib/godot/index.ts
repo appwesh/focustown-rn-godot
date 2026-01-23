@@ -68,6 +68,8 @@ export {
   // Character customization
   setUserCharacter,
   refreshShowcaseNpcs,
+  // Café switching
+  setSelectedCafe,
 } from './bridge';
 
 // React hooks (recommended)

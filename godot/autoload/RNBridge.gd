@@ -684,3 +684,20 @@ func set_user_character_animation(anim_name: String) -> void:
 		_home_showcase.set_user_animation(anim_name)
 	else:
 		push_warning("[RNBridge] HomeCharacterShowcase not active")
+
+
+## Set the selected café index (switches NPC groups with animation)
+## cafe_index: 0 = boston-library, 1 = korea-cafe, 2 = europe-cafe, 3 = ghibli-cafe, 4 = japan-cafe
+func set_selected_cafe(cafe_index: int) -> void:
+	if _home_showcase:
+		_home_showcase.set_selected_cafe(cafe_index)
+		print("[RNBridge] Set selected café: %d" % cafe_index)
+	else:
+		push_warning("[RNBridge] HomeCharacterShowcase not active")
+
+
+## Get the currently selected café index
+func get_selected_cafe() -> int:
+	if _home_showcase:
+		return _home_showcase.get_current_cafe_index()
+	return 0

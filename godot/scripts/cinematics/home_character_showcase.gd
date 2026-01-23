@@ -1,12 +1,13 @@
 extends Node3D
 class_name HomeCharacterShowcase
 
-## Simple character showcase for the React Native homescreen
-## Displays the user's character in the center surrounded by random NPCs
-## Receives user character data from RNBridge
+## Character showcase for the React Native homescreen with multiple café support
+## Displays the user's character in the center surrounded by café-specific NPCs
+## Supports smooth transitions when switching between cafés
 
 signal user_character_updated(character: CinematicCharacter)
 signal characters_ready
+signal cafe_changed(cafe_index: int)
 
 ## Character configuration
 @export_group("User Character")
@@ -26,26 +27,44 @@ signal characters_ready
 ## NPC idle animations (randomly assigned)
 @export var npc_idle_animations: Array[String] = ["Idle_F", "BoredIdle_01", "BoredIdle_02"]
 
+@export_group("Café Switching")
+## Horizontal offset for off-screen café groups
+@export var cafe_offscreen_distance: float = 8.0
+## Animation duration for café switch
+@export var cafe_switch_duration: float = 0.4
+
 @export_group("Depth Effect")
 ## Darkening color for back row NPCs (creates depth) - uses multiply shader
 @export var npc_darken_color: Color = Color(0.65, 0.65, 0.65)
 
+## Café definitions - each café has unique NPC configurations
+## Order matches React Native CAFES array: boston-library, korea-cafe, europe-cafe, ghibli-cafe, japan-cafe
+const CAFE_COUNT := 5
+
 ## Reference to the user character
 var _user_character: CinematicCharacter
-## References to NPC characters
-var _npc_characters: Array[CinematicCharacter] = []
+## NPC groups for each café: Array[Array[CinematicCharacter]]
+var _cafe_npc_groups: Array[Array] = []
+## Currently active café index
+var _current_cafe_index: int = 0
 ## Packed scene for CinematicCharacter
 var _character_scene: PackedScene
 ## Stored user character data from RN
 var _user_character_data: Dictionary = {}
+## Animation tween for café switching
+var _cafe_switch_tween: Tween = null
+## Is a café switch currently animating
+var _is_switching: bool = false
 
 
 func _ready() -> void:
 	_character_scene = preload("res://scenes/characters/cinematic_character.tscn")
 	
-	# Spawn all characters
+	# Spawn user character (always visible)
 	_spawn_user_character()
-	_spawn_npc_characters()
+	
+	# Spawn NPC groups for all cafés (positioned off-screen except first)
+	_spawn_all_cafe_groups()
 	
 	# Register with RNBridge for character updates
 	_register_with_rnbridge()
@@ -82,40 +101,56 @@ func _spawn_user_character() -> void:
 	print("[HomeCharacterShowcase] User character spawned")
 
 
-func _spawn_npc_characters() -> void:
-	## Spawn NPC characters on both sides of the user
-	var positions: Array[Vector3] = _calculate_npc_positions()
+func _spawn_all_cafe_groups() -> void:
+	## Spawn NPC groups for all cafés
+	## First café (index 0) is positioned on-screen, others are off-screen to the right
+	_cafe_npc_groups.clear()
 	
-	for i in range(positions.size()):
-		var npc := _spawn_single_npc(i, positions[i])
-		_npc_characters.append(npc)
+	for cafe_idx in range(CAFE_COUNT):
+		var group: Array[CinematicCharacter] = []
+		var x_offset := _get_cafe_x_offset(cafe_idx)
+		var positions := _calculate_npc_positions(x_offset)
+		
+		for npc_idx in range(positions.size()):
+			var npc := _spawn_single_npc(cafe_idx, npc_idx, positions[npc_idx])
+			group.append(npc)
+		
+		_cafe_npc_groups.append(group)
 	
-	print("[HomeCharacterShowcase] Spawned %d NPC characters" % _npc_characters.size())
+	var total_npcs := CAFE_COUNT * npcs_per_side * 2
+	print("[HomeCharacterShowcase] Spawned %d NPC characters across %d cafés" % [total_npcs, CAFE_COUNT])
 
 
-func _calculate_npc_positions() -> Array[Vector3]:
+func _get_cafe_x_offset(cafe_index: int) -> float:
+	## Calculate X offset for a café group relative to current café
+	## Current café is at 0, others are positioned off-screen
+	var relative_index := cafe_index - _current_cafe_index
+	return relative_index * cafe_offscreen_distance
+
+
+func _calculate_npc_positions(x_offset: float = 0.0) -> Array[Vector3]:
 	## Calculate positions for NPCs in a single line behind the user
 	var positions: Array[Vector3] = []
 	
 	# Left side NPCs (negative X, all at same depth)
 	for i in range(npcs_per_side):
-		var x := -(i + 1) * character_spacing
+		var x := -(i + 1) * character_spacing + x_offset
 		positions.append(Vector3(x, 0, npc_depth_offset))
 	
 	# Right side NPCs (positive X, all at same depth)
 	for i in range(npcs_per_side):
-		var x := (i + 1) * character_spacing
+		var x := (i + 1) * character_spacing + x_offset
 		positions.append(Vector3(x, 0, npc_depth_offset))
 	
 	return positions
 
 
-func _spawn_single_npc(index: int, pos: Vector3) -> CinematicCharacter:
+func _spawn_single_npc(cafe_index: int, npc_index: int, pos: Vector3) -> CinematicCharacter:
 	## Spawn a single NPC character at the given position (smaller, behind user)
-	var idle_anim: String = npc_idle_animations[index % npc_idle_animations.size()]
+	var idle_anim: String = npc_idle_animations[npc_index % npc_idle_animations.size()]
 	
 	var npc := _character_scene.instantiate() as CinematicCharacter
-	npc.name = "NPC_%d" % index
+	npc.name = "Cafe%d_NPC_%d" % [cafe_index, npc_index]
 	npc.default_animation = idle_anim
 	npc.auto_play = true
 	npc.position = pos
@@ -124,8 +159,8 @@ func _spawn_single_npc(index: int, pos: Vector3) -> CinematicCharacter:
 	
 	add_child(npc)
 	
-	# Apply random preset
-	_apply_random_preset_deferred(npc, index)
+	# Apply random preset with café-specific seed for variety
+	_apply_random_preset_deferred(npc, cafe_index * 100 + npc_index)
 	
 	return npc
 
@@ -202,15 +237,41 @@ func get_user_character() -> CinematicCharacter:
 	return _user_character
 
 
-## Get all NPC characters
+## Get NPC characters for the current café
 func get_npc_characters() -> Array[CinematicCharacter]:
-	return _npc_characters
+	if _current_cafe_index >= 0 and _current_cafe_index < _cafe_npc_groups.size():
+		var group: Array = _cafe_npc_groups[_current_cafe_index]
+		var typed_array: Array[CinematicCharacter] = []
+		for npc in group:
+			typed_array.append(npc as CinematicCharacter)
+		return typed_array
+	return []
 
 
-## Refresh all NPC appearances with new random presets
+## Get NPC characters for a specific café
+func get_cafe_npc_characters(cafe_index: int) -> Array[CinematicCharacter]:
+	if cafe_index >= 0 and cafe_index < _cafe_npc_groups.size():
+		var group: Array = _cafe_npc_groups[cafe_index]
+		var typed_array: Array[CinematicCharacter] = []
+		for npc in group:
+			typed_array.append(npc as CinematicCharacter)
+		return typed_array
+	return []
+
+
+## Refresh all NPC appearances with new random presets (current café only)
 func refresh_npcs() -> void:
-	for i in range(_npc_characters.size()):
-		_apply_random_preset_deferred(_npc_characters[i], i)
+	var npcs := get_npc_characters()
+	for i in range(npcs.size()):
+		_apply_random_preset_deferred(npcs[i], _current_cafe_index * 100 + i)
+
+
+## Refresh NPCs for all cafés
+func refresh_all_cafe_npcs() -> void:
+	for cafe_idx in range(_cafe_npc_groups.size()):
+		var group: Array = _cafe_npc_groups[cafe_idx]
+		for npc_idx in range(group.size()):
+			_apply_random_preset_deferred(group[npc_idx] as CinematicCharacter, cafe_idx * 100 + npc_idx)
 
 
 ## Set a specific animation for the user character
@@ -219,10 +280,71 @@ func set_user_animation(anim_name: String) -> void:
 		_user_character.transition_to_animation(anim_name)
 
 
-## Set animations for all characters
+## Set animations for all characters (current café)
 func set_all_animations(anim_name: String) -> void:
 	if _user_character:
 		_user_character.transition_to_animation(anim_name)
 	
-	for npc in _npc_characters:
+	for npc in get_npc_characters():
 		npc.transition_to_animation(anim_name)
+
+
+## Get the current café index
+func get_current_cafe_index() -> int:
+	return _current_cafe_index
+
+
+## Switch to a different café with smooth animation
+## cafe_index: 0 = boston-library, 1 = korea-cafe, 2 = europe-cafe, 3 = ghibli-cafe, 4 = japan-cafe
+func set_selected_cafe(cafe_index: int) -> void:
+	# Clamp to valid range
+	cafe_index = clampi(cafe_index, 0, CAFE_COUNT - 1)
+	
+	# Skip if already on this café or currently switching
+	if cafe_index == _current_cafe_index:
+		return
+	
+	if _is_switching:
+		# Cancel current tween and start new one
+		if _cafe_switch_tween:
+			_cafe_switch_tween.kill()
+	
+	print("[HomeCharacterShowcase] Switching from café %d to café %d" % [_current_cafe_index, cafe_index])
+	
+	var old_cafe_index := _current_cafe_index
+	_current_cafe_index = cafe_index
+	_is_switching = true
+	
+	# Animate all café groups to their new positions
+	_animate_cafe_switch(old_cafe_index, cafe_index)
+
+
+func _animate_cafe_switch(from_cafe: int, to_cafe: int) -> void:
+	## Animate the café switch by sliding all NPC groups
+	_cafe_switch_tween = create_tween()
+	_cafe_switch_tween.set_ease(Tween.EASE_OUT)
+	_cafe_switch_tween.set_trans(Tween.TRANS_CUBIC)
+	_cafe_switch_tween.set_parallel(true)
+	
+	# Calculate new positions for each café group
+	for cafe_idx in range(_cafe_npc_groups.size()):
+		var target_x_offset := _get_cafe_x_offset(cafe_idx)
+		var group: Array = _cafe_npc_groups[cafe_idx]
+		var base_positions := _calculate_npc_positions(0.0)
+		
+		for npc_idx in range(group.size()):
+			var npc: CinematicCharacter = group[npc_idx] as CinematicCharacter
+			var target_pos := base_positions[npc_idx]
+			target_pos.x += target_x_offset
+			
+			_cafe_switch_tween.tween_property(npc, "position", target_pos, cafe_switch_duration)
+	
+	# Mark switch complete when done
+	_cafe_switch_tween.chain().tween_callback(_on_cafe_switch_complete.bind(to_cafe))
+
+
+func _on_cafe_switch_complete(cafe_index: int) -> void:
+	## Called when café switch animation completes
+	_is_switching = false
+	cafe_changed.emit(cafe_index)
+	print("[HomeCharacterShowcase] Café switch complete: %d" % cafe_index)

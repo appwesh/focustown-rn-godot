@@ -1073,3 +1073,28 @@ export function refreshShowcaseNpcs(): void {
     }
   });
 }
+
+/**
+ * Set the selected café index in the homescreen showcase
+ * Triggers smooth animation to switch NPC character groups
+ * @param cafeIndex - 0=boston-library, 1=korea-cafe, 2=europe-cafe, 3=ghibli-cafe, 4=japan-cafe
+ */
+export function setSelectedCafe(cafeIndex: number): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).set_selected_cafe(cafeIndex);
+      console.log('[Bridge] Set selected café:', cafeIndex);
+    }
+  });
+}
