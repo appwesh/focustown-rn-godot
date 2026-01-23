@@ -199,6 +199,7 @@ grow_vertical = 2
 script = ExtResource("1_qbqfq")
 
 [node name="TextureButton" type="TextureButton" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 315.0
 offset_top = 1700.0
