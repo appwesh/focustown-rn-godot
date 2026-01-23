@@ -69,10 +69,10 @@ _subresources={
 "use_external/fallback_path": "res://assets/environments/focusTown/materials/Fence.tres",
 "use_external/path": "uid://byaw4st3t1dqt"
 },
-"FloorMat": {
+"FloorMatNew": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/focusTown/materials/FloorMat.tres",
-"use_external/path": "uid://d1pwd4uvihg1w"
+"use_external/fallback_path": "res://assets/environments/focusTown/materials/FloorMatNew.tres",
+"use_external/path": "uid://bd8pbjvrt60np"
 },
 "Flower1": {
 "use_external/enabled": true,
