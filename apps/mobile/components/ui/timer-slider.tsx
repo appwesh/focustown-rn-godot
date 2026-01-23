@@ -18,6 +18,7 @@ interface TimerSliderProps {
   maximumValue: number;
   step?: number;
   onValueChange: (value: number) => void;
+  color?: string;
 }
 
 const TRACK_HEIGHT = 18;
@@ -30,6 +31,7 @@ export function TimerSlider({
   maximumValue,
   step = 1,
   onValueChange,
+  color = '#735A42',
 }: TimerSliderProps) {
   const [trackWidth, setTrackWidth] = useState(0);
   const trackWidthRef = useRef(0);
@@ -104,7 +106,7 @@ export function TimerSlider({
         <View
           style={[
             styles.filledTrack,
-            { width: Math.max(0, filledWidth) },
+            { width: Math.max(0, filledWidth), backgroundColor: color },
           ]}
         />
         
@@ -124,7 +126,6 @@ const styles = StyleSheet.create({
   container: {
     height: 48,
     justifyContent: 'center',
-    paddingHorizontal: 4,
   },
   track: {
     height: TRACK_HEIGHT,
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     height: TRACK_HEIGHT,
-    backgroundColor: '#6B5344',
+    backgroundColor: '#735A42',
     borderRadius: TRACK_HEIGHT / 2,
   },
   thumb: {

@@ -108,7 +108,7 @@ export function SessionSetupModal({ visible, onTripleTap }: SessionSetupModalPro
             title="Start Session"
             onPress={startSession}
             variant="primary"
-            size="big"
+            size="medium"
             />
           </View>
         </View>
@@ -126,24 +126,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   container: {
+    
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#FFF8E7',
     borderRadius: 24,
     padding: 28,
     width: '100%',
     maxWidth: 340,
-    alignItems: 'center',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 10,
     borderWidth: 3,
-    borderColor: '#DDD5C7',
+    borderColor: '#83715B',
+    borderBottomWidth: 7,
   },
   iconContainer: {
     position: 'absolute',
     top: 20,
-    left: 20,
+    left: 16,
     width: 44,
     height: 44,
     borderRadius: 22,
@@ -159,32 +159,24 @@ const styles = StyleSheet.create({
   timerDisplay: {
     fontSize: 80,
     fontFamily: 'Poppins_700Bold',
-    color: '#5D4037',
-    marginTop: 20,
-    marginBottom: 16,
+    color: '#735A42',
+
   },
   sliderContainer: {
     width: '100%',
-    marginBottom: 24,
   },
   toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-start',
     gap: 12,
-    marginBottom: 24,
+    margin: 24,
+    width: '100%',
   },
   toggleLabel: {
     fontSize: 18,
-    color: '#3D3D3D',
+    color: '#735A42',
     fontWeight: '500',
-  },
-  linkButton: {
-    marginBottom: 20,
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#8B7355',
-    textDecorationLine: 'underline',
   },
   startButton: {
     width: '100%',
@@ -193,6 +185,5 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'column',
     gap: 12,
-    alignItems: 'center',
   },
 });

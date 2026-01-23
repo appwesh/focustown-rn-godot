@@ -13,10 +13,13 @@ import {
   Text,
   Pressable,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSessionStore, formatTime, formatMinutesDisplay } from '@/lib/session';
 import { Button, TimerOverlay, TimerSlider } from '@/components/ui';
+
+const palmTreeIcon = require('@/assets/ui/palmtree.png');
 
 // Break duration range (minutes)
 const MIN_BREAK = 1;
@@ -54,7 +57,7 @@ export function BreakTimerModal({ visible, onTripleTap }: BreakTimerModalProps) 
           <View style={styles.container}>
             {/* Rest Icon */}
             <View style={styles.iconContainer}>
-              <Text style={styles.icon}>🌴</Text>
+              <Image source={palmTreeIcon} style={styles.palmTreeIcon} />
             </View>
 
             {/* Timer Display */}
@@ -70,25 +73,28 @@ export function BreakTimerModal({ visible, onTripleTap }: BreakTimerModalProps) 
                 step={STEP}
                 value={breakDurationMinutes}
                 onValueChange={handleDurationChange}
+                color="#4FB458"
               />
             </View>
 
-            {/* Start Another Session Button */}
-            <Button
-              title="Start another session"
-              onPress={startAnotherSession}
-              variant="muted"
-              size="medium"
-              style={styles.secondaryButton}
-            />
+            {/* Buttons */}
+            <View style={styles.buttonsContainer}>
+              {/* Start Another Session Button */}
+              <Button
+                title="Start another session"
+                onPress={startAnotherSession}
+                variant="muted"
+                size="small"
+              />
 
-            {/* Start Break Button */}
-            <Button
-              title="Start Break"
-              size="medium"
-              onPress={startBreak}
-              style={styles.mainButton}
-            />
+              {/* Start Break Button */}
+              <Button
+                title="Start Break"
+                size="medium"
+                variant="break"
+                onPress={startBreak}
+              />
+            </View>
           </View>
         </Pressable>
       </Modal>
@@ -119,24 +125,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#FFF8E7',
     borderRadius: 24,
     padding: 28,
     width: '100%',
     maxWidth: 340,
-    alignItems: 'center',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 10,
     borderWidth: 3,
-    borderColor: '#DDD5C7',
+    borderColor: '#83715B',
+    borderBottomWidth: 7,
   },
   iconContainer: {
     position: 'absolute',
     top: 20,
-    left: 20,
+    left: 16,
     width: 44,
     height: 44,
     borderRadius: 22,
@@ -144,25 +149,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: {
-    fontSize: 32,
+  palmTreeIcon: {
+    width: 44,
+    height: 44,
+    resizeMode: 'contain',
   },
   timerDisplay: {
     fontSize: 80,
     fontFamily: 'Poppins_700Bold',
-    color: '#5D4037',
-    marginTop: 20,
-    marginBottom: 16,
+    color: '#4FB458',
   },
   sliderContainer: {
     width: '100%',
-    marginBottom: 24,
   },
-  secondaryButton: {
+  buttonsContainer: {
     width: '100%',
-    marginBottom: 12,
-  },
-  mainButton: {
-    width: '100%',
+    flexDirection: 'column',
+    gap: 12,
+    marginTop: 24,
   },
 });

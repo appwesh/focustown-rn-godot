@@ -55,6 +55,7 @@ export function ActiveSessionOverlay({ visible, onEndEarly, onTripleTap }: Activ
         buttonTitle="End Session"
         onButtonPress={onEndEarly ?? (() => {})}
         onTripleTap={onTripleTap}
+        buttonVariant="danger"
       />
     </>
   );
@@ -70,11 +71,6 @@ const styles = StyleSheet.create({
     height: 48,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
     borderWidth: 2,
     borderColor: '#DDD5C7',
     zIndex: 10,

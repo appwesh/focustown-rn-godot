@@ -57,7 +57,7 @@ export function AbandonConfirmModal({ visible, onTripleTap }: AbandonConfirmModa
             <Button
               title={isGroupSession ? 'End for All' : 'End Session'}
               onPress={confirmAbandonSession}
-              variant="muted"
+              variant="danger"
               size="small"
               style={styles.button}
             />
@@ -83,13 +83,9 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 320,
     alignItems: 'center',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 10,
     borderWidth: 3,
-    borderColor: '#DDD5C7',
+    borderColor: '#83715B',
+    borderBottomWidth: 7,
   },
   title: {
     fontSize: 24,

@@ -17,6 +17,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from './button';
 
+type ButtonVariant = 'primary' | 'secondary' | 'muted' | 'disabled' | 'break' | 'danger';
+
 interface TimerOverlayProps {
   visible: boolean;
   time: string;
@@ -24,6 +26,7 @@ interface TimerOverlayProps {
   buttonTitle: string;
   onButtonPress: () => void;
   onTripleTap?: () => void;
+  buttonVariant?: ButtonVariant;
 }
 
 export function TimerOverlay({
@@ -33,6 +36,7 @@ export function TimerOverlay({
   buttonTitle,
   onButtonPress,
   onTripleTap,
+  buttonVariant = 'primary',
 }: TimerOverlayProps) {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
@@ -60,6 +64,7 @@ export function TimerOverlay({
           title={buttonTitle}
           onPress={onButtonPress}
           size="small"
+          variant={buttonVariant}
         />
       </Pressable>
     </View>

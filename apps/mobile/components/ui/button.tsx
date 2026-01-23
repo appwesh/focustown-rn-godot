@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, Pressable, ViewStyle } from 'react-native';
 
-type ButtonVariant = 'primary' | 'secondary' | 'muted' | 'disabled';
+type ButtonVariant = 'primary' | 'secondary' | 'muted' | 'disabled' | 'break' | 'danger';
 type ButtonSize = 'small' | 'medium' | 'big';
 
 interface ButtonProps {
@@ -31,6 +31,16 @@ const COLORS = {
   disabled: {
     surface: '#C4C4C4',
     border: '#A0A0A0',
+    text: '#FFFFFF',
+  },
+  break: {
+    surface: '#4FB458',
+    border: '#3D9344',
+    text: '#FFFFFF',
+  },
+  danger: {
+    surface: '#C6410D',
+    border: '#9E340A',
     text: '#FFFFFF',
   },
 };
