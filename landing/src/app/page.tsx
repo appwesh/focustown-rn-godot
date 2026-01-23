@@ -102,7 +102,7 @@ export default function Home() {
             </p>
 
             <a
-              href="https://discord.gg/focustown"
+              href="https://discord.gg/XbmKqmgdCb"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-discord flex items-center justify-center gap-2 w-full h-[52px] md:h-[58px] text-base mt-5"

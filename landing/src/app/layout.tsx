@@ -11,6 +11,28 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "FocusTown - Study with Friends",
   description: "Focusing feels better with friends. Study live with homies around the world.",
+  icons: {
+    icon: "/focusfavicon.png",
+    apple: "/focusfavicon.png",
+  },
+  openGraph: {
+    title: "FocusTown - Study with Friends",
+    description: "Focusing feels better with friends. Study live with homies around the world.",
+    images: [
+      {
+        url: "/capybaraLandscape.png",
+        width: 1200,
+        height: 630,
+        alt: "FocusTown - Capybara studying in cozy room",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FocusTown - Study with Friends",
+    description: "Focusing feels better with friends. Study live with homies around the world.",
+    images: ["/capybaraLandscape.png"],
+  },
 };
 
 export default function RootLayout({

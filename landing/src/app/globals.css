@@ -129,12 +129,12 @@ body {
   box-shadow: 0 2px 0 0 #6B7A62;
 }
 
-/* Discord button - soft purple */
+/* Discord button - deep purple */
 .btn-discord {
-  background: #9B8DC2;
+  background: #7C6AAE;
   border: none;
   border-radius: 50px;
-  box-shadow: 0 4px 0 0 #7A6FA0;
+  box-shadow: 0 4px 0 0 #5D4F87;
   color: white;
   font-weight: 700;
   padding: 14px 28px;
@@ -145,12 +145,12 @@ body {
 
 .btn-discord:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 0 #7A6FA0;
+  box-shadow: 0 6px 0 0 #5D4F87;
 }
 
 .btn-discord:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 0 #7A6FA0;
+  box-shadow: 0 2px 0 0 #5D4F87;
 }
 
 /* Blue underline decoration */
