@@ -1,8 +1,9 @@
-[gd_scene load_steps=36 format=4 uid="uid://c8jykvaif16sl"]
+[gd_scene load_steps=37 format=4 uid="uid://c8jykvaif16sl"]
 
 [ext_resource type="PackedScene" uid="uid://c830n46lkydvv" path="res://assets/environments/focusTown/FocusTown.blend" id="1_y31qy"]
 [ext_resource type="PackedScene" uid="uid://cf1e7ixlvsi0r" path="res://scenes/characters/capybara.tscn" id="2_h4wr1"]
 [ext_resource type="PackedScene" uid="uid://i3qca17yxve8" path="res://scenes/ui/capybara_intro.tscn" id="3_5thrm"]
+[ext_resource type="CompressedTexture3D" uid="uid://db1p7yghcyghm" path="res://assets/LUTs/FocusTownLUT.png" id="4_x6y6q"]
 [ext_resource type="Script" uid="uid://1ryy1ebelhmo" path="res://scenes/environment/fcous_town/scene_manager.gd" id="4_yu58e"]
 [ext_resource type="Material" uid="uid://c7yplagrfaipc" path="res://assets/environments/focusTown/materials/Parasol.001.tres" id="8_f3tjn"]
 [ext_resource type="Material" uid="uid://cd5ja1og2c57m" path="res://assets/environments/focusTown/materials/faro.001.tres" id="9_bu5we"]
@@ -119,8 +120,8 @@ shadow_mesh = SubResource("ArrayMesh_kwlum")
 sky_top_color = Color(0.31, 0.35599995, 1, 1)
 sky_horizon_color = Color(0.247, 0.65708345, 0.95, 1)
 sky_curve = 0.35676178
-ground_bottom_color = Color(0.1657736, 0.2917838, 0.46007138, 1)
-ground_horizon_color = Color(0.36862746, 0.6901961, 0.9137255, 1)
+ground_bottom_color = Color(0.1728, 0.21816, 0.27, 1)
+ground_horizon_color = Color(0.24705882, 0.65882355, 0.9490196, 1)
 ground_curve = 0.25992078
 
 [sub_resource type="Sky" id="Sky_h4wr1"]
@@ -132,8 +133,11 @@ background_color = Color(1, 1, 1, 1)
 background_energy_multiplier = 1.1
 sky = SubResource("Sky_h4wr1")
 sky_custom_fov = 118.8
+reflected_light_source = 2
 tonemap_mode = 4
-glow_intensity = 0.52
+glow_enabled = true
+glow_intensity = 0.68
+glow_bloom = 0.12
 fog_enabled = true
 fog_mode = 1
 fog_light_color = Color(0.8, 0.8466667, 1, 1)
@@ -144,8 +148,10 @@ fog_depth_curve = 0.5547839
 fog_depth_begin = 5.0
 fog_depth_end = 50.0
 adjustment_enabled = true
-adjustment_contrast = 1.25
-adjustment_saturation = 1.4
+adjustment_brightness = 1.1
+adjustment_contrast = 1.03
+adjustment_saturation = 1.32
+adjustment_color_correction = ExtResource("4_x6y6q")
 
 [sub_resource type="Animation" id="Animation_nqw0w"]
 length = 0.001
@@ -642,9 +648,16 @@ environment = SubResource("Environment_h4wr1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.50731283, 0.861762, 0, -0.861762, 0.50731283, 0, 7.0069976, 0)
-light_color = Color(0.9999996, 0.9764617, 0.68541217, 1)
+light_color = Color(0.9225, 1, 0.69, 1)
 light_energy = 0.451
 shadow_enabled = true
+shadow_opacity = 0.45
+shadow_blur = 2.692
+
+[node name="AmbientUnderlight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 7.0069976, 0)
+light_color = Color(0.56271607, 0.9286391, 0.98767084, 1)
+light_energy = 0.3
 shadow_opacity = 0.67
 
 [node name="Characters" type="Node3D" parent="."]
@@ -763,6 +776,12 @@ autoplay = "cam_intro1"
 
 [node name="SceneManager" type="Node" parent="."]
 script = ExtResource("4_yu58e")
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6229248, 3.970128, -9.96722)
+intensity = 0.01
+size = Vector3(16.75415, 11.144409, 33.79834)
+enable_shadows = true
 
 [connection signal="pressed" from="CapyBaraIntro/TextureButton" to="SceneManager" method="_on_texture_button_pressed"]
 
