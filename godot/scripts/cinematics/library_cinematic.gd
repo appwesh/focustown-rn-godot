@@ -10,12 +10,36 @@ signal cinematic_finished
 signal character_spawned(character: CinematicCharacter)
 signal tap_detected(world_position: Vector3)
 signal session_triggered(spot_position: Vector3)
+signal entrance_cinematic_started
+signal entrance_cinematic_finished
 
 ## Character spawn configuration
 @export_group("Character Setup")
 @export var character_preset_name: String = "librarian"
 @export var character_spawn_position: Vector3 = Vector3(0, 0, 11)
 @export var character_spawn_rotation: float = 0.0  # Y rotation in degrees
+
+@export_group("Entrance Cinematic")
+## Enable the entrance cinematic when scene starts
+@export var play_entrance_cinematic: bool = false
+## Position where character enters (e.g., doorway)
+@export var entrance_position: Vector3 = Vector3(0, 0, 14)
+## Rotation when entering (facing into the cafe)
+@export var entrance_rotation: float = 180.0
+## Position to walk to after entering
+@export var entrance_destination: Vector3 = Vector3(0, 0, 8)
+## Delay before starting the walk (lets camera settle)
+@export var entrance_start_delay: float = 0.5
+## Delay after reaching destination before switching to overview
+@export var entrance_end_delay: float = 0.8
+## Walk speed during entrance (can be slower for cinematic effect)
+@export var entrance_walk_speed: float = 1.8
+## Fixed entrance camera position (on the left side, looking at player)
+@export var entrance_camera_position: Vector3 = Vector3(-3, 1.5, 9)
+## Animation to play after arriving (before overview)
+@export var entrance_arrival_animation: String = "BoredIdle_01"
+## Duration to show the arrival animation before transitioning to overview
+@export var entrance_animation_duration: float = 1.5
 
 @export_group("Animation")
 @export var idle_animation: String = "Idle_F"
@@ -101,12 +125,21 @@ var _is_player_seated: bool = false
 ## Track spawned NPC characters
 var _npc_characters: Array[CinematicCharacter] = []
 
+## Entrance cinematic state
+var _entrance_cinematic_playing: bool = false
+var _original_move_speed: float = 0.0
+var _entrance_camera: Camera3D = null
+
 
 func _ready() -> void:
 	_character_scene = preload("res://scenes/characters/cinematic_character.tscn")
 	
 	if auto_start:
-		spawn_character()
+		if play_entrance_cinematic:
+			# Spawn at entrance for cinematic
+			spawn_character(character_preset_name, entrance_position, entrance_rotation)
+		else:
+			spawn_character()
 	
 	# Spawn additional NPC characters
 	if spawn_npcs:
@@ -130,6 +163,10 @@ func _ready() -> void:
 	# Connect to character arrival signal
 	if _character:
 		_character.arrived_at_destination.connect(_on_character_arrived)
+	
+	# Start entrance cinematic if enabled (deferred to allow scene to fully load)
+	if play_entrance_cinematic and _character:
+		call_deferred("_start_entrance_cinematic")
 
 
 func _process(delta: float) -> void:
@@ -139,8 +176,8 @@ func _process(delta: float) -> void:
 
 func _handle_keyboard_movement(delta: float) -> void:
 	## Handle WASD/Arrow key movement
-	## Blocked when player is seated
-	if _is_player_seated:
+	## Blocked when player is seated or during entrance cinematic
+	if _is_player_seated or _entrance_cinematic_playing:
 		return
 	
 	var input_dir := Vector2.ZERO
@@ -339,6 +376,110 @@ func _on_camera_changed(camera_name: String) -> void:
 	# Update raycast camera to the active one
 	if camera_rig:
 		raycast_camera = camera_rig.get_active_camera()
+
+
+# =============================================================================
+# Entrance Cinematic
+# =============================================================================
+
+func _start_entrance_cinematic():
+	## Begin the entrance cinematic sequence
+	## Fixed camera on left watches player walk in, plays idle animation, then goes to overview
+	if _entrance_cinematic_playing:
+		return
+	
+	_entrance_cinematic_playing = true
+	entrance_cinematic_started.emit()
+	print("[LibraryCinematic] Starting entrance cinematic")
+	
+	# Hide NPC study bubbles during cinematic
+	_set_study_bubbles_visible(false)
+	
+	# Store and set cinematic walk speed
+	_original_move_speed = _character.move_speed
+	_character.move_speed = entrance_walk_speed
+	
+	# Create fixed entrance camera on the left side
+	_entrance_camera = Camera3D.new()
+	_entrance_camera.name = "EntranceCamera"
+	_entrance_camera.fov = 50.0
+	add_child(_entrance_camera)
+	
+	# Position camera and look at the destination point (where player will walk to)
+	_entrance_camera.global_position = entrance_camera_position
+	_entrance_camera.look_at(entrance_destination + Vector3.UP * 1.0)  # Look at chest height
+	_entrance_camera.current = true
+	
+	# Small delay to let everything settle
+	await get_tree().create_timer(entrance_start_delay).timeout
+	
+	# Start walking to destination
+	_character.move_to(entrance_destination)
+	
+	# Wait for character to arrive
+	await _character.arrived_at_destination
+	
+	# Play arrival animation (e.g., BoredIdle_01)
+	if not entrance_arrival_animation.is_empty():
+		_character.transition_to_animation(entrance_arrival_animation)
+		print("[LibraryCinematic] Playing arrival animation: %s" % entrance_arrival_animation)
+		await get_tree().create_timer(entrance_animation_duration).timeout
+	
+	# Small pause before overview
+	await get_tree().create_timer(entrance_end_delay).timeout
+	
+	# Clean up entrance camera
+	if _entrance_camera:
+		_entrance_camera.queue_free()
+		_entrance_camera = null
+	
+	# Switch to overview camera
+	if camera_rig:
+		camera_rig.switch_to_overview(true)  # instant switch since we're coming from a custom camera
+	
+	# Return to idle animation
+	_character.transition_to_animation(idle_animation)
+	
+	# Restore original move speed
+	_character.move_speed = _original_move_speed
+	
+	# Show NPC study bubbles again
+	_set_study_bubbles_visible(true)
+	
+	_entrance_cinematic_playing = false
+	entrance_cinematic_finished.emit()
+	
+	# Notify React Native
+	if RNBridge:
+		RNBridge.on_entrance_cinematic_finished()
+	
+	print("[LibraryCinematic] Entrance cinematic complete")
+
+
+## Trigger entrance cinematic manually (can be called from RN or code)
+func trigger_entrance_cinematic() -> void:
+	if not _character:
+		push_warning("[LibraryCinematic] Cannot play entrance cinematic - no character")
+		return
+	
+	# Reset character position to entrance
+	_character.position = entrance_position
+	_character.rotation_degrees.y = entrance_rotation
+	
+	_start_entrance_cinematic()
+
+
+## Check if entrance cinematic is currently playing
+func is_entrance_cinematic_playing() -> bool:
+	return _entrance_cinematic_playing
+
+
+## Set visibility of all NPC study bubbles
+func _set_study_bubbles_visible(is_visible: bool) -> void:
+	for npc in _npc_characters:
+		var bubble := npc.get_node_or_null("StudyBubble")
+		if bubble:
+			bubble.visible = is_visible
 
 
 ## Check if currently in first person view
@@ -641,6 +782,9 @@ func _add_study_bubble_deferred(npc: CinematicCharacter) -> void:
 	
 	var bubble := NPCStudyBubble.new()
 	bubble.name = "StudyBubble"
+	# Hide bubble if entrance cinematic is playing
+	if _entrance_cinematic_playing:
+		bubble.visible = false
 	npc.add_child(bubble)
 	print("[LibraryCinematic] Added study bubble to: %s" % npc.name)
 
@@ -668,6 +812,10 @@ func _apply_npc_preset_deferred(npc: CinematicCharacter, preset_name: String) ->
 
 
 func _input(event: InputEvent) -> void:
+	# Block all navigation during entrance cinematic
+	if _entrance_cinematic_playing:
+		return
+	
 	# Block all navigation when player is seated
 	if _is_player_seated:
 		# Any tap/click triggers confirm end popup
@@ -685,11 +833,12 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 		return
 	
-	# Handle camera toggle (C key)
-	if camera_toggle_enabled and event is InputEventKey:
+	# Handle C key - replay entrance cinematic (for testing)
+	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_C:
-			cycle_camera()
+			if not _entrance_cinematic_playing:
+				trigger_entrance_cinematic()
 			return
 	
 	# Handle click to move

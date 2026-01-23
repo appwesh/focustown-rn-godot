@@ -55,8 +55,8 @@ func _setup_ui() -> void:
 	# Create pill background panel with explicit size
 	var panel := Panel.new()
 	panel.position = Vector2(0, 0)
-	panel.size = Vector2(140, 55)
-	panel.custom_minimum_size = Vector2(140, 55)
+	panel.size = Vector2(150, 55)
+	panel.custom_minimum_size = Vector2(150, 55)
 	
 	# Style the panel as a rounded pill
 	var style := StyleBoxFlat.new()
@@ -123,9 +123,16 @@ func _randomize_display() -> void:
 
 func _update_display() -> void:
 	if _timer_label:
-		var minutes := _total_seconds / 60
-		var seconds := _total_seconds % 60
-		_timer_label.text = "%02d:%02d" % [minutes, seconds]
+		var total_minutes := _total_seconds / 60
+		var hours := total_minutes / 60
+		var minutes := total_minutes % 60
+		
+		if hours > 0:
+			# Format as "1h24" for times over an hour
+			_timer_label.text = "%dh%02d" % [hours, minutes]
+		else:
+			# Format as "12min" for times under an hour
+			_timer_label.text = "%dmin" % minutes
 	
 	if _flag_label:
 		_flag_label.text = _flag

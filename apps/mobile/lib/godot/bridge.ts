@@ -31,6 +31,7 @@ let playerPositionHandler: ((x: number, y: number, z: number) => void) | null = 
 let sessionTapOutsideHandler: (() => void) | null = null;
 let breakTickHandler: ((elapsed: number) => void) | null = null;
 let breakEndedHandler: ((duration: number) => void) | null = null;
+let entranceCinematicFinishedHandler: (() => void) | null = null;
 
 /**
  * Set the session handler (called from JS thread when session completes)
@@ -85,6 +86,15 @@ export function setBreakEndedHandler(
   handler: ((duration: number) => void) | null
 ): void {
   breakEndedHandler = handler;
+}
+
+/**
+ * Set the entrance cinematic finished handler (called when entrance cinematic ends)
+ */
+export function setEntranceCinematicFinishedHandler(
+  handler: (() => void) | null
+): void {
+  entranceCinematicFinishedHandler = handler;
 }
 
 /**
@@ -151,6 +161,16 @@ function handleBreakEnded(duration: number): void {
   }
 }
 
+/**
+ * Called from worklet - bridges entrance cinematic finished to JS thread
+ */
+function handleEntranceCinematicFinished(): void {
+  console.log('[Bridge] Entrance cinematic finished');
+  if (entranceCinematicFinishedHandler) {
+    entranceCinematicFinishedHandler();
+  }
+}
+
 // Create worklet-compatible functions that can be called from Godot thread
 const handleSessionCompleteWorklet = Worklets.createRunOnJS(handleSessionComplete);
 const handlePlayerSeatedWorklet = Worklets.createRunOnJS(handlePlayerSeated) as (
@@ -170,6 +190,9 @@ const handleBreakTickWorklet = Worklets.createRunOnJS(handleBreakTick) as (
 const handleBreakEndedWorklet = Worklets.createRunOnJS(handleBreakEnded) as (
   duration: number
 ) => void;
+const handleEntranceCinematicFinishedWorklet = Worklets.createRunOnJS(
+  handleEntranceCinematicFinished
+);
 
 /**
  * Check if Godot instance is ready
@@ -407,6 +430,34 @@ export function registerSessionTapOutsideCallback(): void {
         handleSessionTapOutsideWorklet();
       });
       console.log('[Bridge] Session tap outside callback registered');
+    }
+  });
+}
+
+/**
+ * Register entrance cinematic finished callback with Godot
+ * Fires when entrance cinematic completes (to show "pick your spot" text)
+ */
+export function registerEntranceCinematicFinishedCallback(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).set_entrance_cinematic_finished_callback(function () {
+        'worklet';
+        handleEntranceCinematicFinishedWorklet();
+      });
+      console.log('[Bridge] Entrance cinematic finished callback registered');
     }
   });
 }

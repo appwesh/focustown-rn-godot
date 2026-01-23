@@ -9,6 +9,17 @@ size = Vector3(50, 0.1, 50)
 [node name="LibraryCinematicWithCharacter" type="Node3D"]
 script = ExtResource("1_script")
 character_spawn_rotation = 180.0
+play_entrance_cinematic = true
+entrance_position = Vector3(0, 0, 9.5)
+entrance_rotation = 180.0
+entrance_destination = Vector3(0, 0, 8)
+entrance_start_delay = 0.3
+entrance_end_delay = 0.5
+entrance_walk_speed = 1.0
+entrance_camera_position = Vector3(-2.5, 1.5, 9.5)
+
+entrance_arrival_animation = "BoredIdle_01"
+entrance_animation_duration = 1.2
 
 [node name="LibraryEnvironment" parent="." instance=ExtResource("2_env")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013491631, 0, 0.00074338913)

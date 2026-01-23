@@ -70,7 +70,8 @@
       ],
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
-      "./plugins/with-firebase-godot-fix.js"
+      "./plugins/with-firebase-godot-fix.js",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,

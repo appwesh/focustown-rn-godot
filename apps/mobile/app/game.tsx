@@ -29,6 +29,8 @@ import {
   switchToSetupCamera,
   switchToThirdPersonCamera,
   changeScene,
+  setEntranceCinematicFinishedHandler,
+  registerEntranceCinematicFinishedCallback,
   type SpotLocation,
 } from '@/lib/godot';
 import {
@@ -49,6 +51,7 @@ export default function GameScreen() {
   const insets = useSafeAreaInsets();
   const [debugVisible, setDebugVisible] = useState(false);
   const [sceneTransitioning, setSceneTransitioning] = useState(true); // Start with transition visible
+  const [cinematicFinished, setCinematicFinished] = useState(false); // Wait for entrance cinematic
   
   // Pulsing animation for "pick your spot" text
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -134,6 +137,7 @@ export default function GameScreen() {
     
     // Show transition overlay
     setSceneTransitioning(true);
+    setCinematicFinished(false); // Reset cinematic state
     
     const attemptSceneChange = () => {
       if (cancelled) return;
@@ -161,6 +165,40 @@ export default function GameScreen() {
     return () => {
       cancelled = true;
       clearTimeout(timer);
+    };
+  }, []);
+
+  // Register entrance cinematic finished callback
+  useEffect(() => {
+    let callbackRegistered = false;
+    
+    // Set up the handler
+    setEntranceCinematicFinishedHandler(() => {
+      console.log('[Game] Entrance cinematic finished');
+      setCinematicFinished(true);
+    });
+    
+    // Register the Godot callback once ready
+    const checkAndRegister = () => {
+      if (isGodotReady() && !callbackRegistered) {
+        console.log('[Game] Registering entrance cinematic callback...');
+        registerEntranceCinematicFinishedCallback();
+        callbackRegistered = true;
+      }
+    };
+    
+    checkAndRegister();
+    const interval = setInterval(() => {
+      if (!callbackRegistered) {
+        checkAndRegister();
+      } else {
+        clearInterval(interval);
+      }
+    }, 500);
+    
+    return () => {
+      clearInterval(interval);
+      setEntranceCinematicFinishedHandler(null);
     };
   }, []);
 
@@ -450,7 +488,7 @@ export default function GameScreen() {
       <SceneTransition 
         visible={sceneTransitioning} 
         backgroundColor="#000000"
-        fadeDuration={400}
+        fadeDuration={1500}
       />
 
       {/* Active Session Overlay - shows timer during focus session */}
@@ -475,10 +513,13 @@ export default function GameScreen() {
             <Text style={styles.backArrow}>←</Text>
           </Pressable>
 
-          {/* Pick your spot text */}
-          <Animated.Text style={[styles.pickSpotText, { top: insets.top + 80, opacity: pulseAnim }]}>
-            pick your spot
-          </Animated.Text>
+          {/* Pick your spot text - only show after entrance cinematic */}
+          {cinematicFinished && (
+            <Animated.View style={[styles.pickSpotContainer, { opacity: pulseAnim }]}>
+              <Text style={styles.pickSpotText}>pick your</Text>
+              <Text style={styles.pickSpotText}>spot</Text>
+            </Animated.View>
+          )}
         </>
       )}
 
@@ -519,16 +560,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 16,
     backgroundColor: '#FFF8E7',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 100,
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
-    borderWidth: 2,
-    borderColor: '#DDD5C7',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: '#83715B',
+    borderBottomWidth: 7,
     zIndex: 2,
   },
   backButtonPressed: {
@@ -537,18 +574,26 @@ const styles = StyleSheet.create({
   },
   backArrow: {
     fontSize: 24,
-    color: '#5D4037',
-    fontWeight: '600',
+    fontWeight: '900',
+    color: '#9A835A',
+  },
+  pickSpotContainer: {
+    position: 'absolute',
+    top: 100,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    paddingHorizontal: 40,
+    paddingVertical: 16,
+    borderRadius: 32,
+    alignItems: 'center',
+    zIndex: 2,
   },
   pickSpotText: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
     textAlign: 'center',
-    fontSize: 32,
+    fontSize: 36,
     fontFamily: 'Poppins_700Bold',
     color: 'white',
-    zIndex: 2,
+    lineHeight: 48,
   },
   beanCounterContainer: {
     position: 'absolute',

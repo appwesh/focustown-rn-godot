@@ -46,6 +46,9 @@ export {
   // Session tap outside
   setSessionTapOutsideHandler,
   registerSessionTapOutsideCallback,
+  // Entrance cinematic
+  setEntranceCinematicFinishedHandler,
+  registerEntranceCinematicFinishedCallback,
   // Camera control
   toggleSessionCamera,
   switchToSeatedCamera,

@@ -29,6 +29,9 @@ var _session_tap_outside_callback: Callable
 var _break_tick_callback: Callable
 var _break_ended_callback: Callable
 
+## Callback when entrance cinematic finishes
+var _entrance_cinematic_finished_callback: Callable
+
 ## Reference to the camera rig for camera control
 var _camera_rig: CinematicCameraRig = null
 
@@ -135,6 +138,12 @@ func set_break_tick_callback(callback: Callable) -> void:
 func set_break_ended_callback(callback: Callable) -> void:
 	_break_ended_callback = callback
 	print("[RNBridge] Break ended callback registered")
+
+
+## Register callback from RN for when entrance cinematic finishes
+func set_entrance_cinematic_finished_callback(callback: Callable) -> void:
+	_entrance_cinematic_finished_callback = callback
+	print("[RNBridge] Entrance cinematic finished callback registered")
 
 
 ## Start position sync (sends player position to RN periodically)
@@ -497,6 +506,17 @@ func on_session_tap_outside() -> void:
 		print("[RNBridge] Session tap outside callback invoked")
 	else:
 		print("[RNBridge] No tap outside callback registered")
+
+
+## Called when entrance cinematic finishes
+## Notifies RN to show "pick your spot" text
+func on_entrance_cinematic_finished() -> void:
+	print("[RNBridge] Entrance cinematic finished")
+	if _entrance_cinematic_finished_callback.is_valid():
+		_entrance_cinematic_finished_callback.call()
+		print("[RNBridge] Entrance cinematic finished callback invoked")
+	else:
+		print("[RNBridge] No entrance cinematic finished callback registered")
 
 
 # =============================================================================
