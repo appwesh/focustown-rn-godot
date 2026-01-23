@@ -156,13 +156,18 @@ export default function CharacterScreen() {
         console.log('[Character] Switching to home_showcase scene');
         changeScene('home_showcase');
         
-        // Wait for scene change, then hide overlay
-        // Character updates happen separately via updateCharacter()
+        // Wait for scene change, then apply initial character and hide overlay
         setTimeout(() => {
-          if (!cancelled) {
-            setSceneTransitioning(false);
-          }
-        }, 450);
+          if (cancelled) return;
+          // Apply initial character state to Godot
+          setUserCharacter(character);
+          
+          setTimeout(() => {
+            if (!cancelled) {
+              setSceneTransitioning(false);
+            }
+          }, 100);
+        }, 350);
       };
       
       // Start scene change after a brief delay

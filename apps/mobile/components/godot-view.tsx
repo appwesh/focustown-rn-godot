@@ -255,10 +255,13 @@ export function GodotGame({ style, pckUrl, onLoadingChange }: GodotGameProps) {
 
     setup();
 
-    // During Fast Refresh / teardown, the JS runtime can be briefly unavailable while native downloads
-    // still emit progress events. Pause + cleanup to avoid noisy native warnings.
+    // During Fast Refresh / teardown, pause any active download to avoid noisy native warnings.
+    // Only clean up partial files if we interrupted an active download.
     return () => {
       void (async () => {
+        // Capture whether there's an active download BEFORE we clear it
+        const downloadWasActive = activeDownloadResumable !== null;
+
         try {
           if (activeDownloadResumable) {
             await activeDownloadResumable.pauseAsync();
@@ -266,11 +269,15 @@ export function GodotGame({ style, pckUrl, onLoadingChange }: GodotGameProps) {
           }
         } catch {
           // ignore
-        } finally {
-          // Best-effort: if a partial file exists, remove it so we don't cache a corrupt pack.
+        }
+
+        // Only delete files if we interrupted an active download (partial file).
+        // Don't touch fully downloaded/cached files - that would defeat caching!
+        if (downloadWasActive) {
           try {
             await FileSystem.deleteAsync(LOCAL_PCK_COMPLETE_URI, { idempotent: true });
             await FileSystem.deleteAsync(LOCAL_PCK_URI, { idempotent: true });
+            console.log('[GodotGame] Cleaned up interrupted download');
           } catch {
             // ignore
           }

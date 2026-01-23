@@ -9,7 +9,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -92,12 +92,13 @@ const AnimatedCafeCard = ({
   isSelected: boolean; 
   onPress: () => void;
 }) => {
-  const scale = useSharedValue(isSelected ? 1 : 0.85);
+  const scale = useSharedValue(isSelected ? 1 : 0.75);
   const opacity = useSharedValue(isSelected ? 1 : 0.5);
 
   useEffect(() => {
-    scale.value = withTiming(isSelected ? 1 : 0.85, { duration: 200 });
-    opacity.value = withTiming(isSelected ? 1 : 0.5, { duration: 200 });
+    const springConfig = { damping: 20, stiffness: 300, overshootClamping: true };
+    scale.value = withSpring(isSelected ? 1 : 0.75, springConfig);
+    opacity.value = withSpring(isSelected ? 1 : 0.5, springConfig);
   }, [isSelected]);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -317,10 +318,11 @@ export default function HomeScreen() {
 
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const handleScrollEnd = useCallback((event: any) => {
+  const handleScroll = useCallback((event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / (CAROUSEL_ITEM_WIDTH + CAROUSEL_ITEM_SPACING));
-    setSelectedCafe(Math.max(0, Math.min(index, CAFES.length - 1)));
+    const clampedIndex = Math.max(0, Math.min(index, CAFES.length - 1));
+    setSelectedCafe(clampedIndex);
   }, []);
 
   const navigateCarousel = useCallback((direction: 'prev' | 'next') => {
@@ -435,7 +437,8 @@ export default function HomeScreen() {
             contentContainerStyle={styles.carouselContent}
             snapToInterval={CAROUSEL_ITEM_WIDTH + CAROUSEL_ITEM_SPACING}
             decelerationRate="fast"
-            onMomentumScrollEnd={handleScrollEnd}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
           >
             {CAFES.map((cafe, index) => (
               <AnimatedCafeCard
