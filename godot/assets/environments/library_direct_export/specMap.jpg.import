@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c1o83am7rv65m"
-path="res://.godot/imported/specMap.jpg-f58854156d2d14757d40dac8723035a3.ctex"
+path="res://.godot/imported/specMap.jpg-0fc28361345e12471ad9b6f14dbddfbb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library_direct_export/specMap.jpg"
-dest_files=["res://.godot/imported/specMap.jpg-f58854156d2d14757d40dac8723035a3.ctex"]
+source_file="res://assets/Environments/library_direct_export/specMap.jpg"
+dest_files=["res://.godot/imported/specMap.jpg-0fc28361345e12471ad9b6f14dbddfbb.ctex"]
 
 [params]
 

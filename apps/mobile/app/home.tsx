@@ -339,8 +339,9 @@ export default function HomeScreen() {
     setActiveTab(tab);
     if (tab === 'social') {
       router.push('/social');
+    } else if (tab === 'shop') {
+      router.push('/character');
     }
-    // Shop not implemented yet
   };
 
   // Handle PCK loading state changes

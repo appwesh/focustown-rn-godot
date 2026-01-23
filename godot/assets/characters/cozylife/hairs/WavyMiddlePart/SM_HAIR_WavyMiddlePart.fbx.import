@@ -4,11 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://sylp1rv2llyp"
-valid=false
+path="res://.godot/imported/SM_HAIR_WavyMiddlePart.fbx-70d7612e4a2ae9c14f45f4d4f0e0860e.scn"
 
 [deps]
 
 source_file="res://assets/characters/cozylife/hairs/WavyMiddlePart/SM_HAIR_WavyMiddlePart.fbx"
+dest_files=["res://.godot/imported/SM_HAIR_WavyMiddlePart.fbx-70d7612e4a2ae9c14f45f4d4f0e0860e.scn"]
 
 [params]
 

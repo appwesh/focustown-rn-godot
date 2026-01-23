@@ -1,0 +1,65 @@
+[gd_scene load_steps=4 format=3 uid="uid://c0hair_preview_cell"]
+
+[ext_resource type="Script" path="res://scripts/characters/modular_character.gd" id="1_char"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cell"]
+bg_color = Color(0.973, 0.933, 0.878, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="Environment" id="Environment_cell"]
+background_mode = 1
+background_color = Color(0.973, 0.933, 0.878, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.5
+
+[node name="HairPreviewCell" type="PanelContainer"]
+custom_minimum_size = Vector2(100, 120)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_cell")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(120, 140)
+render_target_update_mode = 4
+
+[node name="PreviewScene" type="Node3D" parent="SubViewportContainer/SubViewport"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewportContainer/SubViewport/PreviewScene"]
+environment = SubResource("Environment_cell")
+
+[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport/PreviewScene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 1.8)
+fov = 35.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewportContainer/SubViewport/PreviewScene"]
+transform = Transform3D(0.866, -0.25, 0.433, 0, 0.866, 0.5, -0.5, -0.433, 0.75, 2, 3, 2)
+light_energy = 1.2
+
+[node name="FillLight" type="DirectionalLight3D" parent="SubViewportContainer/SubViewport/PreviewScene"]
+transform = Transform3D(0.866, 0.25, -0.433, 0, 0.866, 0.5, 0.5, -0.433, 0.75, -2, 2, -1)
+light_energy = 0.4
+
+[node name="ModularCharacter" type="Node3D" parent="SubViewportContainer/SubViewport/PreviewScene"]
+script = ExtResource("1_char")
+default_selections = {
+"Bottom": 0,
+"EyeColor": 0,
+"Face": 0,
+"Glasses": 0,
+"Hair": 1,
+"HairColor": 0,
+"Hat": 0,
+"Shoes": 0,
+"SkinTone": 0,
+"Top": 0
+}
