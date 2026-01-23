@@ -31,6 +31,7 @@ import { Button } from '@/components/ui/button';
 import * as Bridge from '@/lib/godot/bridge';
 
 const beanIcon = require('@/assets/ui/bean.png');
+const clockIcon = require('@/assets/ui/clock.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CONFETTI_COLORS = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#DDA0DD'];
 
@@ -271,7 +272,7 @@ export function SessionCompleteModal({ visible, onTripleTap }: SessionCompleteMo
             <View style={styles.statRow}>
               <Text style={styles.statLabel}>Session:</Text>
               <View style={styles.statValueRow}>
-                <Text style={styles.timerIcon}>⏱</Text>
+                <Image source={clockIcon} style={styles.clockIconImage} />
                 <Text style={styles.statValue}>{formatDuration(durationSeconds)}</Text>
               </View>
             </View>
@@ -387,8 +388,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_700Bold',
     color: '#5D4037',
   },
-  timerIcon: {
-    fontSize: 20,
+  clockIconImage: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
   beanIconImage: {
     width: 24,
