@@ -8,3 +8,7 @@
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.glb filter=lfs diff=lfs merge=lfs -text
 *.gltf filter=lfs diff=lfs merge=lfs -text
+
+# Exclude landing page images from LFS (needed for Vercel)
+apps/landing/public/*.png -filter -diff -merge text=auto
+apps/landing/public/*.jpg -filter -diff -merge text=auto
