@@ -3,7 +3,7 @@
  * 
  * Shown after completing a focus session.
  * - Setup phase: Modal with duration slider
- * - Active break: Bottom overlay (same style as active session)
+ * - Active break: Bottom overlay (uses shared TimerOverlay)
  */
 
 import React from 'react';
@@ -14,10 +14,9 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSessionStore, formatTime } from '@/lib/session';
-import { Button } from '@/components/ui/button';
+import { useSessionStore, formatTime, formatMinutesDisplay } from '@/lib/session';
+import { Button, TimerOverlay, TimerSlider } from '@/components/ui';
 
 // Break duration range (minutes)
 const MIN_BREAK = 1;
@@ -26,9 +25,10 @@ const STEP = 1;
 
 interface BreakTimerModalProps {
   visible: boolean;
+  onTripleTap?: () => void;
 }
 
-export function BreakTimerModal({ visible }: BreakTimerModalProps) {
+export function BreakTimerModal({ visible, onTripleTap }: BreakTimerModalProps) {
   const insets = useSafeAreaInsets();
   const breakSession = useSessionStore((s) => s.breakSession);
   const breakDurationMinutes = useSessionStore((s) => s.breakDurationMinutes);
@@ -48,8 +48,9 @@ export function BreakTimerModal({ visible }: BreakTimerModalProps) {
         visible={visible}
         transparent
         animationType="fade"
+        supportedOrientations={['portrait', 'landscape']}
       >
-        <View style={[styles.backdrop, { paddingTop: insets.top + 16 }]}>
+        <Pressable style={[styles.backdrop, { paddingTop: insets.top + 16 }]} onPress={onTripleTap}>
           <View style={styles.container}>
             {/* Rest Icon */}
             <View style={styles.iconContainer}>
@@ -58,70 +59,57 @@ export function BreakTimerModal({ visible }: BreakTimerModalProps) {
 
             {/* Timer Display */}
             <Text style={styles.timerDisplay}>
-              {breakDurationMinutes}:00
+              {formatMinutesDisplay(breakDurationMinutes)}
             </Text>
 
             {/* Duration Slider */}
             <View style={styles.sliderContainer}>
-              <Slider
-                style={styles.slider}
+              <TimerSlider
                 minimumValue={MIN_BREAK}
                 maximumValue={MAX_BREAK}
                 step={STEP}
                 value={breakDurationMinutes}
                 onValueChange={handleDurationChange}
-                minimumTrackTintColor="#5D4037"
-                maximumTrackTintColor="#D5CCC0"
-                thumbTintColor="#FFF"
               />
             </View>
 
-            {/* Start Another Session Link */}
-            <Pressable
-              style={styles.linkButton}
+            {/* Start Another Session Button */}
+            <Button
+              title="Start another session"
               onPress={startAnotherSession}
-            >
-              <Text style={styles.linkText}>Start another session</Text>
-            </Pressable>
+              variant="muted"
+              size="medium"
+              style={styles.secondaryButton}
+            />
 
             {/* Start Break Button */}
             <Button
               title="Start Break"
+              size="medium"
               onPress={startBreak}
               style={styles.mainButton}
             />
           </View>
-        </View>
+        </Pressable>
       </Modal>
     );
   }
 
-  // Break in progress - show bottom overlay (same style as active session)
+  // Break in progress - show bottom overlay (uses shared TimerOverlay)
   const { remainingSeconds } = breakSession;
 
-  if (!visible) return null;
-
   return (
-    <View style={[overlayStyles.container, { bottom: insets.bottom + 24 }]}>
-      <View style={overlayStyles.card}>
-        {/* Timer and Label */}
-        <View style={overlayStyles.timerSection}>
-          <Text style={overlayStyles.timerText}>{formatTime(remainingSeconds)}</Text>
-          <Text style={overlayStyles.label}>Break</Text>
-        </View>
-
-        {/* End Break Button */}
-        <Button
-          title="End Break"
-          onPress={endBreak}
-          size="small"
-        />
-      </View>
-    </View>
+    <TimerOverlay
+      visible={visible}
+      time={formatTime(remainingSeconds)}
+      label="Break"
+      buttonTitle="End Break"
+      onButtonPress={endBreak}
+      onTripleTap={onTripleTap}
+    />
   );
 }
 
-// Modal styles (for setup phase)
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
@@ -168,62 +156,13 @@ const styles = StyleSheet.create({
   },
   sliderContainer: {
     width: '100%',
-    paddingHorizontal: 8,
     marginBottom: 24,
   },
-  slider: {
+  secondaryButton: {
     width: '100%',
-    height: 40,
-  },
-  linkButton: {
-    marginBottom: 20,
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#8B7355',
-    textDecorationLine: 'underline',
+    marginBottom: 12,
   },
   mainButton: {
     width: '100%',
-  },
-});
-
-// Overlay styles (for active break - same as active session)
-const overlayStyles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    left: 16,
-    right: 16,
-    zIndex: 10,
-  },
-  card: {
-    backgroundColor: '#FFF8E7',
-    borderRadius: 24,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    shadowColor: '#5D4037',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 6,
-    borderWidth: 3,
-    borderColor: '#DDD5C7',
-  },
-  timerSection: {
-    flexDirection: 'column',
-  },
-  timerText: {
-    fontSize: 32,
-    fontFamily: 'Poppins_700Bold',
-    color: '#3D3D3D',
-  },
-  label: {
-    fontSize: 16,
-    fontFamily: 'Poppins_500Medium',
-    color: '#8B7355',
-    marginTop: -4,
   },
 });

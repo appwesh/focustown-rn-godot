@@ -706,6 +706,30 @@ export function cancelGodotSessionSetup(): void {
 }
 
 /**
+ * Play celebration animation on the player character (fist pump)
+ * Called when a focus session completes successfully
+ */
+export function playCelebrationAnimation(): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).play_celebration_animation();
+      console.log('[Bridge] Playing celebration animation');
+    }
+  });
+}
+
+/**
  * Send joystick input to Godot
  */
 export function setJoystickInput(x: number, y: number): void {

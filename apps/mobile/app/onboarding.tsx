@@ -10,8 +10,9 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -47,6 +48,13 @@ export default function OnboardingScreen() {
     isAuthenticated,
     user,
   } = useAuth();
+
+  // Lock to portrait orientation
+  useFocusEffect(
+    useCallback(() => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    }, [])
+  );
 
   // Step state
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');

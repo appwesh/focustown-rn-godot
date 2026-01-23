@@ -1,10 +1,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, Pressable, Animated } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
 import { DebugModal } from '@/components/debug-modal';
+import { BeanCounter } from '@/components/ui';
 import {
   SessionSetupModal,
   SessionCompleteModal,
@@ -51,6 +53,20 @@ export default function GameScreen() {
   // Pulsing animation for "pick your spot" text
   const pulseAnim = useRef(new Animated.Value(1)).current;
   
+  // Triple tap debug trigger
+  const tapTimesRef = useRef<number[]>([]);
+  const handleTripleTap = useCallback(() => {
+    const now = Date.now();
+    const recentTaps = tapTimesRef.current.filter((t) => now - t < 500);
+    recentTaps.push(now);
+    tapTimesRef.current = recentTaps;
+    
+    if (recentTaps.length >= 3) {
+      setDebugVisible(true);
+      tapTimesRef.current = [];
+    }
+  }, []);
+  
   useEffect(() => {
     const pulse = Animated.loop(
       Animated.sequence([
@@ -69,6 +85,13 @@ export default function GameScreen() {
     pulse.start();
     return () => pulse.stop();
   }, [pulseAnim]);
+
+  // Unlock orientation to allow landscape on game screen
+  useFocusEffect(
+    useCallback(() => {
+      ScreenOrientation.unlockAsync();
+    }, [])
+  );
 
   const { recordSession, userDoc, user } = useAuth();
 
@@ -202,7 +225,7 @@ export default function GameScreen() {
           const activeSession = useSessionStore.getState().activeSession;
           if (activeSession) {
             const elapsed = Math.floor((Date.now() - activeSession.startedAt) / 1000);
-            const coinsPerMinute = 10;
+            const coinsPerMinute = 1;
             const coins = Math.floor((elapsed / 60) * coinsPerMinute);
             endSession(elapsed, coins);
           }
@@ -420,7 +443,7 @@ export default function GameScreen() {
   const showTopBar = (phase === 'idle' || phase === 'active') && !showingAbandonConfirm;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onTouchEnd={handleTripleTap}>
       <GodotGame style={styles.game} pckUrl={PCK_URL} />
       
       {/* Scene transition overlay - covers Godot during scene changes */}
@@ -434,6 +457,7 @@ export default function GameScreen() {
       <ActiveSessionOverlay
         visible={phase === 'active' && !showingAbandonConfirm}
         onEndEarly={requestAbandonSession}
+        onTripleTap={handleTripleTap}
       />
 
       {/* Idle UI - "pick your spot" header */}
@@ -447,8 +471,6 @@ export default function GameScreen() {
               pressed && styles.backButtonPressed,
             ]}
             onPress={() => router.dismissTo('/home')}
-            onLongPress={__DEV__ ? () => setDebugVisible(true) : undefined}
-            delayLongPress={800}
           >
             <Text style={styles.backArrow}>←</Text>
           </Pressable>
@@ -460,21 +482,27 @@ export default function GameScreen() {
         </>
       )}
 
+      {/* Bean Counter - shows during success modal */}
+      {/* incrementDelay syncs with flying beans: 300ms measure + 100ms start + 600ms first bean travel */}
+      {phase === 'complete' && (
+        <View style={[styles.beanCounterContainer, { top: insets.top + 12 }]}>
+          <BeanCounter size="small" incrementDelay={1000} />
+        </View>
+      )}
+
       {/* Session Modals */}
       {/* Setup modal only for solo sessions - group sessions auto-start when all seated */}
-      <SessionSetupModal visible={phase === 'setup' && !isGroupSession} />
-      <SessionCompleteModal visible={phase === 'complete'} />
-      <SessionAbandonedModal visible={phase === 'abandoned'} />
-      <BreakTimerModal visible={phase === 'break'} />
-      <AbandonConfirmModal visible={showingAbandonConfirm} />
+      <SessionSetupModal visible={phase === 'setup' && !isGroupSession} onTripleTap={handleTripleTap} />
+      <SessionCompleteModal visible={phase === 'complete'} onTripleTap={handleTripleTap} />
+      <SessionAbandonedModal visible={phase === 'abandoned'} onTripleTap={handleTripleTap} />
+      <BreakTimerModal visible={phase === 'break'} onTripleTap={handleTripleTap} />
+      <AbandonConfirmModal visible={showingAbandonConfirm} onTripleTap={handleTripleTap} />
 
-      {/* Debug Modal (dev only) */}
-      {__DEV__ && (
-        <DebugModal
-          visible={debugVisible}
-          onClose={() => setDebugVisible(false)}
-        />
-      )}
+      {/* Debug Modal (triple tap anywhere) */}
+      <DebugModal
+        visible={debugVisible}
+        onClose={() => setDebugVisible(false)}
+      />
     </View>
   );
 }
@@ -521,5 +549,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_700Bold',
     color: 'white',
     zIndex: 2,
+  },
+  beanCounterContainer: {
+    position: 'absolute',
+    right: 16,
+    zIndex: 200,
   },
 });

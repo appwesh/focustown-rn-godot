@@ -17,8 +17,9 @@ import {
   ActivityIndicator,
   TextInput,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { useAuth } from '@/lib/firebase';
 import { useSocialStore, type FriendWithStatus } from '@/lib/social';
 import { FriendCard } from '@/components/social/friend-card';
@@ -28,6 +29,13 @@ export default function SocialScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  
+  // Lock to portrait orientation
+  useFocusEffect(
+    useCallback(() => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    }, [])
+  );
   
   // Search state
   const [searchQuery, setSearchQuery] = useState('');

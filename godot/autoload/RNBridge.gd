@@ -32,6 +32,9 @@ var _break_ended_callback: Callable
 ## Reference to the camera rig for camera control
 var _camera_rig: CinematicCameraRig = null
 
+## Reference to the library cinematic scene (if active)
+var _library_cinematic: LibraryCinematic = null
+
 ## Position sync timer
 var _position_sync_timer: Timer = null
 var _position_sync_enabled: bool = false
@@ -497,6 +500,42 @@ func on_session_tap_outside() -> void:
 
 
 # =============================================================================
+# Character Animations
+# =============================================================================
+
+## Play celebration animation on the player character (fist pump)
+## Called from RN when session completes successfully
+func play_celebration_animation() -> void:
+	_ensure_library_cinematic()
+	if _library_cinematic:
+		_library_cinematic.play_celebration_animation()
+		print("[RNBridge] Playing celebration animation")
+	else:
+		print("[RNBridge] LibraryCinematic not available for celebration animation")
+
+
+func _ensure_library_cinematic() -> void:
+	## Find the library cinematic if not cached
+	if _library_cinematic:
+		return
+	
+	# Search scene tree for library cinematic
+	var root := get_tree().current_scene
+	if root:
+		_library_cinematic = _find_library_cinematic_recursive(root)
+
+
+func _find_library_cinematic_recursive(node: Node) -> LibraryCinematic:
+	if node is LibraryCinematic:
+		return node
+	for child in node.get_children():
+		var found := _find_library_cinematic_recursive(child)
+		if found:
+			return found
+	return null
+
+
+# =============================================================================
 # Multiplayer - Remote Players
 # =============================================================================
 
@@ -567,6 +606,7 @@ func change_scene(scene_name: String) -> void:
 	# Clear cached references
 	_home_showcase = null
 	_camera_rig = null
+	_library_cinematic = null
 	
 	# Defer scene change to next frame to avoid crashes
 	call_deferred("_do_change_scene", scene_path)

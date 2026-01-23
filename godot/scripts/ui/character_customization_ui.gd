@@ -32,6 +32,10 @@ func _ready() -> void:
 	_setup_buttons()
 	_setup_animation_list()
 	_on_tab_changed(0)
+	
+	# Show the character after setup
+	if modular_character:
+		modular_character.show_character()
 
 
 func _process(delta: float) -> void:

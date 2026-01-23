@@ -19,7 +19,9 @@ signal session_triggered(spot_position: Vector3)
 
 @export_group("Animation")
 @export var idle_animation: String = "Idle_F"
-@export var sitting_animation: String = "Idle_Sitting_01"  # Animation when seated
+@export var sit_down_animation: String = "SITTING_ON_CHAIR_01"  # Transition from walking to sitting
+@export var sitting_animation: String = "Idle_Sitting_01"  # Animation when seated (looping)
+@export var celebration_animation: String = "SITTING_FIST_PUMP_03"  # Animation on session success
 @export var auto_start: bool = true
 
 @export_group("Additional Characters")
@@ -527,8 +529,8 @@ func _trigger_session_at_spot(spot: Dictionary) -> void:
 	var spot_rotation: float = spot.get("rotation", 0.0)
 	_character.rotation_degrees.y = spot_rotation
 	
-	# Play sitting/studying animation
-	_character.transition_to_animation(sitting_animation)
+	# Play sit-down transition animation, then loop sitting idle
+	_character.play_animation_once(sit_down_animation, sitting_animation)
 	
 	# Switch camera to setup view (front-facing, shows player's face for setup modal)
 	if camera_rig:
@@ -934,6 +936,14 @@ func get_character() -> CinematicCharacter:
 func play_animation(anim_name: String) -> void:
 	if _character:
 		_character.transition_to_animation(anim_name)
+
+
+## Play celebration animation (fist pump) and return to sitting
+## Called when a focus session completes successfully
+func play_celebration_animation() -> void:
+	if _character and _is_player_seated:
+		print("[LibraryCinematic] Playing celebration animation")
+		_character.play_animation_once(celebration_animation, sitting_animation)
 
 
 ## Move character to position

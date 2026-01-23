@@ -13,22 +13,26 @@ import {
   Pressable,
   StyleSheet,
   Switch,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Slider from '@react-native-community/slider';
-import { useSessionStore } from '@/lib/session';
-import { Button } from '@/components/ui/button';
+import { useSessionStore, formatMinutesDisplay } from '@/lib/session';
+import { Button, TimerSlider } from '@/components/ui';
+
+const clockIcon = require('@/assets/ui/clock.png');
 
 interface SessionSetupModalProps {
   visible: boolean;
+  onTripleTap?: () => void;
 }
 
 // Duration range (minutes)
-const MIN_DURATION = 5;
-const MAX_DURATION = 60;
-const STEP = 5;
+const MIN_DURATION = 1;
+const MAX_DURATION = 120;
+const DEFAULT_DURATION = 20;
+const STEP = 1;
 
-export function SessionSetupModal({ visible }: SessionSetupModalProps) {
+export function SessionSetupModal({ visible, onTripleTap }: SessionSetupModalProps) {
   const insets = useSafeAreaInsets();
   const config = useSessionStore((s) => s.config);
   const updateConfig = useSessionStore((s) => s.updateConfig);
@@ -39,7 +43,7 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
   const handleDurationChange = (value: number) => {
     // Snap to nearest step
     const snapped = Math.round(value / STEP) * STEP;
-    updateConfig({ durationMinutes: snapped });
+    updateConfig({ durationMinutes: snapped || DEFAULT_DURATION });
   };
 
   const handleToggleDeepFocus = (value: boolean) => {
@@ -51,35 +55,33 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
       visible={visible}
       transparent
       animationType="fade"
+      supportedOrientations={['portrait', 'landscape']}
     >
-      <View style={[styles.backdrop, { paddingTop: insets.top + 16 }]}>
+      <Pressable style={[styles.backdrop, { paddingTop: insets.top + 16 }]} onPress={onTripleTap}>
         <View style={styles.container}>
           {/* Timer Icon */}
           <View style={styles.iconContainer}>
-            <Text style={styles.icon}>⏱️</Text>
+            <Image source={clockIcon} style={styles.clockIcon} />
           </View>
 
           {/* Timer Display */}
           <Text style={styles.timerDisplay}>
-            {config.durationMinutes}:00
+            {formatMinutesDisplay(config.durationMinutes)}
           </Text>
 
           {/* Duration Slider */}
           <View style={styles.sliderContainer}>
-            <Slider
-              style={styles.slider}
+            <TimerSlider
               minimumValue={MIN_DURATION}
               maximumValue={MAX_DURATION}
               step={STEP}
               value={config.durationMinutes}
               onValueChange={handleDurationChange}
-              minimumTrackTintColor="#5D4037"
-              maximumTrackTintColor="#D5CCC0"
-              thumbTintColor="#FFF"
             />
           </View>
 
           {/* Deep Focus Toggle */}
+          {/* TODO: Add deep focus toggle back in when we have a deep focus mode */}
           <View style={styles.toggleRow}>
             <Switch
               value={config.deepFocusMode}
@@ -90,25 +92,27 @@ export function SessionSetupModal({ visible }: SessionSetupModalProps) {
             />
             <Text style={styles.toggleLabel}>Deep focus mode</Text>
           </View>
-
+          <View style={styles.buttonsContainer}> 
           {/* Take a break link - only shown after completing at least one session */}
           {hasCompletedAnySession && (
-            <Pressable
-              style={styles.linkButton}
+            <Button 
+              title="Take a break instead"
               onPress={showBreakSetup}
-            >
-              <Text style={styles.linkText}>Take a break instead</Text>
-            </Pressable>
+              variant="muted"
+              size="small"
+            />
           )}
 
           {/* Start Button */}
           <Button
             title="Start Session"
             onPress={startSession}
-            style={styles.startButton}
-          />
+            variant="primary"
+            size="big"
+            />
+          </View>
         </View>
-      </View>
+      </Pressable>
     </Modal>
   );
 }
@@ -147,8 +151,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: {
-    fontSize: 32,
+  clockIcon: {
+    width: 44,
+    height: 44,
+    resizeMode: 'contain',
   },
   timerDisplay: {
     fontSize: 80,
@@ -159,12 +165,7 @@ const styles = StyleSheet.create({
   },
   sliderContainer: {
     width: '100%',
-    paddingHorizontal: 8,
     marginBottom: 24,
-  },
-  slider: {
-    width: '100%',
-    height: 40,
   },
   toggleRow: {
     flexDirection: 'row',
@@ -187,5 +188,11 @@ const styles = StyleSheet.create({
   },
   startButton: {
     width: '100%',
+  },
+  buttonsContainer: {
+    width: '100%',
+    flexDirection: 'column',
+    gap: 12,
+    alignItems: 'center',
   },
 });

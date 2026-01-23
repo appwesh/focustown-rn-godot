@@ -43,7 +43,7 @@ export const DURATION_OPTIONS = [5, 10, 15, 25, 30, 45, 60] as const;
 // Default session config
 export const DEFAULT_CONFIG: SessionConfig = {
   durationMinutes: 25,
-  deepFocusMode: true,
+  deepFocusMode: false,
 };
 
 // Break duration calculation (1 min break per 5 min focus, min 1, max 15)

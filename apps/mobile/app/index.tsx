@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useRouter, useRootNavigationState } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { useAuth } from '@/lib/firebase';
 
 /**
@@ -13,6 +14,11 @@ export default function RootScreen() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
   const navigationState = useRootNavigationState();
+
+  // Lock to portrait orientation
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+  }, []);
 
   useEffect(() => {
     // Wait for navigation to be ready and auth to be checked

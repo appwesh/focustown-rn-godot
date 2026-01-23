@@ -9,9 +9,11 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { useAuth, groupsService } from '@/lib/firebase';
 import { useSocialStore, type LobbySlot } from '@/lib/social';
 import { BeanCounter, Button } from '@/components/ui';
@@ -34,7 +36,7 @@ const CAFES = [
     flag: '🇺🇸',
     buildingId: 'library',
     buildingName: 'Boston Library',
-    image: require('@/assets/ui/bostonlibrary.png'),
+    image: require('@/assets/ui/cafeLibrary.png'),
     locked: false,
     studyingNow: 512,
   },
@@ -44,11 +46,84 @@ const CAFES = [
     flag: '🇰🇷',
     buildingId: 'cafe',
     buildingName: 'Brooklyn Cafe',
-    image: require('@/assets/ui/koreacafe.png'),
-    locked: true,
+    image: require('@/assets/ui/cafeCabin.png'),
+    locked: false,
+    studyingNow: 1024,
+  },
+  {
+    id: 'europe-cafe',
+    name: 'stockholm cafe',
+    flag: '🇸🇪',
+    buildingId: 'europe',
+    buildingName: 'Stockholm Café',
+    image: require('@/assets/ui/cafeEurope.png'),
+    locked: false,
+    studyingNow: 847,
+  },
+  {
+    id: 'ghibli-cafe',
+    name: 'forest hideaway',
+    flag: '🇯🇵',
+    buildingId: 'ghibli',
+    buildingName: 'Forest Hideaway',
+    image: require('@/assets/ui/cafeGhibli.png'),
+    locked: false,
+    studyingNow: 631,
+  },
+  {
+    id: 'japan-cafe',
+    name: 'japanese cafe',
+    flag: '🇯🇵',
+    buildingId: 'japan',
+    buildingName: 'Japanese Cafe',
+    image: require('@/assets/ui/cafeJapan.png'),
+    locked: false,
     studyingNow: 1024,
   },
 ];
+
+// Animated Cafe Card component
+const AnimatedCafeCard = ({ 
+  cafe, 
+  isSelected, 
+  onPress 
+}: { 
+  cafe: typeof CAFES[0]; 
+  isSelected: boolean; 
+  onPress: () => void;
+}) => {
+  const scale = useSharedValue(isSelected ? 1 : 0.85);
+  const opacity = useSharedValue(isSelected ? 1 : 0.5);
+
+  useEffect(() => {
+    scale.value = withTiming(isSelected ? 1 : 0.85, { duration: 200 });
+    opacity.value = withTiming(isSelected ? 1 : 0.5, { duration: 200 });
+  }, [isSelected]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Pressable onPress={onPress} style={styles.cafeCardPressable}>
+      <Animated.View style={[styles.cafeCard, animatedStyle]}>
+        <View style={styles.cafeImageContainer}>
+          <Image
+            source={cafe.image}
+            style={[styles.cafeImage, cafe.locked && styles.cafeImageLocked]}
+            resizeMode="contain"
+          />
+          {cafe.locked && (
+            <View style={styles.lockOverlay}>
+              <Image source={require('@/assets/ui/lock.png')} style={styles.lockIcon} />
+            </View>
+          )}
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
+};
 
 type NavTab = 'social' | 'main' | 'shop';
 
@@ -62,6 +137,20 @@ export default function HomeScreen() {
   const [sceneTransitioning, setSceneTransitioning] = useState(true); // Start with transition visible
   const [pckLoading, setPckLoading] = useState(true);
   const [pckDownloadProgress, setPckDownloadProgress] = useState<number | undefined>(undefined);
+
+  // Triple tap debug trigger
+  const tapTimesRef = useRef<number[]>([]);
+  const handleTripleTap = useCallback(() => {
+    const now = Date.now();
+    const recentTaps = tapTimesRef.current.filter((t) => now - t < 500);
+    recentTaps.push(now);
+    tapTimesRef.current = recentTaps;
+    
+    if (recentTaps.length >= 3) {
+      setShowDebugModal(true);
+      tapTimesRef.current = [];
+    }
+  }, []);
 
   const { user, userDoc } = useAuth();
 
@@ -91,6 +180,13 @@ export default function HomeScreen() {
       return cleanup;
     }
   }, [user, initialize]);
+
+  // Lock to portrait orientation when this screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    }, [])
+  );
 
   // Switch to home showcase scene when screen is focused
   // Shows transition overlay while scene changes
@@ -279,6 +375,7 @@ export default function HomeScreen() {
     <LinearGradient
       colors={['#FEE2AA', '#F6F4E7','#F6F4E7']}
       style={[styles.container, { paddingTop: insets.top }]}
+      onTouchEnd={handleTripleTap}
     >
       {/* Plant decoration - top left */}
       <Image
@@ -293,8 +390,6 @@ export default function HomeScreen() {
         <Pressable
           style={({ pressed }) => [styles.profilePill, pressed && styles.profilePillPressed]}
           onPress={() => router.push('/settings')}
-          onLongPress={() => setShowDebugModal(true)}
-          delayLongPress={500}
         >
           {/* <Image 
             source={require('@/assets/ui/settings.png')} 
@@ -341,33 +436,14 @@ export default function HomeScreen() {
             decelerationRate="fast"
             onMomentumScrollEnd={handleScrollEnd}
           >
-            {CAFES.map((cafe, index) => {
-              const isSelected = selectedCafe === index;
-              const isCafeLocked = cafe.locked;
-              return (
-                <Pressable
-                  key={cafe.id}
-                  style={[
-                    styles.cafeCard,
-                    isSelected && styles.cafeCardSelected,
-                  ]}
-                  onPress={() => setSelectedCafe(index)}
-                >
-                  <View style={styles.cafeImageContainer}>
-                    <Image
-                      source={cafe.image}
-                      style={[styles.cafeImage, isCafeLocked && styles.cafeImageLocked]}
-                      resizeMode="contain"
-                    />
-                    {isCafeLocked && (
-                      <View style={styles.lockOverlay}>
-                        <Image source={require('@/assets/ui/lock.png')} style={styles.lockIcon} />
-                      </View>
-                    )}
-                  </View>
-                </Pressable>
-              );
-            })}
+            {CAFES.map((cafe, index) => (
+              <AnimatedCafeCard
+                key={cafe.id}
+                cafe={cafe}
+                isSelected={selectedCafe === index}
+                onPress={() => setSelectedCafe(index)}
+              />
+            ))}
           </ScrollView>
 
           {/* Right Arrow */}
@@ -503,7 +579,7 @@ export default function HomeScreen() {
         onClose={dismissInviteModal}
       />
 
-      {/* Debug Modal (long press settings) */}
+      {/* Debug Modal (triple tap anywhere) */}
       <DebugModal
         visible={showDebugModal}
         onClose={() => setShowDebugModal(false)}
@@ -628,13 +704,13 @@ const styles = StyleSheet.create({
     gap: CAROUSEL_ITEM_SPACING,
     alignItems: 'center',
   },
+  cafeCardPressable: {
+    width: CAROUSEL_ITEM_WIDTH,
+  },
   cafeCard: {
     width: CAROUSEL_ITEM_WIDTH,
     alignItems: 'center',
     padding: 8,
-  },
-  cafeCardSelected: {
-    transform: [{ scale: 1.02 }],
   },
   cafeImageContainer: {
     width: CAROUSEL_ITEM_WIDTH - 16,

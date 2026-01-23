@@ -3,13 +3,13 @@
 importer="animation_library"
 importer_version=1
 type="AnimationLibrary"
-uid="uid://b4c3jihu1bflx"
-path="res://.godot/imported/ANIM_Avatar_Idle_Sitting_01.fbx-603092b37641164c1cd0fa4a0ba30fe8.res"
+uid="uid://bxctldlr1v4tp"
+path="res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01.fbx-69bb94e5b80b6db49795f4b0e9417671.res"
 
 [deps]
 
-source_file="res://assets/characters/cozylife/animations/ANIM_Avatar_Idle_Sitting_01.fbx"
-dest_files=["res://.godot/imported/ANIM_Avatar_Idle_Sitting_01.fbx-603092b37641164c1cd0fa4a0ba30fe8.res"]
+source_file="res://assets/characters/cozylife/animations/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01.fbx"
+dest_files=["res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01.fbx-69bb94e5b80b6db49795f4b0e9417671.res"]
 
 [params]
 

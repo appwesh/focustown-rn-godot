@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { clearPckCache } from './godot-view';
 import { useSocialStore } from '@/lib/social';
+import { useSessionStore } from '@/lib/session';
 import { useAuth, db, friendsService } from '@/lib/firebase';
 import {
   collection,
@@ -35,7 +36,7 @@ interface DebugModalProps {
 }
 
 // Tab type
-type DebugTab = 'state' | 'users' | 'friends' | 'lobby' | 'cache';
+type DebugTab = 'state' | 'session' | 'users' | 'friends' | 'lobby' | 'cache';
 
 // Test user for debug
 interface TestUser {
@@ -77,7 +78,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
   }
   const [groupInvites, setGroupInvites] = useState<GroupInviteInfo[]>([]);
   
-  const { user, userDoc } = useAuth();
+  const { user, userDoc, recordSession } = useAuth();
   
   // Social store state
   const friends = useSocialStore((s) => s.friends);
@@ -395,6 +396,8 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
     switch (activeTab) {
       case 'state':
         return renderStateTab();
+      case 'session':
+        return renderSessionTab();
       case 'users':
         return renderUsersTab();
       case 'friends':
@@ -404,6 +407,71 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
       case 'cache':
         return renderCacheTab();
     }
+  };
+
+  // Session store for fake sessions
+  const sessionPhase = useSessionStore((s) => s.phase);
+  const COINS_PER_MINUTE = 1; // Match the store's coin rate
+  
+  // Trigger fake session completion
+  const triggerFakeSession = useCallback((durationMinutes: number) => {
+    const durationSeconds = durationMinutes * 60;
+    const coinsEarned = Math.max(1, Math.floor(durationMinutes * COINS_PER_MINUTE));
+    
+    // Actually record the session to Firebase (awards coins)
+    recordSession(durationSeconds, coinsEarned);
+    
+    // Directly set the store state to simulate a completed session
+    useSessionStore.setState({
+      completedSession: {
+        durationSeconds,
+        coinsEarned,
+        startedAt: Date.now() - durationSeconds * 1000,
+      },
+      activeSession: null,
+      phase: 'complete',
+    });
+    
+    onClose(); // Close debug modal to see the completion screen
+  }, [onClose, recordSession]);
+
+  // SESSION TAB
+  const renderSessionTab = () => {
+    const durations = [5, 15, 25, 45, 60, 90];
+    
+    return (
+      <View style={styles.tabContent}>
+        <Text style={styles.sectionTitle}>🎯 Fake Session Complete</Text>
+        <Text style={styles.hintText}>
+          Trigger a fake session completion to test the success screen.
+          Coins are calculated at {COINS_PER_MINUTE} per minute.
+        </Text>
+        
+        <View style={styles.sessionGrid}>
+          {durations.map((mins) => {
+            const coins = Math.floor(mins * COINS_PER_MINUTE);
+            return (
+              <Pressable
+                key={mins}
+                style={[styles.sessionBtn, styles.successBtn]}
+                onPress={() => triggerFakeSession(mins)}
+              >
+                <Text style={styles.sessionBtnTime}>{mins} min</Text>
+                <Text style={styles.sessionBtnCoins}>{coins} coins</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        
+        <View style={styles.divider} />
+        
+        <Text style={styles.sectionTitle}>📊 Current Session State</Text>
+        <View style={styles.stateCard}>
+          <Text style={styles.stateLabel}>Phase</Text>
+          <Text style={styles.stateValue}>{sessionPhase}</Text>
+        </View>
+      </View>
+    );
   };
 
   // STATE TAB
@@ -915,7 +983,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
 
               {/* Tabs */}
               <View style={styles.tabs}>
-                {(['state', 'users', 'friends', 'lobby', 'cache'] as DebugTab[]).map((tab) => (
+                {(['state', 'session', 'users', 'friends', 'lobby', 'cache'] as DebugTab[]).map((tab) => (
               <Pressable
                     key={tab}
                     style={[styles.tab, activeTab === tab && styles.tabActive]}
@@ -923,6 +991,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
                   >
                     <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
                       {tab === 'state' && '📊'}
+                      {tab === 'session' && '🎯'}
                       {tab === 'users' && '👤'}
                       {tab === 'friends' && '🤝'}
                       {tab === 'lobby' && '🏠'}
@@ -1252,5 +1321,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#8D6E63',
+  },
+  sessionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+  },
+  sessionBtn: {
+    width: '31%',
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 2,
+  },
+  sessionBtnTime: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  sessionBtnCoins: {
+    fontSize: 11,
+    color: '#fff',
+    opacity: 0.85,
+    marginTop: 2,
   },
 });

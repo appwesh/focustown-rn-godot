@@ -41,7 +41,7 @@ const GRACE_PERIOD_MS = 15000;
 const REMINDER_NOTIFICATION_DELAY_S = 10;
 
 /** Coins earned per minute of focus */
-const COINS_PER_MINUTE = 10;
+const COINS_PER_MINUTE = 1;
 
 /** Heartbeat interval for presence updates */
 const HEARTBEAT_INTERVAL_MS = 30000;
@@ -847,10 +847,20 @@ export const selectHasCompletedAnySession = (state: SessionStore) => state.hasCo
 // Helper: Format seconds to MM:SS
 // ============================================================================
 
+/**
+ * Format seconds for countdown timer display (smart hours/minutes/seconds)
+ * - Under 60 min: "25:30" format (mm:ss)
+ * - 60+ min: "1:05:30" format (h:mm:ss)
+ */
 export function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
+  const hours = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  
+  if (hours > 0) {
+    return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 // Format seconds to human readable (e.g., "32M" or "1H 24M")
@@ -862,4 +872,33 @@ export function formatDuration(seconds: number): string {
     return `${hours}H ${mins}M`;
   }
   return `${mins}M`;
+}
+
+/**
+ * Format minutes for timer display (smart hours/minutes)
+ * - Under 60 min: "25:00" format
+ * - 60+ min: "1:00", "1:30", "2:00" format (hours:minutes)
+ */
+export function formatMinutesDisplay(minutes: number): string {
+  if (minutes < 60) {
+    return `${minutes}:00`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}:${mins.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Format minutes to compact human readable (e.g., "25m", "1h", "1h 30m")
+ */
+export function formatMinutesCompact(minutes: number): string {
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (mins === 0) {
+    return `${hours}h`;
+  }
+  return `${hours}h ${mins}m`;
 }

@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text, Pressable, ViewStyle } from 'react-native';
 
 type ButtonVariant = 'primary' | 'secondary' | 'muted' | 'disabled';
-type ButtonSize = 'small' | 'medium';
+type ButtonSize = 'small' | 'medium' | 'big';
 
 interface ButtonProps {
   title: string;
@@ -46,6 +46,14 @@ const SIZES = {
   },
   medium: {
     paddingVertical: 10,
+    paddingHorizontal: 18,
+    fontSize: 18,
+    borderWidth: 2,
+    borderBottomWidth: 6,
+    pressedMarginTop: 3,
+  },
+  big: {
+    paddingVertical: 10,
     paddingHorizontal: 24,
     fontSize: 24,
     borderWidth: 3,
@@ -59,7 +67,7 @@ export function Button({
   onPress, 
   disabled = false, 
   variant = 'primary',
-  size = 'medium',
+  size = 'big',
   style,
 }: ButtonProps) {
   const colorKey = disabled ? 'disabled' : variant;

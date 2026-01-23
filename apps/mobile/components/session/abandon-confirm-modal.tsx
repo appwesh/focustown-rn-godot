@@ -11,6 +11,7 @@ import {
   Modal,
   View,
   Text,
+  Pressable,
   StyleSheet,
 } from 'react-native';
 import { useSessionStore } from '@/lib/session';
@@ -18,9 +19,10 @@ import { Button } from '@/components/ui/button';
 
 interface AbandonConfirmModalProps {
   visible: boolean;
+  onTripleTap?: () => void;
 }
 
-export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
+export function AbandonConfirmModal({ visible, onTripleTap }: AbandonConfirmModalProps) {
   const confirmAbandonSession = useSessionStore((s) => s.confirmAbandonSession);
   const cancelAbandonSession = useSessionStore((s) => s.cancelAbandonSession);
   const isGroupSession = useSessionStore((s) => s.isGroupSession);
@@ -30,8 +32,9 @@ export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
       visible={visible}
       transparent
       animationType="fade"
+      supportedOrientations={['portrait', 'landscape']}
     >
-      <View style={styles.backdrop}>
+      <Pressable style={styles.backdrop} onPress={onTripleTap}>
         <View style={styles.container}>
           {/* Title */}
           <Text style={styles.title}>End Session Early?</Text>
@@ -60,7 +63,7 @@ export function AbandonConfirmModal({ visible }: AbandonConfirmModalProps) {
             />
           </View>
         </View>
-      </View>
+      </Pressable>
     </Modal>
   );
 }

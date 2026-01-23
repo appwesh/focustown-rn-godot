@@ -10,6 +10,7 @@ import {
   Modal,
   View,
   Text,
+  Pressable,
   StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,9 +20,10 @@ import { Button } from '@/components/ui/button';
 
 interface SessionAbandonedModalProps {
   visible: boolean;
+  onTripleTap?: () => void;
 }
 
-export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
+export function SessionAbandonedModal({ visible, onTripleTap }: SessionAbandonedModalProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const goHomeFromAbandoned = useSessionStore((s) => s.goHomeFromAbandoned);
@@ -43,8 +45,9 @@ export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
       visible={visible}
       transparent
       animationType="fade"
+      supportedOrientations={['portrait', 'landscape']}
     >
-      <View style={[styles.backdrop, { paddingTop: insets.top + 16 }]}>
+      <Pressable style={[styles.backdrop, { paddingTop: insets.top + 16 }]} onPress={onTripleTap}>
         <View style={styles.container}>
           {/* Title */}
           <Text style={styles.title}>Session Ended Early</Text>
@@ -60,16 +63,18 @@ export function SessionAbandonedModal({ visible }: SessionAbandonedModalProps) {
               title="Leave Cafe"
               onPress={handleGoHome}
               variant="muted"
+              size="medium"
               style={styles.button}
             />
             <Button
               title="Start Another"
               onPress={handleContinue}
+              size="medium"
               style={styles.button}
             />
           </View>
         </View>
-      </View>
+      </Pressable>
     </Modal>
   );
 }

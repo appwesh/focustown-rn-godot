@@ -11,6 +11,8 @@ export {
   clearGodotCallbacks,
   formatTime,
   formatDuration,
+  formatMinutesDisplay,
+  formatMinutesCompact,
   // Selectors
   selectPhase,
   selectConfig,
