@@ -17,14 +17,15 @@ export const metadata: Metadata = {
     apple: "/focusfavicon.png",
   },
   openGraph: {
+    siteName: "FocusTown",
     title: "FocusTown - Study with Friends",
     description: "Focusing feels better with friends. Study live with homies around the world.",
     images: [
       {
-        url: "/capybaraLandscape.png",
+        url: "/focusbanner.png",
         width: 1200,
         height: 630,
-        alt: "FocusTown - Capybara studying in cozy room",
+        alt: "FocusTown - Study with friends in a virtual library",
       },
     ],
   },
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "FocusTown - Study with Friends",
     description: "Focusing feels better with friends. Study live with homies around the world.",
-    images: ["/capybaraLandscape.png"],
+    images: ["/focusbanner.png"],
   },
 };
 

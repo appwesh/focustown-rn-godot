@@ -34,7 +34,7 @@ export default function Home() {
       />
 
       {/* Content Overlay */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center pt-4 md:pt-[15vh] px-3 md:px-4">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-3 md:px-4">
         {/* Main Header Card */}
         <div className="card px-4 py-4 md:px-8 md:py-6 max-w-2xl w-full text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
