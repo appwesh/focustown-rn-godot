@@ -14,6 +14,7 @@ export { groupsService } from "./groups";
 export type {
   // User
   UserDoc,
+  CharacterSkin,
   AuthState,
   PhoneAuthStep,
   PhoneAuthState,

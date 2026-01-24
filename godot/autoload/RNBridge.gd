@@ -666,6 +666,17 @@ func register_character_showcase(showcase: CharacterCustomizationShowcase) -> vo
 		_character_showcase.set_user_character(_user_character_data)
 
 
+## Register the LibraryCinematic scene with RNBridge
+## Called automatically by LibraryCinematic._ready()
+func register_library_cinematic(cinematic: LibraryCinematic) -> void:
+	_library_cinematic = cinematic
+	print("[RNBridge] LibraryCinematic registered")
+	
+	# Apply any pending user character data
+	if not _user_character_data.is_empty():
+		_library_cinematic.set_user_character(_user_character_data)
+
+
 ## Set the user's character appearance from React Native
 ## skin_data should be a Dictionary with keys like: SkinTone, Face, EyeColor, Hair, etc.
 ## See CharacterPresets for the expected format
@@ -673,20 +684,24 @@ func set_user_character(skin_data: Dictionary) -> void:
 	_user_character_data = skin_data
 	print("[RNBridge] User character data received: ", skin_data.keys())
 	
-	# Route to whichever showcase is currently active
+	# Route to whichever scene is currently active
 	if _home_showcase:
 		_home_showcase.set_user_character(skin_data)
 	elif _character_showcase:
 		_character_showcase.set_user_character(skin_data)
+	elif _library_cinematic:
+		_library_cinematic.set_user_character(skin_data)
 	else:
-		print("[RNBridge] No showcase active, data stored for later")
+		print("[RNBridge] No scene active, data stored for later")
 
 
 ## Set user character from individual values (called from RN since Dictionary.create doesn't work)
 ## Values of -1 are ignored (not set)
 func set_user_character_values(
 	skin_tone: int, face: int, eye_color: int, hair: int, hair_color: int,
-	top: int, bottom: int, shoes: int, hat: int, glasses: int
+	top: int, top_variant: int, bottom: int, bottom_variant: int,
+	shoes: int, shoes_variant: int, hat: int, hat_variant: int,
+	glasses: int, glasses_variant: int
 ) -> void:
 	var skin_data := {}
 	if skin_tone >= 0: skin_data["SkinTone"] = skin_tone
@@ -695,10 +710,15 @@ func set_user_character_values(
 	if hair >= 0: skin_data["Hair"] = hair
 	if hair_color >= 0: skin_data["HairColor"] = hair_color
 	if top >= 0: skin_data["Top"] = top
+	if top_variant >= 0: skin_data["TopVariant"] = top_variant
 	if bottom >= 0: skin_data["Bottom"] = bottom
+	if bottom_variant >= 0: skin_data["BottomVariant"] = bottom_variant
 	if shoes >= 0: skin_data["Shoes"] = shoes
+	if shoes_variant >= 0: skin_data["ShoesVariant"] = shoes_variant
 	if hat >= 0: skin_data["Hat"] = hat
+	if hat_variant >= 0: skin_data["HatVariant"] = hat_variant
 	if glasses >= 0: skin_data["Glasses"] = glasses
+	if glasses_variant >= 0: skin_data["GlassesVariant"] = glasses_variant
 	
 	set_user_character(skin_data)
 

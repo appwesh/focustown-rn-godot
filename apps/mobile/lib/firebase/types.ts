@@ -5,6 +5,29 @@ import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 // ============================================================================
 
 /**
+ * Character appearance data for customization
+ */
+export interface CharacterSkin {
+  SkinTone?: number;
+  Face?: number;
+  EyeColor?: number;
+  Hair?: number;
+  HairColor?: number;
+  Top?: number;
+  TopVariant?: number;
+  Bottom?: number;
+  BottomVariant?: number;
+  Shoes?: number;
+  ShoesVariant?: number;
+  Hat?: number;
+  HatVariant?: number;
+  Glasses?: number;
+  GlassesVariant?: number;
+  Neck?: number;
+  NeckVariant?: number;
+}
+
+/**
  * User document stored in Firestore
  * Flat structure to avoid nested writes and complex queries
  */
@@ -18,6 +41,12 @@ export interface UserDoc {
   displayName: string | null;
   username: string | null; // Unique, lowercase, for friend search
   avatarUrl: string | null;
+
+  // Character customization
+  characterSkin: CharacterSkin | null;
+
+  // Store / Inventory
+  ownedItems: string[]; // Array of item IDs the user has purchased
 
   // Game progress (updated frequently via increment())
   totalCoins: number;

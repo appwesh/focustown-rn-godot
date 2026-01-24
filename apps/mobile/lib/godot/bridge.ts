@@ -1060,10 +1060,17 @@ export interface CharacterSkin {
   Hair?: number;
   HairColor?: number;
   Top?: number;
+  TopVariant?: number;
   Bottom?: number;
+  BottomVariant?: number;
   Shoes?: number;
+  ShoesVariant?: number;
   Hat?: number;
+  HatVariant?: number;
   Glasses?: number;
+  GlassesVariant?: number;
+  Neck?: number;
+  NeckVariant?: number;
 }
 
 /**
@@ -1093,10 +1100,15 @@ export function setUserCharacter(skinData: CharacterSkin): void {
         skinData.Hair ?? -1,
         skinData.HairColor ?? -1,
         skinData.Top ?? -1,
+        skinData.TopVariant ?? -1,
         skinData.Bottom ?? -1,
+        skinData.BottomVariant ?? -1,
         skinData.Shoes ?? -1,
+        skinData.ShoesVariant ?? -1,
         skinData.Hat ?? -1,
-        skinData.Glasses ?? -1
+        skinData.HatVariant ?? -1,
+        skinData.Glasses ?? -1,
+        skinData.GlassesVariant ?? -1
       );
       console.log('[Bridge] Set user character');
     }

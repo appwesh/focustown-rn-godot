@@ -210,9 +210,15 @@ export default function HomeScreen() {
         console.log('[Home] Switching to home_showcase scene');
         changeScene('home_showcase');
         
-        // Wait for scene change to complete, then hide overlay
+        // Wait for scene change to complete, then apply character and hide overlay
         setTimeout(() => {
           if (cancelled) return;
+          
+          // Apply saved character appearance
+          if (userDoc?.characterSkin) {
+            setUserCharacter(userDoc.characterSkin);
+            console.log('[Home] Applied saved character skin');
+          }
           
           // Hide transition overlay after scene is ready
           setTimeout(() => {
@@ -230,7 +236,7 @@ export default function HomeScreen() {
         cancelled = true;
         clearTimeout(timer);
       };
-    }, [])
+    }, [userDoc?.characterSkin])
   );
 
   // Auto-navigate to game when group session starts (for invited users)
@@ -345,7 +351,7 @@ export default function HomeScreen() {
     if (tab === 'social') {
       router.push('/social');
     } else if (tab === 'shop') {
-      router.push('/character');
+      router.push('/store');
     }
   };
 

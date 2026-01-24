@@ -6,9 +6,10 @@ import {
   onSnapshot,
   increment,
   collection,
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "./config";
-import type { UserDoc } from "./types";
+import type { UserDoc, CharacterSkin } from "./types";
 
 // Collection reference
 const usersCollection = collection(db, "users");
@@ -48,6 +49,8 @@ export const userService = {
       displayName: null,
       username: null,
       avatarUrl: null,
+      characterSkin: null,
+      ownedItems: [],
       totalCoins: 0,
       totalFocusTime: 0,
       sessionsCompleted: 0,
@@ -82,6 +85,30 @@ export const userService = {
     const docRef = doc(usersCollection, uid);
     await updateDoc(docRef, {
       ...updates,
+      lastActiveAt: Date.now(),
+    });
+  },
+
+  /**
+   * Update user's character skin/appearance.
+   */
+  async updateCharacterSkin(uid: string, characterSkin: CharacterSkin): Promise<void> {
+    const docRef = doc(usersCollection, uid);
+    await updateDoc(docRef, {
+      characterSkin,
+      lastActiveAt: Date.now(),
+    });
+  },
+
+  /**
+   * Purchase an item from the store.
+   * Deducts coins and adds item to owned items.
+   */
+  async purchaseItem(uid: string, itemId: string, price: number): Promise<void> {
+    const docRef = doc(usersCollection, uid);
+    await updateDoc(docRef, {
+      totalCoins: increment(-price),
+      ownedItems: arrayUnion(itemId),
       lastActiveAt: Date.now(),
     });
   },

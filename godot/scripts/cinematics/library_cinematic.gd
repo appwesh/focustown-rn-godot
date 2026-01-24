@@ -136,6 +136,10 @@ var _original_move_speed: float = 0.0
 var _entrance_camera: Camera3D = null
 
 
+## Stored user character data from RN
+var _user_character_data: Dictionary = {}
+
+
 func _ready() -> void:
 	_character_scene = preload("res://scenes/characters/cinematic_character.tscn")
 	
@@ -173,9 +177,19 @@ func _ready() -> void:
 	FocusSessionManager.session_started.connect(_on_focus_session_started)
 	FocusSessionManager.session_ended.connect(_on_focus_session_ended)
 	
+	# Register with RNBridge for character updates
+	_register_with_rnbridge()
+	
 	# Start entrance cinematic if enabled (deferred to allow scene to fully load)
 	if play_entrance_cinematic and _character:
 		call_deferred("_start_entrance_cinematic")
+
+
+func _register_with_rnbridge() -> void:
+	## Register this scene with RNBridge to receive character updates
+	if RNBridge:
+		RNBridge.register_library_cinematic(self)
+		print("[LibraryCinematic] Registered with RNBridge")
 
 
 func _process(delta: float) -> void:
@@ -1089,6 +1103,12 @@ func _apply_character_preset(preset_name: String) -> void:
 	for i in range(5):
 		await get_tree().process_frame
 	
+	# Check if we have user character data from RN - use that instead of preset
+	if not _user_character_data.is_empty():
+		_character.apply_preset_dict(_user_character_data, "Player")
+		print("[LibraryCinematic] Applied user character data instead of preset")
+		return
+	
 	# apply_preset_dict/randomize_appearance auto-shows the character
 	var preset_data := CharacterPresets.get_preset(preset_name)
 	if not preset_data.is_empty():
@@ -1098,6 +1118,33 @@ func _apply_character_preset(preset_name: String) -> void:
 		# Create random if preset not found
 		push_warning("[LibraryCinematic] Preset '%s' not found, using random" % preset_name)
 		_character.randomize_appearance()
+
+
+## Set the user's character appearance from React Native
+func set_user_character(skin_data: Dictionary) -> void:
+	_user_character_data = skin_data
+	
+	if _character:
+		_apply_user_character_deferred(skin_data)
+	
+	print("[LibraryCinematic] User character data received: %s" % skin_data.keys())
+
+
+func _apply_user_character_deferred(data: Dictionary) -> void:
+	## Apply user character data after initialization
+	for i in range(5):
+		await get_tree().process_frame
+	
+	if not _character:
+		return
+	
+	var modular := _character.get_modular_character()
+	if not modular:
+		push_warning("[LibraryCinematic] ModularCharacter not ready for user")
+		return
+	
+	_character.apply_preset_dict(data, "Player")
+	print("[LibraryCinematic] Applied user character data")
 
 
 ## Spawn multiple characters at different positions

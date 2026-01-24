@@ -29,6 +29,7 @@ import {
   switchToSetupCamera,
   switchToThirdPersonCamera,
   changeScene,
+  setUserCharacter,
   setEntranceCinematicFinishedHandler,
   registerEntranceCinematicFinishedCallback,
   type SpotLocation,
@@ -151,12 +152,22 @@ export default function GameScreen() {
       console.log('[Game] Switching to library scene');
       changeScene('library');
       
-      // Hide transition after scene loads
+      // Apply saved character appearance after scene loads
       setTimeout(() => {
-        if (!cancelled) {
-          setSceneTransitioning(false);
+        if (cancelled) return;
+        
+        if (userDoc?.characterSkin) {
+          setUserCharacter(userDoc.characterSkin);
+          console.log('[Game] Applied saved character skin');
         }
-      }, 400);
+        
+        // Hide transition after scene loads
+        setTimeout(() => {
+          if (!cancelled) {
+            setSceneTransitioning(false);
+          }
+        }, 100);
+      }, 300);
     };
     
     // Start scene change after brief delay
@@ -166,7 +177,7 @@ export default function GameScreen() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, []);
+  }, [userDoc?.characterSkin]);
 
   // Register entrance cinematic finished callback
   useEffect(() => {
