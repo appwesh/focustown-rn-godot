@@ -603,6 +603,9 @@ func remove_remote_player(od_id: String) -> void:
 ## Reference to the HomeCharacterShowcase scene (if active)
 var _home_showcase: HomeCharacterShowcase = null
 
+## Reference to the CharacterCustomizationShowcase scene (if active)
+var _character_showcase: CharacterCustomizationShowcase = null
+
 ## Stored user character data (persisted until applied)
 var _user_character_data: Dictionary = {}
 
@@ -610,11 +613,12 @@ var _user_character_data: Dictionary = {}
 const SCENE_PATHS := {
 	"library": "res://scenes/main/library_cinematic_with_character.tscn",
 	"home_showcase": "res://scenes/main/home_character_showcase.tscn",
+	"character_showcase": "res://scenes/main/character_customization_showcase.tscn",
 }
 
 
 ## Change the current scene
-## scene_name can be: "library", "home_showcase"
+## scene_name can be: "library", "home_showcase", "character_showcase"
 func change_scene(scene_name: String) -> void:
 	var scene_path: String = SCENE_PATHS.get(scene_name, "")
 	if scene_path.is_empty():
@@ -625,6 +629,7 @@ func change_scene(scene_name: String) -> void:
 	
 	# Clear cached references
 	_home_showcase = null
+	_character_showcase = null
 	_camera_rig = null
 	_library_cinematic = null
 	
@@ -650,6 +655,17 @@ func register_home_showcase(showcase: HomeCharacterShowcase) -> void:
 		_home_showcase.set_user_character(_user_character_data)
 
 
+## Register the CharacterCustomizationShowcase scene with RNBridge
+## Called automatically by CharacterCustomizationShowcase._ready()
+func register_character_showcase(showcase: CharacterCustomizationShowcase) -> void:
+	_character_showcase = showcase
+	print("[RNBridge] CharacterCustomizationShowcase registered")
+	
+	# Apply any pending user character data
+	if not _user_character_data.is_empty():
+		_character_showcase.set_user_character(_user_character_data)
+
+
 ## Set the user's character appearance from React Native
 ## skin_data should be a Dictionary with keys like: SkinTone, Face, EyeColor, Hair, etc.
 ## See CharacterPresets for the expected format
@@ -657,10 +673,13 @@ func set_user_character(skin_data: Dictionary) -> void:
 	_user_character_data = skin_data
 	print("[RNBridge] User character data received: ", skin_data.keys())
 	
+	# Route to whichever showcase is currently active
 	if _home_showcase:
 		_home_showcase.set_user_character(skin_data)
+	elif _character_showcase:
+		_character_showcase.set_user_character(skin_data)
 	else:
-		print("[RNBridge] HomeCharacterShowcase not active, data stored for later")
+		print("[RNBridge] No showcase active, data stored for later")
 
 
 ## Set user character from individual values (called from RN since Dictionary.create doesn't work)
@@ -702,8 +721,10 @@ func refresh_showcase_npcs() -> void:
 func set_user_character_animation(anim_name: String) -> void:
 	if _home_showcase:
 		_home_showcase.set_user_animation(anim_name)
+	elif _character_showcase:
+		_character_showcase.set_user_animation(anim_name)
 	else:
-		push_warning("[RNBridge] HomeCharacterShowcase not active")
+		push_warning("[RNBridge] No showcase active")
 
 
 ## Set the selected café index (switches NPC groups with animation)

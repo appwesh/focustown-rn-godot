@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bkgg54ex3jefs"
-path.s3tc="res://.godot/imported/laptoplink_screen_focustown.png-6f42e86f46f02c96c982625f0016104f.s3tc.ctex"
-path.etc2="res://.godot/imported/laptoplink_screen_focustown.png-6f42e86f46f02c96c982625f0016104f.etc2.ctex"
+path.s3tc="res://.godot/imported/laptoplink_screen_focustown.png-15388b11463a84552ae93c9313578dc6.s3tc.ctex"
+path.etc2="res://.godot/imported/laptoplink_screen_focustown.png-15388b11463a84552ae93c9313578dc6.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/Environments/objects/laptoplink/laptoplink_screen_focustown.png"
-dest_files=["res://.godot/imported/laptoplink_screen_focustown.png-6f42e86f46f02c96c982625f0016104f.s3tc.ctex", "res://.godot/imported/laptoplink_screen_focustown.png-6f42e86f46f02c96c982625f0016104f.etc2.ctex"]
+source_file="res://assets/environments/objects/laptoplink/laptoplink_screen_focustown.png"
+dest_files=["res://.godot/imported/laptoplink_screen_focustown.png-15388b11463a84552ae93c9313578dc6.s3tc.ctex", "res://.godot/imported/laptoplink_screen_focustown.png-15388b11463a84552ae93c9313578dc6.etc2.ctex"]
 
 [params]
 

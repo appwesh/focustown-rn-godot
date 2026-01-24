@@ -153,8 +153,8 @@ export default function CharacterScreen() {
           return;
         }
         
-        console.log('[Character] Switching to home_showcase scene');
-        changeScene('home_showcase');
+        console.log('[Character] Switching to character_showcase scene');
+        changeScene('character_showcase');
         
         // Wait for scene change, then apply initial character and hide overlay
         setTimeout(() => {

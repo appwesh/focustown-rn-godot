@@ -227,7 +227,7 @@ export function restartGodot(): void {
  * Force scene change by restarting if needed
  * This is more aggressive than changeScene() - use when regular scene change fails
  */
-export function forceSceneChange(sceneName: 'library' | 'home_showcase'): void {
+export function forceSceneChange(sceneName: 'library' | 'home_showcase' | 'character_showcase'): void {
   const scenePath = SCENE_PATHS[sceneName];
   if (!scenePath) {
     console.error('[Bridge] Unknown scene:', sceneName);
@@ -252,12 +252,12 @@ export function forceSceneChange(sceneName: 'library' | 'home_showcase'): void {
 }
 
 // Store pending scene for when Godot initializes
-let pendingScene: 'library' | 'home_showcase' | null = null;
+let pendingScene: 'library' | 'home_showcase' | 'character_showcase' | null = null;
 
 /**
  * Get and clear the pending scene (call after Godot init)
  */
-export function getPendingScene(): 'library' | 'home_showcase' | null {
+export function getPendingScene(): 'library' | 'home_showcase' | 'character_showcase' | null {
   const scene = pendingScene;
   pendingScene = null;
   return scene;
@@ -974,6 +974,7 @@ export function removeRemotePlayer(odId: string): void {
 const SCENE_PATHS: Record<string, string> = {
   library: 'res://scenes/main/library_cinematic_with_character.tscn',
   home_showcase: 'res://scenes/main/home_character_showcase.tscn',
+  character_showcase: 'res://scenes/main/character_customization_showcase.tscn',
 };
 
 // Track current scene to avoid unnecessary changes
@@ -982,9 +983,9 @@ let currentSceneName: string | null = null;
 /**
  * Change the current Godot scene safely
  * Pauses the engine, changes scene, then resumes to avoid crashes during layout
- * @param sceneName - 'library' or 'home_showcase'
+ * @param sceneName - 'library', 'home_showcase', or 'character_showcase'
  */
-export function changeScene(sceneName: 'library' | 'home_showcase'): void {
+export function changeScene(sceneName: 'library' | 'home_showcase' | 'character_showcase'): void {
   const scenePath = SCENE_PATHS[sceneName];
   if (!scenePath) {
     console.error('[Bridge] Unknown scene:', sceneName);

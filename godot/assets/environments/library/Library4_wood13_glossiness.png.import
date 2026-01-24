@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ccvk5l41b3744"
-path="res://.godot/imported/Library4_wood13_glossiness.png-8195d3622ead44a35863660d853f7454.ctex"
+path="res://.godot/imported/Library4_wood13_glossiness.png-68e76ef5174caee56ed2df3d67c7197f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Environments/Library/Library4_wood13_glossiness.png"
-dest_files=["res://.godot/imported/Library4_wood13_glossiness.png-8195d3622ead44a35863660d853f7454.ctex"]
+source_file="res://assets/environments/library/Library4_wood13_glossiness.png"
+dest_files=["res://.godot/imported/Library4_wood13_glossiness.png-68e76ef5174caee56ed2df3d67c7197f.ctex"]
 
 [params]
 
