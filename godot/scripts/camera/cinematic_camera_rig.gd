@@ -21,6 +21,9 @@ enum CameraMode {
 @export var overview_camera: Camera3D
 ## Auto-create cameras if not assigned
 @export var auto_create_cameras: bool = true
+## Layers to hide from overview camera (e.g., walls that block the view)
+## Objects on layer 2 will be hidden from overview camera
+@export_flags_3d_render var overview_hidden_layers: int = 2
 
 @export_group("Third Person Settings")
 ## Distance behind the target
@@ -54,9 +57,9 @@ enum CameraMode {
 ## Distance in front of the target for setup view (faces the player)
 @export var setup_distance: float = 2.5
 ## Height for setup view (roughly eye level)
-@export var setup_height: float = 1.4
+@export var setup_height: float = 1.8
 ## Vertical angle (slight look down at character)
-@export var setup_pitch: float = -5.0
+@export var setup_pitch: float = -35.0
 ## FOV for setup view
 @export var setup_fov: float = 50.0
 
@@ -168,6 +171,12 @@ func _setup_cameras() -> void:
 	# Use existing overview camera or find one
 	if not overview_camera:
 		overview_camera = get_viewport().get_camera_3d()
+	
+	# Configure overview camera to hide specified layers (e.g., walls blocking the view)
+	if overview_camera and overview_hidden_layers > 0:
+		# Remove hidden layers from cull mask (default is all layers = 0xFFFFF)
+		overview_camera.cull_mask = overview_camera.cull_mask & ~overview_hidden_layers
+		print("[CameraRig] Overview camera hiding layers: %d (cull_mask: %d)" % [overview_hidden_layers, overview_camera.cull_mask])
 	
 	# Create third person pivot (this follows the player)
 	_third_person_pivot = Node3D.new()
@@ -319,18 +328,27 @@ func cycle_camera() -> void:
 		CameraMode.THIRD_PERSON:
 			next_mode = CameraMode.FIRST_PERSON
 		CameraMode.FIRST_PERSON:
+			next_mode = CameraMode.SETUP
+		CameraMode.SETUP:
 			next_mode = CameraMode.OVERVIEW
 		CameraMode.SEATED:
 			next_mode = CameraMode.OVERVIEW  # Exit seated goes to overview
 	_switch_to_mode(next_mode)
 
 
-## Toggle between third person and overview during focus session
+## Cycle between overview, third person, and setup during focus session
 func toggle_session_camera() -> void:
-	if _current_mode == CameraMode.THIRD_PERSON:
-		_switch_to_mode(CameraMode.OVERVIEW)
-	else:
-		_switch_to_mode(CameraMode.THIRD_PERSON)
+	var next_mode: CameraMode
+	match _current_mode:
+		CameraMode.OVERVIEW:
+			next_mode = CameraMode.THIRD_PERSON
+		CameraMode.THIRD_PERSON:
+			next_mode = CameraMode.SETUP
+		CameraMode.SETUP:
+			next_mode = CameraMode.OVERVIEW
+		_:
+			next_mode = CameraMode.OVERVIEW
+	_switch_to_mode(next_mode)
 
 
 func _switch_to_mode(new_mode: CameraMode, instant: bool = false) -> void:

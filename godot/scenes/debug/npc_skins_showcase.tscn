@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8xmv7npc5k2q"]
+
+[ext_resource type="Script" uid="uid://dxw8yv3m2k4nt" path="res://scripts/debug/npc_skins_showcase.gd" id="1_script"]
+
+[node name="NPCSkinsShowcase" type="Node3D"]
+script = ExtResource("1_script")
+grid_columns = 5
+spacing_x = 2.6
+spacing_z = 5.0
+character_scale = 1.0
+idle_animation = "Idle_F"
+face_camera = true
+auto_camera = true
+camera_height = 2.0
+camera_distance_mult = 1.2
+label_offset_z = -0.5
+label_offset_y = -0.1

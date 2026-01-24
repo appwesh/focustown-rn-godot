@@ -43,8 +43,9 @@ signal entrance_cinematic_finished
 
 @export_group("Animation")
 @export var idle_animation: String = "Idle_F"
-@export var sit_down_animation: String = "SITTING_ON_CHAIR_01"  # Transition from walking to sitting
+@export var sit_down_animation: String = "SITTING_ON_CHAIR_02"  # Transition from walking to sitting
 @export var sitting_animation: String = "Idle_Sitting_01"  # Animation when seated (looping)
+@export var studying_animation: String = "SITTING_USING_LAPTOP_02"  # Animation during focus session (looping)
 @export var celebration_animation: String = "SITTING_FIST_PUMP_03"  # Animation on session success
 @export var auto_start: bool = true
 
@@ -125,6 +126,10 @@ var _is_player_seated: bool = false
 ## Track spawned NPC characters
 var _npc_characters: Array[CinematicCharacter] = []
 
+## Pre-fetched unique NPC skins for current spawn batch
+var _npc_skins_batch: Array[Dictionary] = []
+var _npc_skin_index: int = 0
+
 ## Entrance cinematic state
 var _entrance_cinematic_playing: bool = false
 var _original_move_speed: float = 0.0
@@ -163,6 +168,10 @@ func _ready() -> void:
 	# Connect to character arrival signal
 	if _character:
 		_character.arrived_at_destination.connect(_on_character_arrived)
+	
+	# Connect to focus session events to control player animation
+	FocusSessionManager.session_started.connect(_on_focus_session_started)
+	FocusSessionManager.session_ended.connect(_on_focus_session_ended)
 	
 	# Start entrance cinematic if enabled (deferred to allow scene to fully load)
 	if play_entrance_cinematic and _character:
@@ -303,6 +312,10 @@ func _spawn_npc_characters() -> void:
 	if configs.is_empty():
 		configs = _get_default_npc_configs()
 	
+	# Pre-fetch unique random NPC skins for the batch (no duplicates)
+	_npc_skins_batch = NPCSkins.get_unique_random_skins(configs.size())
+	_npc_skin_index = 0
+	
 	for config in configs:
 		_spawn_single_npc(config)
 
@@ -312,38 +325,35 @@ func _get_default_npc_configs() -> Array[Dictionary]:
 	## Using actual chair positions from the library grid
 	## Columns: [1.59, 0.82, -0.76, -1.54], Rows: [1.73, 3.25, 5.49, 7.02, 9.27, 10.79]
 	## Even rows face 0°, odd rows face 180°
+	## Note: preset_name is left empty to use random NPCSkins
 	var configs: Array[Dictionary] = []
 	
-	# Student sitting at front-left chair (row 0, col 3)
+	# NPC sitting at front-left chair (row 0, col 3)
 	configs.append({
-		"preset_name": "student",
 		"position": Vector3(-1.54, 0, 1.73),
 		"rotation": 0.0,  # Even row faces forward
-		"animation": "Idle_Sitting_01"
+		"animation": "SITTING_USING_LAPTOP_02"
 	})
 	
-	# Wizard sitting at middle-right chair (row 2, col 0)
+	# NPC sitting at middle-right chair (row 2, col 0)
 	configs.append({
-		"preset_name": "wizard",
 		"position": Vector3(1.59, 0, 5.49),
 		"rotation": 0.0,  # Even row faces forward
-		"animation": "Idle_Sitting_01"
+		"animation": "SITTING_USING_LAPTOP_02"
 	})
 	
-	# Cozy reader standing near the reading nook
+	# NPC standing near the reading nook
 	configs.append({
-		"preset_name": "cozy_reader",
 		"position": Vector3(1.5, 0, 1.0),
 		"rotation": 45.0,
 		"animation": "BoredIdle_02"
 	})
 	
-	# Hipster sitting at middle chair (row 3, col 1)
+	# NPC sitting at middle chair (row 3, col 1)
 	configs.append({
-		"preset_name": "hipster",
 		"position": Vector3(0.82, 0, 7.02),
 		"rotation": 180.0,  # Odd row faces backward
-		"animation": "Idle_Sitting_02"
+		"animation": "SITTING_USING_LAPTOP_02"
 	})
 	
 	return configs
@@ -746,15 +756,30 @@ func end_focus_session() -> void:
 		_character.transition_to_animation(idle_animation)
 
 
+## Called when focus session actually starts (timer begins)
+func _on_focus_session_started(_spot: Node3D) -> void:
+	print("[LibraryCinematic] Focus session started - playing studying animation")
+	if _character and _is_player_seated:
+		_character.transition_to_animation(studying_animation)
+
+
+## Called when focus session ends (timer stops)
+func _on_focus_session_ended(_duration: int, _coins: int) -> void:
+	print("[LibraryCinematic] Focus session ended - returning to sitting idle")
+	if _character and _is_player_seated:
+		_character.transition_to_animation(sitting_animation)
+
+
 func _spawn_single_npc(config: Dictionary) -> CinematicCharacter:
-	var preset_name: String = config.get("preset_name", "student")
+	var preset_name: String = config.get("preset_name", "")  # Empty = use NPCSkins
 	var pos: Vector3 = config.get("position", Vector3.ZERO)
 	var rot: float = config.get("rotation", 0.0)
 	var anim: String = config.get("animation", idle_animation)
 	var is_seated: bool = anim.contains("Sitting")
 	
 	var npc := _character_scene.instantiate() as CinematicCharacter
-	npc.name = "NPC_" + preset_name.capitalize()
+	var npc_index := _npc_characters.size() + 1
+	npc.name = "NPC_%d" % npc_index if preset_name.is_empty() else "NPC_" + preset_name.capitalize()
 	npc.default_animation = anim
 	npc.auto_play = true
 	npc.position = pos
@@ -801,6 +826,21 @@ func _apply_npc_preset_deferred(npc: CinematicCharacter, preset_name: String) ->
 		push_warning("[LibraryCinematic] ModularCharacter not ready for: %s" % preset_name)
 		return
 	
+	# If no preset name provided, use curated NPC skins (unique per batch)
+	if preset_name.is_empty():
+		var skin_data: Dictionary
+		if _npc_skin_index < _npc_skins_batch.size():
+			skin_data = _npc_skins_batch[_npc_skin_index]
+			_npc_skin_index += 1
+		else:
+			# Fallback to random if batch exhausted
+			skin_data = NPCSkins.get_random_skin()
+		
+		var skin_name: String = skin_data.get("name", "npc")
+		npc.apply_preset_dict(skin_data, skin_name.capitalize().replace("_", " "))
+		print("[LibraryCinematic] Applied NPC skin: %s" % skin_name)
+		return
+	
 	# apply_preset_dict/randomize_appearance auto-shows the character
 	var data := CharacterPresets.get_preset(preset_name)
 	if not data.is_empty():
@@ -833,13 +873,21 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 		return
 	
-	# Handle C key - replay entrance cinematic (for testing)
+	# Handle keyboard shortcuts
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
-		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_C:
-			if not _entrance_cinematic_playing:
-				trigger_entrance_cinematic()
-			return
+		if key_event.pressed and not key_event.echo:
+			match key_event.keycode:
+				KEY_C:
+					# Toggle camera mode
+					if camera_toggle_enabled:
+						cycle_camera()
+					return
+				KEY_G:
+					# Replay entrance cinematic (for testing)
+					if not _entrance_cinematic_playing:
+						trigger_entrance_cinematic()
+					return
 	
 	# Handle click to move
 	if not click_to_move_enabled:
@@ -1087,7 +1135,7 @@ func play_animation(anim_name: String) -> void:
 		_character.transition_to_animation(anim_name)
 
 
-## Play celebration animation (fist pump) and return to sitting
+## Play celebration animation (fist pump) and return to reading
 ## Called when a focus session completes successfully
 func play_celebration_animation() -> void:
 	if _character and _is_player_seated:

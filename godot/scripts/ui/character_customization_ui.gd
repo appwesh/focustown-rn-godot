@@ -129,7 +129,12 @@ func _update_part_grid() -> void:
 	
 	if max_count == 0:
 		var label := Label.new()
-		label.text = "No options"
+		# For variant categories, show a more helpful message
+		if _current_part_category.ends_with("Variant"):
+			var base_cat := _current_part_category.replace("Variant", "")
+			label.text = "Select a %s first" % base_cat.to_lower()
+		else:
+			label.text = "No options"
 		part_grid.add_child(label)
 		return
 	
@@ -211,7 +216,9 @@ func _on_animation_selected(index: int) -> void:
 
 func _on_confirm_pressed() -> void:
 	if modular_character:
-		customization_confirmed.emit(modular_character.save_to_dict())
+		var customization_data := modular_character.save_to_dict()
+		print(customization_data)
+		customization_confirmed.emit(customization_data)
 
 
 func _on_randomize_pressed() -> void:

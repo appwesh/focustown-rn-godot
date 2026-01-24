@@ -56,8 +56,9 @@ const ANIMATION_FILES: PackedStringArray = [
 	"ANIM_Avatar_Walk_R_01.fbx",
 	# Custom sitting animations
 	"ANIM_AVATAR_ACTION_SITTING_FIST_PUMP_03.fbx",
-	"ANIM_AVATAR_ACTION_SITTING_ON_CHAIR_01.fbx",
+	"ANIM_AVATAR_ACTION_SITTING_ON_CHAIR_02.fbx",
 	"ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01.fbx",
+	"ANIM_AVATAR_ACTION_SITTING_USING_LAPTOP_02.fbx",
 	"ANIM_AVATAR_ACTION_SITTING_USING_SMARTPHONE_01.fbx",
 ]
 const CLOTHES_PATH := "res://assets/characters/cozylife/clothes/"
@@ -80,44 +81,54 @@ const HAIR_COLORS := ["Default", "Black", "Blonde", "Blue", "Cyan", "DarkBrown",
 ## Hair style folder names (must match HAIRS order)
 const HAIR_NAMES := ["", "Afro", "BabyBangs", "LongWavy", "MessyKnotBun", "MessySpiky", "Mullet", "StarBuns", "WavyMiddlePart"]
 
-## Default textures for clothes/accessories (first available texture for each item)
-const DEFAULT_TEXTURES := {
+## Texture variants for all clothes/accessories - each item maps to array of available textures
+const TEXTURE_VARIANTS := {
 	# Tops
-	"Tank": "T_TOP_Tank_Black_D.tga",
-	"LongSleeve": "T_TOP_LongSleeve_Olive_D.tga",
-	"Sweater": "T_TOP_Sweater_BlackStar_D.tga",
-	"PuffSleeveDress": "T_TOP_PuffSleeveDress_Olive_D.tga",
-	"WarriorTunic": "T_TOP_WarriorTunic_Beige_D.tga",
-	"WizardRobe": "T_TOP_WizardRobe_Maroon_D.tga",
+	"Tank": ["T_TOP_Tank_Black_D.tga", "T_TOP_Tank_BlackRadiation_D.tga", "T_TOP_Tank_Olive_D.tga", "T_TOP_Tank_White_D.tga"],
+	"LongSleeve": ["T_TOP_LongSleeve_Black_D.tga", "T_TOP_LongSleeve_Beige_D.tga", "T_TOP_LongSleeve_Olive_D.tga"],
+	"Sweater": ["T_TOP_Sweater_Black_D.tga", "T_TOP_Sweater_BlackStar_D.tga", "T_TOP_Sweater_Beige_D.tga", "T_TOP_Sweater_Maroon_D.tga", "T_TOP_Sweater_MaroonMushroom_D.tga", "T_TOP_Sweater_Olive_D.tga", "T_TOP_Sweater_OliveCollegiate_D.tga"],
+	"PuffSleeveDress": ["T_TOP_PuffSleeveDress_BlueFloral_D.tga", "T_TOP_PuffSleeveDress_Lavender_D.tga", "T_TOP_PuffSleeveDress_Olive_D.tga", "T_TOP_PuffSleeveDress_PinkFloral_D.tga"],
+	"WarriorTunic": ["T_TOP_WarriorTunic_Beige_D.tga", "T_TOP_WarriorTunic_Blue_D.tga", "T_TOP_WarriorTunic_Maroon_D.tga", "T_TOP_WarriorTunic_Olive_D.tga"],
+	"WizardRobe": ["T_TOP_WizardRobe_Beige_D.tga", "T_TOP_WizardRobe_Blue_D.tga", "T_TOP_WizardRobe_Maroon_D.tga", "T_TOP_WizardRobe_Olive_D.tga"],
+	"Tshirt": ["T_TOP_Tshirt_Black_D.tga", "T_TOP_Tshirt_BlackMushroom_D.tga", "T_TOP_Tshirt_BlackSkull_D.tga", "T_TOP_Tshirt_Beige_D.tga", "T_TOP_Tshirt_Blue_D.tga", "T_TOP_Tshirt_BlueStar_D.tga", "T_TOP_Tshirt_Lavender_D.tga", "T_TOP_Tshirt_LavenderStar_D.tga", "T_TOP_Tshirt_Maroon_D.tga", "T_TOP_Tshirt_MaroonCollegiate_D.tga", "T_TOP_Tshirt_Mustard_D.tga", "T_TOP_Tshirt_Olive_D.tga", "T_TOP_Tshirt_OliveLightning_D.tga", "T_TOP_Tshirt_Pumpkin_D.tga", "T_TOP_Tshirt_PumpkinCollegiate_D.tga", "T_TOP_Tshirt_White_D.tga"],
+	"Hoodie": ["T_TOP_Hoodie_Black_D.tga", "T_TOP_Hoodie_BlackSakura_D.tga", "T_TOP_Hoodie_BlackSwirl_D.tga", "T_TOP_Hoodie_Beige_D.tga", "T_TOP_Hoodie_BeigeSakura_D.tga", "T_TOP_Hoodie_OliveCollegiate_D.tga"],
 	# Bottoms
-	"Underwear": "",
-	"Shorts": "T_BOTTOM_Shorts_Black_D.tga",
-	"Pants": "T_BOTTOM_Pants_Black_D.tga",
-	"SkinnyPants": "T_BOTTOM_SkinnyPants_Brown_D.tga",
-	"FlarePants": "T_BOTTOM_FlarePants_Black_D.tga",
-	"Skirt": "T_BOTTOM_Skirt_BlueFloral_D.tga",
+	"Underwear": ["T_BOTTOM_Underwear_White_D.tga"],
+	"Shorts": ["T_BOTTOM_Shorts_Black_D.tga", "T_BOTTOM_Shorts_Denim_D.tga", "T_BOTTOM_Shorts_Khaki_D.tga", "T_BOTTOM_Shorts_Olive_D.tga"],
+	"Pants": ["T_BOTTOM_Pants_Black_D.tga", "T_BOTTOM_Pants_CamoRed_D.tga", "T_BOTTOM_Pants_CamoSnow_D.tga", "T_BOTTOM_Pants_Denim_D.tga", "T_BOTTOM_Pants_Khaki_D.tga", "T_BOTTOM_Pants_Olive_D.tga"],
+	"SkinnyPants": ["T_BOTTOM_SkinnyPants_Brown_D.tga"],
+	"FlarePants": ["T_BOTTOM_FlarePants_Black_D.tga", "T_BOTTOM_FlarePants_Denim_D.tga"],
+	"Skirt": ["T_BOTTOM_Skirt_Black_D.tga", "T_BOTTOM_Skirt_BlueFloral_D.tga", "T_BOTTOM_Skirt_Denim_D.tga", "T_BOTTOM_Skirt_Houndstooth_D.tga", "T_BOTTOM_Skirt_Olive_D.tga"],
 	# Shoes
-	"CrewSocks": "T_SHOES_CrewSocks_Black_D.tga",
-	"Oxfords": "T_SHOES_Oxfords_Black_D.tga",
-	"ChunkyBoots": "T_SHOES_ChunkyBoots_Black_D.tga",
-	"RainBoots": "T_SHOES_RainBoots_Black_D.tga",
-	"WarriorBoots": "T_SHOES_WarriorBoots_Brown_D.tga",
-	"WizardBoots": "T_SHOES_WizardBoots_Brown_D.tga",
+	"CrewSocks": ["T_SHOES_CrewSocks_Black_D.tga", "T_SHOES_CrewSocks_Beige_D.tga", "T_SHOES_CrewSocks_White_D.tga"],
+	"Oxfords": ["T_SHOES_Oxfords_Black_D.tga", "T_SHOES_Oxfords_Brown_D.tga"],
+	"ChunkyBoots": ["T_SHOES_ChunkyBoots_Black_D.tga", "T_SHOES_ChunkyBoots_Lavender_D.tga"],
+	"RainBoots": ["T_SHOES_RainBoots_Black_D.tga", "T_SHOES_RainBoots_Yellow_D.tga"],
+	"WarriorBoots": ["T_SHOES_WarriorBoots_Brown_D.tga"],
+	"WizardBoots": ["T_SHOES_WizardBoots_Brown_D.tga"],
+	"OverKneeSocks": ["T_SHOES_OverKneeSocks_Black_D.tga", "T_SHOES_OverKneeSocks_Beige_D.tga", "T_SHOES_OverKneeSocks_BlackWhiteStripes_D.tga", "T_SHOES_OverKneeSocks_White_D.tga"],
+	"Sneakers": ["T_SHOES_Sneakers_BlackWithWhiteStripes_D.tga", "T_SHOES_Sneakers_Chucks_D.tga", "T_SHOES_Sneakers_White_D.tga"],
 	# Hats
-	"Cowboy": "T_MISC_Hat_Cowboy_Brown_D.tga",
-	"Fisherman": "T_MISC_Hat_Fisherman_Olive_D.tga",
-	"PartyHat": "T_MISC_Hat_PartyHat_Blue_D.tga",
-	"PatrolCap": "T_MISC_Hat_PatrolCap_GreenCamo_D.tga",
-	"PorkPie": "T_MISC_Hat_PorkPie_Black_D.tga",
-	"PropellerCap": "T_MISC_Hat_PropellerCap_Rainbow_D.tga",
-	"StrawHat": "T_MISC_Hat_StrawHat_White_D.tga",
-	"Viking": "T_MISC_Hat_Viking_Blue_D.tga",
+	"Cowboy": ["T_MISC_Hat_Cowboy_Brown_D.tga", "T_MISC_Hat_Cowboy_Beige_D.tga", "T_MISC_Hat_Cowboy_Pink_D.tga"],
+	"Fisherman": ["T_MISC_Hat_Fisherman_Olive_D.tga", "T_MISC_Hat_Fisherman_GreenFroggy_D.tga", "T_MISC_Hat_Fisherman_Khaki_D.tga", "T_MISC_Hat_Fisherman_Orange_D.tga"],
+	"PartyHat": ["T_MISC_Hat_PartyHat_Blue_D.tga", "T_MISC_Hat_PartyHat_Red_D.tga"],
+	"PatrolCap": ["T_MISC_Hat_PatrolCap_GreenCamo_D.tga", "T_MISC_Hat_PatrolCap_KhakiCamo_D.tga"],
+	"PorkPie": ["T_MISC_Hat_PorkPie_Black_D.tga", "T_MISC_Hat_PorkPie_Brown_D.tga", "T_MISC_Hat_PorkPie_Navy_D.tga", "T_MISC_Hat_PorkPie_Red_D.tga"],
+	"PropellerCap": ["T_MISC_Hat_PropellerCap_Rainbow_D.tga", "T_MISC_Hat_PropellerCap_Purple_D.tga"],
+	"StrawHat": ["T_MISC_Hat_StrawHat_White_D.tga", "T_MISC_Hat_StrawHat_Yellow_D.tga"],
+	"Viking": ["T_MISC_Hat_Viking_Blue_D.tga", "T_MISC_Hat_Viking_Red_D.tga"],
+	"BaseballCap": ["T_MISC_Hat_BaseballCap_Black_D.tga", "T_MISC_Hat_BaseballCap_BlackGold_D.tga", "T_MISC_Hat_BaseballCap_BlackGreen_D.tga", "T_MISC_Hat_BaseballCap_BlackWhite_D.tga", "T_MISC_Hat_BaseballCap_BlueStar_D.tga", "T_MISC_Hat_BaseballCap_RedBranded_D.tga", "T_MISC_Hat_BaseballCap_White_D.tga", "T_MISC_Hat_BaseballCap_WhiteYellow_D.tga"],
+	"TopHat": ["T_MISC_Hat_TopHat_Black_D.tga", "T_MISC_Hat_TopHat_White_D.tga"],
+	"Witch": ["T_MISC_Hat_Witch_Black_D.tga", "T_MISC_Hat_Witch_Brown_D.tga", "T_MISC_Hat_Witch_White_D.tga"],
+	"RobotHelmet": ["T_MISC_Helmet_Robot_Blue_D.tga"],
 	# Glasses
-	"Round": "T_MISC_Glasses_Round_Brown_D.tga",
-	"Aviator": "T_MISC_Glasses_Aviator_Brown_D.tga",
-	"CatEye": "T_MISC_Glasses_CatEye_Black_D.tga",
-	"CatEyeSunglasses": "",  # No texture file available
-	"HeartSunglasses": "T_MISC_Glasses_HeartSunglasses_Pink_D.tga",
+	"Round": ["T_MISC_Glasses_Round_Brown_D.tga"],
+	"Aviator": ["T_MISC_Glasses_Aviator_Black_D.tga", "T_MISC_Glasses_Aviator_Brown_D.tga"],
+	"CatEye": ["T_MISC_Glasses_CatEye_Black_D.tga", "T_MISC_Glasses_CatEye_Maroon_D.tga"],
+	"CatEyeSunglasses": [],  # No texture file available
+	"HeartSunglasses": ["T_MISC_Glasses_HeartSunglasses_Pink_D.tga", "T_MISC_Glasses_HeartSunglasses_Black_D.tga", "T_MISC_Glasses_HeartSunglasses_Lavender_D.tga"],
+	# Neck
+	"SpikedCollar": ["T_MISC_Neck_SpikedCollar_Black_D.tga"],
 }
 
 ## Skin tone textures
@@ -156,14 +167,15 @@ const FACES := [
 const EYE_COLORS := ["Default", "Blue", "DarkBrown", "Green", "LightBrown", "Pink", "Purple", "Red", "Teal", "White", "Yellow"]
 
 ## Clothing files (SKM = skinned mesh)
-const TOPS := ["", "SKM_TOP_Tank.fbx", "SKM_TOP_LongSleeve.fbx", "SKM_TOP_Sweater.fbx", "SKM_TOP_PuffSleeveDress.fbx", "SKM_TOP_WarriorTunic.fbx", "SKM_TOP_WizardRobe.fbx"]
+const TOPS := ["", "SKM_TOP_Tank.fbx", "SKM_TOP_LongSleeve.fbx", "SKM_TOP_Sweater.fbx", "SKM_TOP_PuffSleeveDress.fbx", "SKM_TOP_WarriorTunic.fbx", "SKM_TOP_WizardRobe.fbx", "SKM_TOP_Tshirt.fbx", "SKM_TOP_Hoodie.fbx"]
 const BOTTOMS := ["", "SKM_BOTTOM_Underwear.fbx", "SKM_BOTTOM_Shorts.fbx", "SKM_BOTTOM_Pants.fbx", "SKM_BOTTOM_SkinnyPants.fbx", "SKM_BOTTOM_FlarePants.fbx", "SKM_BOTTOM_Skirt.fbx"]
-const SHOES := ["", "SKM_SHOES_CrewSocks.fbx", "SKM_SHOES_Oxfords.fbx", "SKM_SHOES_ChunkyBoots.fbx", "SKM_SHOES_RainBoots.fbx", "SKM_SHOES_WarriorBoots.fbx", "SKM_SHOES_WizardBoots.fbx"]
+const SHOES := ["", "SKM_SHOES_CrewSocks.fbx", "SKM_SHOES_Oxfords.fbx", "SKM_SHOES_ChunkyBoots.fbx", "SKM_SHOES_RainBoots.fbx", "SKM_SHOES_WarriorBoots.fbx", "SKM_SHOES_WizardBoots.fbx", "SKM_SHOES_OverKneeSocks.fbx", "SKM_SHOES_Sneakers.fbx"]
 
 ## Accessories (SM = static mesh, attach to bone)
 const HAIRS := ["", "Afro/SM_HAIR_Afro.fbx", "BabyBangs/SM_HAIR_BabyBangs.fbx", "LongWavy/SM_HAIR_LongWavy.fbx", "MessyKnotBun/SM_HAIR_MessyKnotBun.fbx", "MessySpiky/SM_HAIR_MessySpiky.fbx", "Mullet/SM_HAIR_Mullet.fbx", "StarBuns/SM_HAIR_StarBuns.fbx", "WavyMiddlePart/SM_HAIR_WavyMiddlePart.fbx"]
-const HATS := ["", "SM_MISC_Hat_Cowboy.fbx", "SM_MISC_Hat_Fisherman.fbx", "SM_MISC_Hat_PartyHat.fbx", "SM_MISC_Hat_PatrolCap.fbx", "SM_MISC_Hat_PorkPie.fbx", "SM_MISC_Hat_PropellerCap.fbx", "SM_MISC_Hat_StrawHat.fbx", "SM_MISC_Hat_Viking.fbx"]
+const HATS := ["", "SM_MISC_Hat_Cowboy.fbx", "SM_MISC_Hat_Fisherman.fbx", "SM_MISC_Hat_PartyHat.fbx", "SM_MISC_Hat_PatrolCap.fbx", "SM_MISC_Hat_PorkPie.fbx", "SM_MISC_Hat_PropellerCap.fbx", "SM_MISC_Hat_StrawHat.fbx", "SM_MISC_Hat_Viking.fbx", "SM_MISC_Hat_BaseballCap.fbx", "SM_MISC_Hat_TopHat.fbx", "SM_MISC_Hat_Witch.fbx", "SM_MISC_Helmet_Robot.fbx"]
 const GLASSES := ["", "SM_MISC_Glasses_Round.fbx", "SM_MISC_Glasses_Aviator.fbx", "SM_MISC_Glasses_CatEye.fbx", "SM_MISC_Glasses_CatEyeSunglasses.fbx", "SM_MISC_Glasses_HeartSunglasses.fbx"]
+const NECK := ["", "SM_MISC_Neck_SpikedCollar.fbx"]
 
 ## Part definitions for UI
 const PARTS := {
@@ -172,11 +184,12 @@ const PARTS := {
 	"EyeColor": EYE_COLORS,
 	"Hair": ["None", "Afro", "BabyBangs", "LongWavy", "MessyKnotBun", "MessySpiky", "Mullet", "StarBuns", "WavyMiddlePart"],
 	"HairColor": HAIR_COLORS,
-	"Top": ["None", "Tank", "LongSleeve", "Sweater", "PuffSleeveDress", "WarriorTunic", "WizardRobe"],
+	"Top": ["None", "Tank", "LongSleeve", "Sweater", "PuffSleeveDress", "WarriorTunic", "WizardRobe", "Tshirt", "Hoodie"],
 	"Bottom": ["None", "Underwear", "Shorts", "Pants", "SkinnyPants", "FlarePants", "Skirt"],
-	"Shoes": ["None", "CrewSocks", "Oxfords", "ChunkyBoots", "RainBoots", "WarriorBoots", "WizardBoots"],
-	"Hat": ["None", "Cowboy", "Fisherman", "PartyHat", "PatrolCap", "PorkPie", "PropellerCap", "StrawHat", "Viking"],
+	"Shoes": ["None", "CrewSocks", "Oxfords", "ChunkyBoots", "RainBoots", "WarriorBoots", "WizardBoots", "OverKneeSocks", "Sneakers"],
+	"Hat": ["None", "Cowboy", "Fisherman", "PartyHat", "PatrolCap", "PorkPie", "PropellerCap", "StrawHat", "Viking", "BaseballCap", "TopHat", "Witch", "RobotHelmet"],
 	"Glasses": ["None", "Round", "Aviator", "CatEye", "CatEyeSunglasses", "HeartSunglasses"],
+	"Neck": ["None", "SpikedCollar"],
 }
 
 const PART_DISPLAY_NAMES := {
@@ -186,16 +199,23 @@ const PART_DISPLAY_NAMES := {
 	"Hair": "Hair Style",
 	"HairColor": "Hair Color",
 	"Top": "Top",
+	"TopVariant": "Top Style",
 	"Bottom": "Bottom",
+	"BottomVariant": "Bottom Style",
 	"Shoes": "Shoes",
+	"ShoesVariant": "Shoes Style",
 	"Hat": "Hat",
+	"HatVariant": "Hat Style",
 	"Glasses": "Glasses",
+	"GlassesVariant": "Glasses Style",
+	"Neck": "Neck",
+	"NeckVariant": "Neck Style",
 }
 
 const UI_CATEGORIES := {
 	"Body": ["SkinTone", "Face", "EyeColor"],
-	"Clothes": ["Top", "Bottom", "Shoes"],
-	"Accessories": ["Hair", "HairColor", "Hat", "Glasses"],
+	"Clothes": ["Top", "TopVariant", "Bottom", "BottomVariant", "Shoes", "ShoesVariant"],
+	"Accessories": ["Hair", "HairColor", "Hat", "HatVariant", "Glasses", "GlassesVariant", "Neck", "NeckVariant"],
 }
 
 @export var default_selections: Dictionary = {
@@ -205,10 +225,17 @@ const UI_CATEGORIES := {
 	"Hair": 1,
 	"HairColor": 0,
 	"Top": 1,
+	"TopVariant": 0,
 	"Bottom": 3,
+	"BottomVariant": 0,
 	"Shoes": 2,
+	"ShoesVariant": 0,
 	"Hat": 0,
+	"HatVariant": 0,
 	"Glasses": 0,
+	"GlassesVariant": 0,
+	"Neck": 0,
+	"NeckVariant": 0,
 }
 
 var _base_model: Node3D
@@ -330,7 +357,7 @@ func _apply_textures() -> void:
 
 
 func _apply_all_parts() -> void:
-	for category in ["Hair", "Top", "Bottom", "Shoes", "Hat", "Glasses"]:
+	for category in ["Hair", "Top", "Bottom", "Shoes", "Hat", "Glasses", "Neck"]:
 		_equip_part(category, _current_selections.get(category, 0))
 
 
@@ -401,6 +428,9 @@ func _equip_part(category: String, index: int) -> void:
 		"Glasses":
 			if index >= 0 and index < GLASSES.size():
 				file_path = GLASSES[index]
+		"Neck":
+			if index >= 0 and index < NECK.size():
+				file_path = NECK[index]
 	
 	# Empty path means "None" option
 	if file_path.is_empty():
@@ -416,7 +446,7 @@ func _equip_part(category: String, index: int) -> void:
 	var part_instance := part_scene.instantiate()
 	
 	# Check if this is a skinned mesh (clothing) or static mesh (accessory)
-	var is_head_accessory := category in ["Hair", "Hat", "Glasses"]
+	var is_head_accessory := category in ["Hair", "Hat", "Glasses", "Neck"]
 	var is_skinned := file_path.begins_with("SKM_")
 	
 	if is_skinned and _skeleton:
@@ -426,7 +456,7 @@ func _equip_part(category: String, index: int) -> void:
 			_equipped_parts[category] = equipped
 			# Apply texture to skinned mesh
 			var part_name: String = PARTS[category][index]
-			_apply_part_texture(equipped, part_name)
+			_apply_part_texture(equipped, part_name, category)
 		part_instance.queue_free()
 	elif is_head_accessory and _head_attachment:
 		# Static mesh - attach to head bone
@@ -462,7 +492,7 @@ func _equip_part(category: String, index: int) -> void:
 			if category == "Hair":
 				_apply_hair_texture(new_mesh)
 			else:
-				_apply_part_texture(new_mesh, part_name)
+				_apply_part_texture(new_mesh, part_name, category)
 			
 			part_instance.queue_free()
 		else:
@@ -505,15 +535,21 @@ func _attach_skinned_mesh(source_scene: Node, category: String) -> Node3D:
 	return new_mesh
 
 
-func _apply_part_texture(mesh: MeshInstance3D, part_name: String) -> void:
-	## Apply texture to a mesh based on part name using DEFAULT_TEXTURES
+func _apply_part_texture(mesh: MeshInstance3D, part_name: String, category: String = "") -> void:
+	## Apply texture to a mesh based on part name using TEXTURE_VARIANTS
 	if not mesh or part_name.is_empty():
 		return
 	
-	var texture_file: String = DEFAULT_TEXTURES.get(part_name, "")
-	if texture_file.is_empty():
+	var variants: Array = TEXTURE_VARIANTS.get(part_name, [])
+	if variants.is_empty():
 		return
 	
+	# Get the variant index for this category
+	var variant_category := category + "Variant"
+	var variant_index: int = _current_selections.get(variant_category, 0)
+	variant_index = clampi(variant_index, 0, variants.size() - 1)
+	
+	var texture_file: String = variants[variant_index]
 	var texture_path: String = CLOTHES_TEXTURES_PATH + texture_file
 	var texture := load(texture_path) as Texture2D
 	if not texture:
@@ -524,7 +560,7 @@ func _apply_part_texture(mesh: MeshInstance3D, part_name: String) -> void:
 	var material := StandardMaterial3D.new()
 	material.albedo_texture = texture
 	mesh.material_override = material
-	print("[ModularCharacter] Applied texture %s to %s" % [texture_file, part_name])
+	print("[ModularCharacter] Applied texture %s to %s (variant %d)" % [texture_file, part_name, variant_index])
 
 
 func _apply_hair_texture(mesh: MeshInstance3D) -> void:
@@ -638,7 +674,7 @@ func get_animation_list() -> Array[String]:
 func get_animation_categories() -> Dictionary:
 	return {
 		"Idle": ["Idle_F", "Idle_L", "Idle_R", "BoredIdle_01", "BoredIdle_02"],
-		"Sitting": ["Idle_Sitting_01", "SITTING_FIST_PUMP_03", "SITTING_ON_CHAIR_01", "SITTING_READING_BOOK_01", "SITTING_USING_SMARTPHONE_01"],
+		"Sitting": ["Idle_Sitting_01", "SITTING_FIST_PUMP_03", "SITTING_ON_CHAIR_01", "SITTING_READING_BOOK_01", "SITTING_USING_LAPTOP_02", "SITTING_USING_SMARTPHONE_01"],
 		"Movement": ["Walk_F", "Walk_L", "Walk_R", "Run_F", "Run_L", "Run_R"],
 		"Emotes": ["Emote_Waving_Loop", "Emote_Happy_Loop", "Emote_Excited_Loop", "Emote_Sad_Loop"],
 		"Actions": ["Pickup_01", "Axe_Swing_01", "Shovel_Dig_01"],
@@ -662,10 +698,33 @@ func set_part(category: String, index: int) -> void:
 			_apply_face(_current_selections.get("Face", 0), _current_selections.get("EyeColor", 0))
 		"HairColor":
 			_update_hair_color()
-		"Hair", "Top", "Bottom", "Shoes", "Hat", "Glasses":
+		"Hair", "Top", "Bottom", "Shoes", "Hat", "Glasses", "Neck":
+			# Reset variant to 0 when changing the item
+			_current_selections[category + "Variant"] = 0
 			_equip_part(category, index)
+		"TopVariant", "BottomVariant", "ShoesVariant", "HatVariant", "GlassesVariant", "NeckVariant":
+			# Variant changed - re-apply texture to existing mesh
+			_update_part_variant(category)
 	
 	part_changed.emit(category, index)
+
+
+func _update_part_variant(variant_category: String) -> void:
+	## Re-apply texture when variant changes
+	var base_category := variant_category.replace("Variant", "")
+	if not _equipped_parts.has(base_category):
+		return
+	
+	var mesh := _equipped_parts[base_category] as MeshInstance3D
+	if not mesh:
+		return
+	
+	var item_index: int = _current_selections.get(base_category, 0)
+	if item_index <= 0:  # "None" selected
+		return
+	
+	var part_name: String = PARTS[base_category][item_index]
+	_apply_part_texture(mesh, part_name, base_category)
 
 
 func get_part(category: String) -> int:
@@ -673,12 +732,36 @@ func get_part(category: String) -> int:
 
 
 func get_part_count(category: String) -> int:
+	# For variant categories, count is based on current item's texture variants
+	if category.ends_with("Variant"):
+		var base_category := category.replace("Variant", "")
+		var item_index: int = _current_selections.get(base_category, 0)
+		if item_index <= 0:  # "None" selected
+			return 0
+		var part_name: String = PARTS.get(base_category, [])[item_index] if item_index < PARTS.get(base_category, []).size() else ""
+		var variants: Array = TEXTURE_VARIANTS.get(part_name, [])
+		return variants.size()
 	return PARTS.get(category, []).size()
 
 
 func get_part_name(category: String, index: int) -> String:
-	var parts: Array = PARTS.get(category, [])
-	return parts[index] if index >= 0 and index < parts.size() else ""
+	# For variant categories, return the variant texture name (cleaned up)
+	if category.ends_with("Variant"):
+		var base_category := category.replace("Variant", "")
+		var item_index: int = _current_selections.get(base_category, 0)
+		if item_index <= 0:
+			return ""
+		var part_name: String = PARTS.get(base_category, [])[item_index] if item_index < PARTS.get(base_category, []).size() else ""
+		var variants: Array = TEXTURE_VARIANTS.get(part_name, [])
+		if index >= 0 and index < variants.size():
+			# Extract color name from texture filename (e.g., "T_TOP_Tank_Black_D.tga" -> "Black")
+			var filename: String = variants[index]
+			var parts := filename.replace("_D.tga", "").split("_")
+			if parts.size() >= 4:
+				return parts[parts.size() - 1]  # Last part is the color/variant name
+		return ""
+	var parts_list: Array = PARTS.get(category, [])
+	return parts_list[index] if index >= 0 and index < parts_list.size() else ""
 
 
 func next_part(category: String) -> void:
@@ -692,9 +775,15 @@ func previous_part(category: String) -> void:
 
 func randomize_appearance() -> void:
 	for category in PARTS.keys():
-		if category == "Hat":
-			continue  # Skip hats when randomizing
+		if category in ["Hat", "Neck"]:
+			continue  # Skip hats and neck when randomizing
 		set_part(category, randi() % get_part_count(category))
+	
+	# Also randomize variants for equipped clothing
+	for variant_cat in ["TopVariant", "BottomVariant", "ShoesVariant"]:
+		var count := get_part_count(variant_cat)
+		if count > 0:
+			set_part(variant_cat, randi() % count)
 
 
 func get_available_categories() -> Array[String]:

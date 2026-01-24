@@ -1,15 +1,15 @@
 [remap]
 
-importer="animation_library"
+importer="scene"
 importer_version=1
-type="AnimationLibrary"
-uid="uid://ba56qacls7uh0"
-path="res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_ON_CHAIR_01.fbx-0f72d01a081a0badf9f90319e618b06f.res"
+type="PackedScene"
+uid="uid://c7awojxfyhr4k"
+path="res://.godot/imported/SM_Laptop.fbx-50b55f4de8f3ee54607e197feb55fe88.scn"
 
 [deps]
 
-source_file="res://assets/characters/cozylife/animations/ANIM_AVATAR_ACTION_SITTING_ON_CHAIR_01.fbx"
-dest_files=["res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_ON_CHAIR_01.fbx-0f72d01a081a0badf9f90319e618b06f.res"]
+source_file="res://assets/environments/objects/SM_Laptop.fbx"
+dest_files=["res://.godot/imported/SM_Laptop.fbx-50b55f4de8f3ee54607e197feb55fe88.scn"]
 
 [params]
 
@@ -18,7 +18,7 @@ nodes/root_name=""
 nodes/root_script=null
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
-nodes/import_as_skeleton_bones=true
+nodes/import_as_skeleton_bones=false
 nodes/use_name_suffixes=true
 nodes/use_node_type_suffixes=true
 meshes/ensure_tangents=true

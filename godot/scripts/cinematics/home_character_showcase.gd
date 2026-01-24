@@ -55,6 +55,8 @@ var _user_character_data: Dictionary = {}
 var _cafe_switch_tween: Tween = null
 ## Is a café switch currently animating
 var _is_switching: bool = false
+## Pre-fetched unique NPC skin indices per café (indices into NPCSkins.SKINS)
+var _cafe_skin_indices: Array = []
 
 
 func _ready() -> void:
@@ -105,11 +107,19 @@ func _spawn_all_cafe_groups() -> void:
 	## Spawn NPC groups for all cafés
 	## First café (index 0) is positioned on-screen, others are off-screen to the right
 	_cafe_npc_groups.clear()
+	_cafe_skin_indices.clear()
+	
+	var npcs_per_cafe := npcs_per_side * 2
 	
 	for cafe_idx in range(CAFE_COUNT):
 		var group: Array[CinematicCharacter] = []
 		var x_offset := _get_cafe_x_offset(cafe_idx)
 		var positions := _calculate_npc_positions(x_offset)
+		
+		# Pre-fetch unique NPC skin indices for this café
+		var skin_indices: Array[int] = NPCSkins.get_unique_random_indices(npcs_per_cafe)
+		print("[HomeCharacterShowcase] Café %d skin indices: %s" % [cafe_idx, skin_indices])
+		_cafe_skin_indices.append(skin_indices)
 		
 		for npc_idx in range(positions.size()):
 			var npc := _spawn_single_npc(cafe_idx, npc_idx, positions[npc_idx])
@@ -117,7 +127,7 @@ func _spawn_all_cafe_groups() -> void:
 		
 		_cafe_npc_groups.append(group)
 	
-	var total_npcs := CAFE_COUNT * npcs_per_side * 2
+	var total_npcs := CAFE_COUNT * npcs_per_cafe
 	print("[HomeCharacterShowcase] Spawned %d NPC characters across %d cafés" % [total_npcs, CAFE_COUNT])
 
 
@@ -159,31 +169,41 @@ func _spawn_single_npc(cafe_index: int, npc_index: int, pos: Vector3) -> Cinemat
 	
 	add_child(npc)
 	
-	# Apply random preset with café-specific seed for variety
-	_apply_random_preset_deferred(npc, cafe_index * 100 + npc_index)
+	# Apply curated NPC skin from pre-fetched batch
+	_apply_random_preset_deferred(npc, cafe_index, npc_index)
 	
 	return npc
 
 
-func _apply_random_preset_deferred(npc: CinematicCharacter, index: int) -> void:
-	## Apply a random preset to the NPC after it's fully initialized
+func _apply_random_preset_deferred(npc: CinematicCharacter, cafe_index: int, npc_index: int) -> void:
+	## Apply a curated NPC skin to the NPC after it's fully initialized
 	# Wait for the character to be fully initialized
 	for i in range(5):
 		await get_tree().process_frame
 	
 	var modular := npc.get_modular_character()
 	if not modular:
-		push_warning("[HomeCharacterShowcase] ModularCharacter not ready for NPC_%d" % index)
+		push_warning("[HomeCharacterShowcase] ModularCharacter not ready for Cafe%d_NPC_%d" % [cafe_index, npc_index])
 		return
 	
-	# Get a random preset - apply_preset_dict/randomize_appearance auto-shows
-	var preset_data := CharacterPresets.get_random_preset()
-	if not preset_data.is_empty():
-		npc.apply_preset_dict(preset_data, "RandomNPC")
-		print("[HomeCharacterShowcase] Applied random preset to NPC_%d" % index)
+	# Get the pre-fetched skin index for this café/NPC combination
+	var skin_index: int = -1
+	if cafe_index < _cafe_skin_indices.size():
+		var indices = _cafe_skin_indices[cafe_index]
+		if npc_index < indices.size():
+			skin_index = indices[npc_index]
+	
+	# Get skin data from index, or fallback to random
+	var skin_data: Dictionary
+	if skin_index >= 0:
+		skin_data = NPCSkins.get_skin(skin_index)
 	else:
-		npc.randomize_appearance()
-		print("[HomeCharacterShowcase] Randomized NPC_%d appearance" % index)
+		skin_data = NPCSkins.get_random_skin()
+		print("[HomeCharacterShowcase] Using fallback random skin for Cafe%d_NPC_%d" % [cafe_index, npc_index])
+	
+	var skin_name: String = skin_data.get("name", "npc")
+	npc.apply_preset_dict(skin_data, skin_name.capitalize().replace("_", " "))
+	print("[HomeCharacterShowcase] Applied NPC skin '%s' (index %d) to Cafe%d_NPC_%d" % [skin_name, skin_index, cafe_index, npc_index])
 	
 	# Apply darkening effect using multiply shader
 	#npc.set_color_modulate(npc_darken_color)
@@ -259,19 +279,29 @@ func get_cafe_npc_characters(cafe_index: int) -> Array[CinematicCharacter]:
 	return []
 
 
-## Refresh all NPC appearances with new random presets (current café only)
+## Refresh all NPC appearances with new random skins (current café only)
 func refresh_npcs() -> void:
 	var npcs := get_npc_characters()
+	# Re-fetch unique skin indices for this café
+	var skin_indices: Array[int] = NPCSkins.get_unique_random_indices(npcs.size())
+	if _current_cafe_index < _cafe_skin_indices.size():
+		_cafe_skin_indices[_current_cafe_index] = skin_indices
+	
 	for i in range(npcs.size()):
-		_apply_random_preset_deferred(npcs[i], _current_cafe_index * 100 + i)
+		_apply_random_preset_deferred(npcs[i], _current_cafe_index, i)
 
 
 ## Refresh NPCs for all cafés
 func refresh_all_cafe_npcs() -> void:
 	for cafe_idx in range(_cafe_npc_groups.size()):
 		var group: Array = _cafe_npc_groups[cafe_idx]
+		# Re-fetch unique skin indices for this café
+		var skin_indices: Array[int] = NPCSkins.get_unique_random_indices(group.size())
+		if cafe_idx < _cafe_skin_indices.size():
+			_cafe_skin_indices[cafe_idx] = skin_indices
+		
 		for npc_idx in range(group.size()):
-			_apply_random_preset_deferred(group[npc_idx] as CinematicCharacter, cafe_idx * 100 + npc_idx)
+			_apply_random_preset_deferred(group[npc_idx] as CinematicCharacter, cafe_idx, npc_idx)
 
 
 ## Set a specific animation for the user character

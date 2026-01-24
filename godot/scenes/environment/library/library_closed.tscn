@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://dk37arc8tndiw"]
+
+[ext_resource type="PackedScene" uid="uid://cmnr33ibwumq4" path="res://assets/environments/library_direct_export/Library.gltf" id="1_qm7tt"]
+[ext_resource type="PackedScene" uid="uid://b8evnabog5855" path="res://scenes/environment/library/backwall.tscn" id="2_271v7"]
+
+[node name="Library2" instance=ExtResource("1_qm7tt")]
+
+[node name="Node3D" parent="Library" index="29" instance=ExtResource("2_271v7")]

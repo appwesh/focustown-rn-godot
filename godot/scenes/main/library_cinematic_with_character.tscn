@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://kpy1kt4pq16n"]
+[gd_scene load_steps=5 format=3 uid="uid://kpy1kt4pq16n"]
 
 [ext_resource type="Script" uid="uid://dtpe55lc2ftby" path="res://scripts/cinematics/library_cinematic.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://bd76o2yql4e7n" path="res://scenes/main/LibraryCinematic.scn" id="2_env"]
+[ext_resource type="PackedScene" uid="uid://b8evnabog5855" path="res://scenes/environment/library/backwall.tscn" id="3_i2eg3"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(50, 0.1, 50)
@@ -11,14 +12,10 @@ script = ExtResource("1_script")
 character_spawn_rotation = 180.0
 play_entrance_cinematic = true
 entrance_position = Vector3(0, 0, 9.5)
-entrance_rotation = 180.0
-entrance_destination = Vector3(0, 0, 8)
 entrance_start_delay = 0.3
 entrance_end_delay = 0.5
 entrance_walk_speed = 1.0
 entrance_camera_position = Vector3(-2.5, 1.5, 9.5)
-
-entrance_arrival_animation = "BoredIdle_01"
 entrance_animation_duration = 1.2
 
 [node name="LibraryEnvironment" parent="." instance=ExtResource("2_env")]
@@ -29,3 +26,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013491631, 0, 0.00074338913
 [node name="CollisionShape3D" type="CollisionShape3D" parent="GroundCollision"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
 shape = SubResource("BoxShape3D_floor")
+
+[node name="backwall" parent="." instance=ExtResource("3_i2eg3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.027628303, 0.0013138801, -0.029893398)
+
+[node name="Cube3" parent="backwall" index="0"]
+layers = 2
+
+[node name="Cube (1)2" parent="backwall" index="1"]
+layers = 2
+
+[node name="Cube (2)2" parent="backwall" index="2"]
+layers = 2
+
+[node name="Cube (8)2" parent="backwall" index="3"]
+layers = 2
+
+[node name="Cube (14)2" parent="backwall" index="4"]
+layers = 2
+
+[editable path="backwall"]

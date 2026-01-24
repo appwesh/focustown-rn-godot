@@ -44,7 +44,7 @@ export function ActiveSessionOverlay({ visible, onEndEarly, onTripleTap }: Activ
         style={[styles.cameraToggle, { top: insets.top + 16 }]}
         onPress={handleToggleCamera}
       >
-        <Text style={styles.cameraIcon}>🔍</Text>
+        <Text style={styles.cameraIcon}>📹</Text>
       </Pressable>
 
       {/* Bottom Timer Card */}
