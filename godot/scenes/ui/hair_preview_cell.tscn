@@ -56,7 +56,7 @@ default_selections = {
 "EyeColor": 0,
 "Face": 0,
 "Glasses": 0,
-"Hair": 1,
+"Hair": 0,
 "HairColor": 0,
 "Hat": 0,
 "Shoes": 0,

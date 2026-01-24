@@ -64,6 +64,43 @@ const ANIMATION_FILES: PackedStringArray = [
 const CLOTHES_PATH := "res://assets/characters/cozylife/clothes/"
 const CLOTHES_TEXTURES_PATH := "res://assets/characters/cozylife/clothes/textures/"
 const HAIRS_PATH := "res://assets/characters/cozylife/hairs/"
+const CUSTOM_SKINS_PATH := "res://assets/characters/cozylife/custom/"
+
+## Custom full-body skins that replace multiple parts at once
+## Each skin defines: display name, folder path, and which parts it includes
+## For FBX files with multiple meshes, use "mesh_parts" to map mesh names to categories
+## Categories: Top, Bottom, Shoes (skinned - SKM_), Hat, Glasses, Neck (head-attached - SM_)
+const CUSTOM_SKINS := {
+	"Lofi": {
+		"display_name": "Lofi Girl",
+		"folder": "Lofi/",
+		"models": [
+			{
+				"file": "Models/Lofi_Top.fbx",
+				"mesh_parts": {
+					# [0] geometry_0_003 Remeshed = unknown/skip
+					# [1] Headphone = skip (using separate file)
+					# [2] TOP_Sweater = the actual top
+					"2": {"category": "Top", "texture": "Textures/Lofi_Top.png"},
+				},
+			},
+			{
+				"file": "Models/Lofi_Bottom.fbx",
+				"mesh_parts": {
+					"0": {"category": "Bottom", "texture": "Textures/Lofi_Pants.png"},
+				},
+			},
+			{
+				"file": "Models/SM_MISC_Hat_HeadPhone.fbx",
+				"mesh_parts": {
+					# Mesh is tiny (~0.007 units), needs scale + position on head
+					# offset: [right/left, up/down, forward/back]
+					"0": {"category": "Hat", "texture": "Textures/headphone/headphone_Untextured_Checker_BaseColor.png", "scale": 40.0, "offset": [0.0, 0.08, 0.0]},
+				},
+			},
+		],
+	},
+}
 
 ## Hat adjustments (scale and height offset)
 const HAT_SCALE := Vector3(1.15, 1.15, 1.15)
@@ -194,6 +231,7 @@ const PARTS := {
 }
 
 const PART_DISPLAY_NAMES := {
+	"CustomSkin": "Full Skins",
 	"SkinTone": "Skin Tone",
 	"Face": "Face",
 	"EyeColor": "Eye Color",
@@ -214,6 +252,7 @@ const PART_DISPLAY_NAMES := {
 }
 
 const UI_CATEGORIES := {
+	"Skins": ["CustomSkin"],
 	"Body": ["SkinTone", "Face", "EyeColor"],
 	"Clothes": ["Top", "TopVariant", "Bottom", "BottomVariant", "Shoes", "ShoesVariant"],
 	"Accessories": ["Hair", "HairColor", "Hat", "HatVariant", "Glasses", "GlassesVariant", "Neck", "NeckVariant"],
@@ -223,7 +262,7 @@ const UI_CATEGORIES := {
 	"SkinTone": 0,
 	"Face": 0,
 	"EyeColor": 0,
-	"Hair": 1,
+	"Hair": 4,
 	"HairColor": 0,
 	"Top": 1,
 	"TopVariant": 0,
@@ -254,6 +293,7 @@ var _color_modulate: Color = Color.WHITE  ## Color modulation for darkening effe
 var _is_initialized: bool = false  ## True after base model/materials setup
 var _pending_load_data: Dictionary = {}  ## Preset data queued before ready
 var _pending_show: bool = false  ## Show request queued before ready
+var _current_custom_skin: String = ""  ## Currently equipped custom skin name (empty = none)
 
 
 func _ready() -> void:
@@ -630,6 +670,250 @@ func _update_hair_color() -> void:
 	var hair_mesh := _equipped_parts.get("Hair") as MeshInstance3D
 	if hair_mesh:
 		_apply_hair_texture(hair_mesh)
+
+
+## Custom Skins
+
+func apply_custom_skin(skin_name: String) -> void:
+	## Apply a full custom skin, replacing multiple parts at once
+	## Pass empty string to clear custom skin and restore default parts
+	
+	if skin_name.is_empty():
+		# Clear custom skin - remove all custom parts
+		if _current_custom_skin.is_empty():
+			return
+		_clear_custom_skin_parts()
+		_current_custom_skin = ""
+		return
+	
+	if not CUSTOM_SKINS.has(skin_name):
+		push_error("[ModularCharacter] Unknown custom skin: %s" % skin_name)
+		return
+	
+	# Clear any existing custom skin first
+	if not _current_custom_skin.is_empty():
+		_clear_custom_skin_parts()
+	
+	var skin_data: Dictionary = CUSTOM_SKINS[skin_name]
+	var skin_folder: String = skin_data.get("folder", "")
+	var models: Array = skin_data.get("models", [])
+	
+	_current_custom_skin = skin_name
+	
+	# Process each model file in the skin
+	for model_data in models:
+		_process_custom_model(skin_folder, model_data as Dictionary)
+	
+	print("[ModularCharacter] Applied custom skin: %s" % skin_name)
+
+
+func _clear_custom_skin_parts() -> void:
+	## Clear all parts from current custom skin
+	if _current_custom_skin.is_empty():
+		return
+	
+	var skin_data: Dictionary = CUSTOM_SKINS.get(_current_custom_skin, {})
+	var models: Array = skin_data.get("models", [])
+	
+	# Collect all categories used by this skin
+	var categories_to_clear: Array[String] = []
+	for model_data in models:
+		var mesh_parts: Dictionary = (model_data as Dictionary).get("mesh_parts", {})
+		for mesh_key in mesh_parts.keys():
+			var part_info: Dictionary = mesh_parts[mesh_key]
+			var category: String = part_info.get("category", "")
+			if not category.is_empty() and category not in categories_to_clear:
+				categories_to_clear.append(category)
+	
+	for category in categories_to_clear:
+		_remove_custom_parts(category)
+
+
+func _process_custom_model(skin_folder: String, model_data: Dictionary) -> void:
+	## Process an FBX file and attach its meshes to appropriate places
+	## Uses index-based matching from mesh_parts config
+	
+	var model_file: String = model_data.get("file", "")
+	var mesh_parts: Dictionary = model_data.get("mesh_parts", {})
+	
+	if model_file.is_empty():
+		print("[ModularCharacter] Empty model file, skipping")
+		return
+	
+	var full_model_path: String = CUSTOM_SKINS_PATH + skin_folder + model_file
+	print("[ModularCharacter] Loading model: %s" % full_model_path)
+	
+	var part_scene := load(full_model_path) as PackedScene
+	if not part_scene:
+		push_error("[ModularCharacter] FAILED to load custom model: %s" % full_model_path)
+		return
+	
+	var part_instance := part_scene.instantiate()
+	print("[ModularCharacter] Instantiated model, finding meshes...")
+	
+	# Find ALL meshes in the FBX
+	var all_meshes: Array[MeshInstance3D] = []
+	_find_all_meshes(part_instance, all_meshes)
+	
+	if all_meshes.is_empty():
+		push_error("[ModularCharacter] No meshes found in: %s" % full_model_path)
+		part_instance.queue_free()
+		return
+	
+	print("[ModularCharacter] Found %d meshes in %s:" % [all_meshes.size(), model_file])
+	for idx in range(all_meshes.size()):
+		print("  [%d] Mesh: %s" % [idx, all_meshes[idx].name])
+	
+	# Process each configured mesh part by index
+	for key in mesh_parts.keys():
+		var part_config: Dictionary = mesh_parts[key]
+		var category: String = part_config.get("category", "")
+		var texture_path: String = part_config.get("texture", "")
+		var mesh_scale: float = part_config.get("scale", 1.0)
+		var offset_array: Array = part_config.get("offset", [0.0, 0.0, 0.0])
+		var mesh_offset := Vector3(offset_array[0], offset_array[1], offset_array[2]) if offset_array.size() >= 3 else Vector3.ZERO
+		
+		if category.is_empty():
+			continue
+		
+		# Get mesh by index
+		var mesh_index: int = int(str(key))
+		if mesh_index < 0 or mesh_index >= all_meshes.size():
+			print("[ModularCharacter] Mesh index %d out of range for %s (has %d meshes)" % [mesh_index, model_file, all_meshes.size()])
+			continue
+		
+		var source_mesh := all_meshes[mesh_index]
+		print("[ModularCharacter] Processing mesh[%d] '%s' as %s (scale: %.1f, offset: %s)" % [mesh_index, source_mesh.name, category, mesh_scale, mesh_offset])
+		
+		# Remove existing part in this category
+		_remove_custom_parts(category)
+		
+		# Determine attachment based on category
+		var is_head_accessory := category in ["Hair", "Hat", "Glasses", "Neck"]
+		
+		if is_head_accessory and _head_attachment:
+			_attach_custom_head_accessory(source_mesh, category, skin_folder, texture_path, mesh_scale, mesh_offset)
+		elif _skeleton:
+			_attach_custom_skinned_mesh(source_mesh, category, skin_folder, texture_path)
+	
+	part_instance.queue_free()
+	print("[ModularCharacter] Finished processing %s" % model_file)
+
+
+func _attach_custom_skinned_mesh(source_mesh: MeshInstance3D, category: String, skin_folder: String, texture_path: String) -> void:
+	## Attach a skinned mesh (clothing) to the skeleton
+	var new_mesh := MeshInstance3D.new()
+	new_mesh.name = category + "_CustomMesh"
+	new_mesh.mesh = source_mesh.mesh
+	new_mesh.skin = source_mesh.skin
+	
+	_skeleton.add_child(new_mesh)
+	new_mesh.skeleton = NodePath("..")
+	
+	_equipped_parts[category] = new_mesh
+	
+	if not texture_path.is_empty():
+		var full_texture_path: String = CUSTOM_SKINS_PATH + skin_folder + texture_path
+		_apply_custom_texture(new_mesh, full_texture_path)
+	
+	print("[ModularCharacter] Attached skinned custom %s" % category)
+
+
+func _attach_custom_head_accessory(source_mesh: MeshInstance3D, category: String, skin_folder: String, texture_path: String, mesh_scale: float = 1.0, mesh_offset: Vector3 = Vector3.ZERO) -> void:
+	## Attach a static mesh accessory to the head bone (like hats, glasses, neck)
+	var new_mesh := MeshInstance3D.new()
+	new_mesh.name = category + "_CustomMesh"
+	new_mesh.mesh = source_mesh.mesh
+	
+	# Apply scale if specified (some custom assets are exported at wrong scale)
+	if mesh_scale != 1.0:
+		new_mesh.scale = Vector3(mesh_scale, mesh_scale, mesh_scale)
+	
+	# Apply position offset
+	new_mesh.position = mesh_offset
+	
+	# Check if this mesh has a skin (is skinned) - if so, set up skeleton reference
+	if source_mesh.skin:
+		new_mesh.skin = source_mesh.skin
+		_skeleton.add_child(new_mesh)
+		new_mesh.skeleton = NodePath("..")
+		print("[ModularCharacter] Custom head accessory '%s' is SKINNED, attached to skeleton" % category)
+	else:
+		# Static mesh - attach to head bone
+		_head_attachment.add_child(new_mesh)
+		print("[ModularCharacter] Custom head accessory '%s' is STATIC, pos: %s, scale: %.1f" % [category, mesh_offset, mesh_scale])
+	
+	_equipped_parts[category] = new_mesh
+	
+	if not texture_path.is_empty():
+		var full_texture_path: String = CUSTOM_SKINS_PATH + skin_folder + texture_path
+		_apply_custom_texture(new_mesh, full_texture_path)
+
+
+func _remove_custom_parts(category: String) -> void:
+	## Remove all meshes for a custom part category
+	if _equipped_parts.has(category):
+		var part = _equipped_parts[category]
+		if is_instance_valid(part):
+			part.queue_free()
+		_equipped_parts.erase(category)
+	
+	# Also remove any individual mesh nodes that were added
+	if _skeleton:
+		var to_remove: Array[Node] = []
+		for child in _skeleton.get_children():
+			if child.name.begins_with(category + "_Mesh_") or child.name.begins_with(category + "_CustomParts"):
+				to_remove.append(child)
+		for node in to_remove:
+			node.queue_free()
+
+
+func _find_all_meshes(node: Node, result: Array[MeshInstance3D]) -> void:
+	## Recursively find all MeshInstance3D nodes
+	if node is MeshInstance3D:
+		result.append(node as MeshInstance3D)
+	for child in node.get_children():
+		_find_all_meshes(child, result)
+
+
+func _apply_custom_texture(mesh: MeshInstance3D, texture_path: String) -> void:
+	## Apply a custom texture to a mesh
+	if not mesh or texture_path.is_empty():
+		return
+	
+	var texture := load(texture_path) as Texture2D
+	if not texture:
+		push_error("[ModularCharacter] Failed to load custom texture: %s" % texture_path)
+		return
+	
+	var material := StandardMaterial3D.new()
+	material.albedo_texture = texture
+	mesh.material_override = material
+	print("[ModularCharacter] Applied custom texture: %s" % texture_path)
+
+
+func get_custom_skin_names() -> Array[String]:
+	## Get list of available custom skin names
+	var names: Array[String] = []
+	for skin_name in CUSTOM_SKINS.keys():
+		names.append(skin_name)
+	return names
+
+
+func get_custom_skin_display_name(skin_name: String) -> String:
+	## Get display name for a custom skin
+	var skin_data: Dictionary = CUSTOM_SKINS.get(skin_name, {})
+	return skin_data.get("display_name", skin_name)
+
+
+func get_current_custom_skin() -> String:
+	## Get currently equipped custom skin name (empty if none)
+	return _current_custom_skin
+
+
+func clear_custom_skin() -> void:
+	## Clear any equipped custom skin
+	apply_custom_skin("")
 
 
 func _load_all_animations() -> void:

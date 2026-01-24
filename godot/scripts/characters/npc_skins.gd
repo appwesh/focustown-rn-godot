@@ -49,7 +49,7 @@ const SKINS := [
 		"SkinTone": 2,
 		"Face": 14,
 		"EyeColor": 1,  # Blue
-		"Hair": 1,  # Afro
+		"Hair": 4,  # Afro
 		"HairColor": 5,  # DarkBrown
 		"Top": 7,  # Tshirt
 		"TopVariant": 5,  # BlueStar
@@ -238,7 +238,7 @@ const SKINS := [
 		"SkinTone": 6,
 		"Face": 5,
 		"EyeColor": 4,  # LightBrown
-		"Hair": 1,  # Afro
+		"Hair": 6,  # Afro
 		"HairColor": 15,  # Red
 		"Top": 7,  # Tshirt
 		"TopVariant": 14,  # PumpkinCollegiate
@@ -350,7 +350,7 @@ const SKINS := [
 		"SkinTone": 8,
 		"Face": 14,
 		"EyeColor": 2,  # DarkBrown
-		"Hair": 1,  # Afro
+		"Hair": 0,  # None
 		"HairColor": 1,  # Black
 		"Top": 3,  # Sweater
 		"TopVariant": 6,  # OliveCollegiate

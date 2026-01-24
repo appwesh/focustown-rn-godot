@@ -259,6 +259,39 @@ func get_current_animation() -> String:
 	return _current_animation
 
 
+## Seek to a specific time in the current animation (useful for offsetting looped animations)
+func seek_animation(time: float) -> void:
+	var anim_player := _modular_character.get_animation_player() if _modular_character else null
+	if anim_player:
+		anim_player.seek(time, true)
+
+
+## Seek to a random position in the current animation (for desync)
+func randomize_animation_offset() -> void:
+	var anim_player := _modular_character.get_animation_player() if _modular_character else null
+	if not anim_player:
+		return
+	
+	var current_anim := anim_player.current_animation
+	if current_anim.is_empty():
+		return
+	
+	# Get animation length
+	var animation: Animation = null
+	var anim_parts := current_anim.split("/")
+	if anim_parts.size() == 2:
+		var lib := anim_player.get_animation_library(anim_parts[0])
+		if lib:
+			animation = lib.get_animation(anim_parts[1])
+	
+	if not animation:
+		return
+	
+	# Seek to random position within animation length
+	var random_time := randf() * animation.length
+	anim_player.seek(random_time, true)
+
+
 ## Get list of all available animations
 func get_available_animations() -> Array[String]:
 	if _modular_character:

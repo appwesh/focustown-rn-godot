@@ -23,6 +23,11 @@ var _sprite: Sprite3D
 var _timer_label: Label
 var _flag_label: Label
 
+## Animation
+var _anim_tween: Tween
+const ANIM_DURATION := 0.35
+const SLIDE_OFFSET := 0.15  ## How far to slide up/down
+
 
 func _ready() -> void:
 	# Load emoji font
@@ -44,64 +49,67 @@ func _process(delta: float) -> void:
 
 
 func _setup_ui() -> void:
-	# Create SubViewport - size matches our UI exactly
+	# Create SubViewport - render at 2x resolution for sharper quality
 	_viewport = SubViewport.new()
-	_viewport.size = Vector2i(180, 55)
+	_viewport.size = Vector2i(260, 110)
 	_viewport.transparent_bg = true
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	_viewport.gui_disable_input = true
 	add_child(_viewport)
 	
-	# Create pill background panel with explicit size
+	# Create pill background panel with explicit size (2x scale)
 	var panel := Panel.new()
 	panel.position = Vector2(0, 0)
-	panel.size = Vector2(150, 55)
-	panel.custom_minimum_size = Vector2(150, 55)
+	panel.size = Vector2(260, 110)
+	panel.custom_minimum_size = Vector2(260, 110)
 	
 	# Style the panel as a rounded pill
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.98, 0.96, 0.92, 1.0)  # Cream white
-	style.border_color = Color(0.82, 0.78, 0.72, 1.0)  # Tan border
-	style.set_border_width_all(3)
-	style.set_corner_radius_all(27)  # Rounded corners (about half the height)
+	style.bg_color = Color(0.98, 0.96, 0.92, 0.75)  # Cream white, slightly transparent
+	style.set_corner_radius_all(54)  # Rounded corners (about half the height)
 	panel.add_theme_stylebox_override("panel", style)
 	_viewport.add_child(panel)
 	
-	# Create HBoxContainer for timer + flag layout
+	# Create HBoxContainer for timer + flag layout (2x scale)
 	var hbox := HBoxContainer.new()
-	hbox.position = Vector2(18, 8)
-	hbox.size = Vector2(100, 40)
+	hbox.position = Vector2(36, 16)
+	hbox.size = Vector2(160, 80)
 	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	hbox.add_theme_constant_override("separation", 12)
+	hbox.add_theme_constant_override("separation", 24)
 	panel.add_child(hbox)
 	
-	# Timer label
+	# Timer label (2x font size for 2x resolution)
 	_timer_label = Label.new()
 	_timer_label.text = "00:00"
-	_timer_label.add_theme_font_size_override("font_size", 26)
+	_timer_label.add_theme_font_size_override("font_size", 52)
 	_timer_label.add_theme_color_override("font_color", Color(0.3, 0.25, 0.2, 1.0))
+	# Simulate bold with outline
+	_timer_label.add_theme_constant_override("outline_size", 6)
+	_timer_label.add_theme_color_override("font_outline_color", Color(0.3, 0.25, 0.2, 1.0))
 	_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_timer_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	hbox.add_child(_timer_label)
 	
-	# Flag label with emoji font
+	# Flag label with emoji font (2x font size)
 	_flag_label = Label.new()
 	_flag_label.text = "🇺🇸"
 	if _emoji_font:
 		_flag_label.add_theme_font_override("font", _emoji_font)
-	_flag_label.add_theme_font_size_override("font_size", 24)
+	_flag_label.add_theme_font_size_override("font_size", 64)
 	_flag_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_flag_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	hbox.add_child(_flag_label)
 	
 	# Create Sprite3D to display the viewport in 3D
 	_sprite = Sprite3D.new()
-	_sprite.pixel_size = 0.005
+	_sprite.pixel_size = 0.0025  # Halved for 2x resolution
 	_sprite.position.y = height_offset
 	_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_sprite.no_depth_test = false
-	_sprite.render_priority = 1
+	_sprite.shaded = false  # Don't apply scene lighting - keeps colors true
+	_sprite.no_depth_test = true  # Always render on top of scene geometry
+	_sprite.render_priority = 10  # Higher priority for UI elements
 	_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
+	_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED  # Support non-binary transparency
 	add_child(_sprite)
 	
 	# Wait a frame then assign texture
@@ -131,8 +139,8 @@ func _update_display() -> void:
 			# Format as "1h24" for times over an hour
 			_timer_label.text = "%dh%02d" % [hours, minutes]
 		else:
-			# Format as "12min" for times under an hour
-			_timer_label.text = "%dmin" % minutes
+			# Format as "12m" for times under an hour
+			_timer_label.text = "%dm" % minutes
 	
 	if _flag_label:
 		_flag_label.text = _flag
@@ -148,3 +156,49 @@ func set_time(minutes: int, seconds: int) -> void:
 func set_flag(flag: String) -> void:
 	_flag = flag
 	_update_display()
+
+
+## Animate the bubble appearing (slide up + fade in)
+func animate_show() -> void:
+	if not _sprite:
+		visible = true
+		return
+	
+	# Cancel any existing animation
+	if _anim_tween and _anim_tween.is_valid():
+		_anim_tween.kill()
+	
+	# Start below final position and transparent
+	_sprite.position.y = height_offset - SLIDE_OFFSET
+	_sprite.modulate.a = 0.0
+	visible = true
+	
+	# Animate to final position
+	_anim_tween = create_tween()
+	_anim_tween.set_ease(Tween.EASE_OUT)
+	_anim_tween.set_trans(Tween.TRANS_BACK)
+	_anim_tween.set_parallel(true)
+	_anim_tween.tween_property(_sprite, "position:y", height_offset, ANIM_DURATION)
+	_anim_tween.tween_property(_sprite, "modulate:a", 1.0, ANIM_DURATION * 0.7)
+
+
+## Animate the bubble disappearing (slide down + fade out)
+func animate_hide() -> void:
+	if not _sprite:
+		visible = false
+		return
+	
+	# Cancel any existing animation
+	if _anim_tween and _anim_tween.is_valid():
+		_anim_tween.kill()
+	
+	# Animate down and fade out
+	_anim_tween = create_tween()
+	_anim_tween.set_ease(Tween.EASE_IN)
+	_anim_tween.set_trans(Tween.TRANS_QUAD)
+	_anim_tween.set_parallel(true)
+	_anim_tween.tween_property(_sprite, "position:y", height_offset - SLIDE_OFFSET, ANIM_DURATION)
+	_anim_tween.tween_property(_sprite, "modulate:a", 0.0, ANIM_DURATION * 0.7)
+	
+	# Hide after animation completes
+	_anim_tween.chain().tween_callback(func(): visible = false)

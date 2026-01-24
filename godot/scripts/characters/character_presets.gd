@@ -129,7 +129,7 @@ const PRESETS := {
 		"SkinTone": 9,
 		"Face": 8,
 		"EyeColor": 7,  # Purple
-		"Hair": 1,  # Afro
+		"Hair": 4,  # Afro
 		"HairColor": 9,  # Holo
 		"Top": 1,  # Tank
 		"Bottom": 6,  # Skirt

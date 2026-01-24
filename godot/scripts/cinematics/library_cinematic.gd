@@ -402,9 +402,6 @@ func _start_entrance_cinematic():
 	entrance_cinematic_started.emit()
 	print("[LibraryCinematic] Starting entrance cinematic")
 	
-	# Hide NPC study bubbles during cinematic
-	_set_study_bubbles_visible(false)
-	
 	# Store and set cinematic walk speed
 	_original_move_speed = _character.move_speed
 	_character.move_speed = entrance_walk_speed
@@ -453,9 +450,6 @@ func _start_entrance_cinematic():
 	# Restore original move speed
 	_character.move_speed = _original_move_speed
 	
-	# Show NPC study bubbles again
-	_set_study_bubbles_visible(true)
-	
 	_entrance_cinematic_playing = false
 	entrance_cinematic_finished.emit()
 	
@@ -484,12 +478,15 @@ func is_entrance_cinematic_playing() -> bool:
 	return _entrance_cinematic_playing
 
 
-## Set visibility of all NPC study bubbles
+## Set visibility of all NPC study bubbles with animation
 func _set_study_bubbles_visible(is_visible: bool) -> void:
 	for npc in _npc_characters:
-		var bubble := npc.get_node_or_null("StudyBubble")
+		var bubble := npc.get_node_or_null("StudyBubble") as NPCStudyBubble
 		if bubble:
-			bubble.visible = is_visible
+			if is_visible:
+				bubble.animate_show()
+			else:
+				bubble.animate_hide()
 
 
 ## Check if currently in first person view
@@ -763,6 +760,18 @@ func _on_focus_session_started(_spot: Node3D) -> void:
 		# Use the laptoplink model for the focus session laptop
 		_character.laptop_model_path = "res://assets/environments/objects/laptoplink/laptoplink.glb"
 		_character.transition_to_animation(studying_animation)
+	
+	# Show NPC study bubbles after camera transition completes
+	_show_study_bubbles_delayed()
+
+
+func _show_study_bubbles_delayed() -> void:
+	# Wait for camera to switch to 3rd person view
+	await get_tree().create_timer(1.2).timeout
+	
+	# Only show if still in a focus session
+	if FocusSessionManager.is_focusing():
+		_set_study_bubbles_visible(true)
 
 
 ## Called when focus session ends (timer stops)
@@ -770,6 +779,9 @@ func _on_focus_session_ended(_duration: int, _coins: int) -> void:
 	print("[LibraryCinematic] Focus session ended - returning to sitting idle")
 	if _character and _is_player_seated:
 		_character.transition_to_animation(sitting_animation)
+	
+	# Hide NPC study bubbles when session ends
+	_set_study_bubbles_visible(false)
 
 
 func _spawn_single_npc(config: Dictionary) -> CinematicCharacter:
@@ -777,7 +789,7 @@ func _spawn_single_npc(config: Dictionary) -> CinematicCharacter:
 	var pos: Vector3 = config.get("position", Vector3.ZERO)
 	var rot: float = config.get("rotation", 0.0)
 	var anim: String = config.get("animation", idle_animation)
-	var is_seated: bool = anim.contains("Sitting")
+	var is_seated: bool = anim.to_lower().contains("sitting")
 	
 	var npc := _character_scene.instantiate() as CinematicCharacter
 	var npc_index := _npc_characters.size() + 1
@@ -809,9 +821,8 @@ func _add_study_bubble_deferred(npc: CinematicCharacter) -> void:
 	
 	var bubble := NPCStudyBubble.new()
 	bubble.name = "StudyBubble"
-	# Hide bubble if entrance cinematic is playing
-	if _entrance_cinematic_playing:
-		bubble.visible = false
+	# Start hidden - only show during active focus session
+	bubble.visible = FocusSessionManager.is_focusing()
 	npc.add_child(bubble)
 	print("[LibraryCinematic] Added study bubble to: %s" % npc.name)
 
@@ -841,16 +852,19 @@ func _apply_npc_preset_deferred(npc: CinematicCharacter, preset_name: String) ->
 		var skin_name: String = skin_data.get("name", "npc")
 		npc.apply_preset_dict(skin_data, skin_name.capitalize().replace("_", " "))
 		print("[LibraryCinematic] Applied NPC skin: %s" % skin_name)
-		return
-	
-	# apply_preset_dict/randomize_appearance auto-shows the character
-	var data := CharacterPresets.get_preset(preset_name)
-	if not data.is_empty():
-		npc.apply_preset_dict(data, preset_name.capitalize())
-		print("[LibraryCinematic] Applied NPC preset: %s" % preset_name)
 	else:
-		npc.randomize_appearance()
-		print("[LibraryCinematic] Randomized NPC (preset not found): %s" % preset_name)
+		# apply_preset_dict/randomize_appearance auto-shows the character
+		var data := CharacterPresets.get_preset(preset_name)
+		if not data.is_empty():
+			npc.apply_preset_dict(data, preset_name.capitalize())
+			print("[LibraryCinematic] Applied NPC preset: %s" % preset_name)
+		else:
+			npc.randomize_appearance()
+			print("[LibraryCinematic] Randomized NPC (preset not found): %s" % preset_name)
+	
+	# Wait a bit more for animation to start, then randomize offset so NPCs aren't in sync
+	await get_tree().create_timer(0.2).timeout
+	npc.randomize_animation_offset()
 
 
 func _input(event: InputEvent) -> void:

@@ -35,7 +35,7 @@ func _setup_main_character() -> void:
 		"SkinTone": 1,
 		"Face": 1,
 		"EyeColor": 0,
-		"Hair": 1,
+		"Hair": 4,
 		"HairColor": 0,
 		"Top": 1,
 		"Bottom": 3,
