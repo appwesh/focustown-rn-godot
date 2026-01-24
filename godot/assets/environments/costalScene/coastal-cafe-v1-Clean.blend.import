@@ -84,6 +84,11 @@ _subresources={
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/Ocean.001.tres",
 "use_external/path": "uid://byn3erdg1gsgt"
 },
+"Orange": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/costalScene/materials/Orange.tres",
+"use_external/path": "uid://cvawmaoplfqbh"
+},
 "Procedural Wood": {
 "use_external/enabled": true,
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/Procedural Wood.tres",
@@ -114,11 +119,6 @@ _subresources={
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/Table_Cafe.tres",
 "use_external/path": "uid://dclu5wlth0d8q"
 },
-"Tree bottom": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Tree bottom.tres",
-"use_external/path": "uid://cxcyf3bd2y7qk"
-},
 "image": {
 "use_external/enabled": true,
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/image.tres",
@@ -128,11 +128,6 @@ _subresources={
 "use_external/enabled": true,
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/mBody.008.tres",
 "use_external/path": "uid://fpq5n650t2y8"
-},
-"mIdrTreeOakLeaf": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/mIdrTreeOakLeaf.tres",
-"use_external/path": "uid://b81l55cvri3e1"
 },
 "mReBody.004": {
 "use_external/enabled": true,
