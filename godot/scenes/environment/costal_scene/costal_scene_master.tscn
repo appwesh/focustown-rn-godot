@@ -8,8 +8,26 @@
 
 [node name="coastal-cafe-v1-Clean" parent="." instance=ExtResource("1_srx8i")]
 
+[node name="stylized bush_003" parent="coastal-cafe-v1-Clean" index="23"]
+transform = Transform3D(0.89499974, 0, -2.0350084, 0, 2.0709279, 0, 1.8675437, 0, 0.97525537, -8.382666, -0.20568097, 9.722037)
+
+[node name="stylized bush_004" parent="coastal-cafe-v1-Clean" index="24"]
+transform = Transform3D(0.97107714, 0, -2.20799, 0, 2.2469633, 0, 2.02629, 0, 1.0581548, 1.6826293, -0.18018329, 10.9824705)
+
 [node name="Plane_009" parent="coastal-cafe-v1-Clean" index="38"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -13.253994)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24.039352)
+
+[node name="Fence_002" parent="coastal-cafe-v1-Clean" index="45"]
+transform = Transform3D(0.51703554, 0, 0.85596395, 0, 1, 0, -0.85596395, 0, 0.51703554, -3.5978413, 0.9105585, 10.673561)
+
+[node name="Fence_003" parent="coastal-cafe-v1-Clean" index="46"]
+transform = Transform3D(0.51703554, 0, 0.85596395, 0, 1, 0, -0.85596395, 0, 0.51703554, 6.8950586, 0.9105585, 11.211175)
+
+[node name="Ground-1" parent="coastal-cafe-v1-Clean" index="63"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31734586, 0, 1.4236007)
+
+[node name="Ground-1_001" parent="coastal-cafe-v1-Clean" index="65"]
+transform = Transform3D(0.9824206, 0.18667573, 0.0013710778, -0.18668002, 0.9824108, 0.0044224113, -0.00052140444, -0.0046006236, 0.9999893, 38.207737, -4.8305597, 1.4889848)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_srx8i")
