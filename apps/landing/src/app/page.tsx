@@ -53,10 +53,10 @@ export default function Home() {
             alt="Focustown logo"
             width={560}
             height={180}
-            className="absolute left-1/2 -translate-x-1/2 -top-8 md:-top-22 w-[380px] md:w-[470px] h-auto z-20"
+            className="absolute left-1/2 -translate-x-1/2 -top-12 sm:-top-14 md:-top-22 w-[300px] sm:w-[360px] md:w-[470px] h-auto z-20"
             priority
           />
-          <div className="card px-4 py-4 md:px-8 md:py-6 w-full text-center">
+          <div className="card px-4 pb-4 pt-10 md:px-8 md:py-6 w-full text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
             <span className="text-[#78ADFD]">Your cozy corner </span>
             <span className="text-[#3D352A]">to </span>
