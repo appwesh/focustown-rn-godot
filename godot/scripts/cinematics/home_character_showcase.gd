@@ -97,8 +97,8 @@ func _spawn_user_character() -> void:
 	if not _user_character_data.is_empty():
 		_apply_user_character_deferred(_user_character_data)
 	else:
-		# Default appearance until RN sends data
-		_apply_random_appearance_deferred(_user_character)
+		# Default appearance until RN sends data (librarian preset, same as library cinematic)
+		_apply_default_appearance_deferred(_user_character)
 	
 	print("[HomeCharacterShowcase] User character spawned")
 
@@ -209,14 +209,20 @@ func _apply_random_preset_deferred(npc: CinematicCharacter, cafe_index: int, npc
 	#npc.set_color_modulate(npc_darken_color)
 
 
-func _apply_random_appearance_deferred(character: CinematicCharacter) -> void:
-	## Apply random appearance to a character after initialization
+func _apply_default_appearance_deferred(character: CinematicCharacter) -> void:
+	## Apply default librarian appearance to a character after initialization
 	for i in range(5):
 		await get_tree().process_frame
 	
-	# randomize_appearance auto-shows the character
-	character.randomize_appearance()
-	print("[HomeCharacterShowcase] Applied random appearance to user character")
+	# Use librarian preset (same as library cinematic player)
+	var preset_data := CharacterPresets.get_preset("librarian")
+	if not preset_data.is_empty():
+		character.apply_preset_dict(preset_data, "You")
+		print("[HomeCharacterShowcase] Applied librarian preset to user character")
+	else:
+		# Fallback to random if preset not found
+		character.randomize_appearance()
+		print("[HomeCharacterShowcase] Applied random appearance to user character (librarian preset not found)")
 
 
 func _apply_user_character_deferred(data: Dictionary) -> void:

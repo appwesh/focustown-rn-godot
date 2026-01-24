@@ -210,21 +210,9 @@ export default function HomeScreen() {
         console.log('[Home] Switching to home_showcase scene');
         changeScene('home_showcase');
         
-        // Wait for scene change to complete, then set character and hide overlay
+        // Wait for scene change to complete, then hide overlay
         setTimeout(() => {
           if (cancelled) return;
-          
-          // Set user character
-          setUserCharacter({
-            SkinTone: 4,
-            Face: 7,
-            EyeColor: 1,
-            Hair: 2,
-            HairColor: 2,
-            Top: 1,
-            Bottom: 2,
-            Shoes: 1,
-          });
           
           // Hide transition overlay after scene is ready
           setTimeout(() => {

@@ -73,6 +73,7 @@ const HAT_HEIGHT_OFFSET := 0.02
 ## Adjust X (left/right), Y (up/down), Z (forward/back) as needed
 const HAT_POSITION_CORRECTIONS := {
 	"PartyHat": Vector3(.6, 0.0, 0.0),
+	"BaseballCap": Vector3(.45, 0.0, 0.0),
 }
 
 ## Hair color options
@@ -250,6 +251,9 @@ var _equipped_parts: Dictionary = {}  # category -> Node3D instance
 var _head_attachment: BoneAttachment3D
 var _is_appearance_ready: bool = false  ## Whether appearance has been fully loaded
 var _color_modulate: Color = Color.WHITE  ## Color modulation for darkening effect
+var _is_initialized: bool = false  ## True after base model/materials setup
+var _pending_load_data: Dictionary = {}  ## Preset data queued before ready
+var _pending_show: bool = false  ## Show request queued before ready
 
 
 func _ready() -> void:
@@ -268,6 +272,14 @@ func _ready() -> void:
 	_apply_all_parts()
 	call_deferred("_play_default_animation")
 	# Don't auto-show - let parent control visibility after customization
+	_is_initialized = true
+	if not _pending_load_data.is_empty():
+		var pending := _pending_load_data
+		_pending_load_data = {}
+		load_from_dict(pending)
+	if _pending_show:
+		_pending_show = false
+		show_character()
 
 
 func _load_base_character() -> void:
@@ -699,8 +711,6 @@ func set_part(category: String, index: int) -> void:
 		"HairColor":
 			_update_hair_color()
 		"Hair", "Top", "Bottom", "Shoes", "Hat", "Glasses", "Neck":
-			# Reset variant to 0 when changing the item
-			_current_selections[category + "Variant"] = 0
 			_equip_part(category, index)
 		"TopVariant", "BottomVariant", "ShoesVariant", "HatVariant", "GlassesVariant", "NeckVariant":
 			# Variant changed - re-apply texture to existing mesh
@@ -796,9 +806,11 @@ func get_available_categories() -> Array[String]:
 
 func show_character() -> void:
 	## Call this after appearance customization is complete to show the character
+	if not _is_initialized or not _base_model:
+		_pending_show = true
+		return
 	_is_appearance_ready = true
-	if _base_model:
-		_base_model.visible = true
+	_base_model.visible = true
 	appearance_ready.emit()
 
 
@@ -865,8 +877,18 @@ func save_to_dict() -> Dictionary:
 
 
 func load_from_dict(data: Dictionary) -> void:
-	for category in data.keys():
-		set_part(category, data[category])
+	if not _is_initialized:
+		_pending_load_data = data.duplicate()
+		return
+	# First, set all variant selections WITHOUT equipping (so they're ready when items equip)
+	for key in data.keys():
+		if key.ends_with("Variant"):
+			_current_selections[key] = data[key]
+	
+	# Then set all non-variant parts (which will use the pre-set variant values)
+	for key in data.keys():
+		if not key.ends_with("Variant"):
+			set_part(key, data[key])
 
 
 ## Helpers

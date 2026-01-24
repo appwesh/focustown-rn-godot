@@ -55,8 +55,8 @@ signal appearance_ready  ## Emitted when character appearance is fully loaded
 @export var laptop_offset: Vector3 = Vector3(0.0, 0.52, -0.6)
 ## Scale for the laptop prop
 @export var laptop_scale: Vector3 = Vector3(1.0, 1.0, 1.0)
-
-const LAPTOP_MODEL_PATH := "res://assets/environments/objects/laptop/laptopcozy.glb"
+## Path to the laptop model (can be overridden per-scene)
+@export var laptop_model_path: String = "res://assets/environments/objects/laptop/laptopcozy.glb"
 
 var _modular_character: ModularCharacter
 var _current_animation: String = ""
@@ -382,9 +382,9 @@ func _spawn_laptop() -> void:
 	if _laptop_instance:
 		return
 	
-	var laptop_scene := load(LAPTOP_MODEL_PATH)
+	var laptop_scene := load(laptop_model_path)
 	if not laptop_scene:
-		push_warning("[CinematicCharacter] Failed to load laptop model: %s" % LAPTOP_MODEL_PATH)
+		push_warning("[CinematicCharacter] Failed to load laptop model: %s" % laptop_model_path)
 		return
 	
 	_laptop_instance = laptop_scene.instantiate()

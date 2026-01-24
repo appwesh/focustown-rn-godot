@@ -760,6 +760,8 @@ func end_focus_session() -> void:
 func _on_focus_session_started(_spot: Node3D) -> void:
 	print("[LibraryCinematic] Focus session started - playing studying animation")
 	if _character and _is_player_seated:
+		# Use the laptoplink model for the focus session laptop
+		_character.laptop_model_path = "res://assets/environments/objects/laptoplink/laptoplink.glb"
 		_character.transition_to_animation(studying_animation)
 
 

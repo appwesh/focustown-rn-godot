@@ -17,6 +17,47 @@ entrance_end_delay = 0.5
 entrance_walk_speed = 1.0
 entrance_camera_position = Vector3(-2.5, 1.5, 9.5)
 entrance_animation_duration = 1.2
+npc_configs = [{
+"position": Vector3(-1.54, 0, 1.73),
+"rotation": 0.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(1.59, 0, 5.49),
+"rotation": 0.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(0.82, 0, 7.02),
+"rotation": 180.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(-0.76, 0, 3.25),
+"rotation": 180.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(0.82, 0, 3.25),
+"rotation": 180.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(-0.76, 0, 5.49),
+"rotation": 0.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(-0.76, 0, 9.27),
+"rotation": 0.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(-1.54, 0, 10.79),
+"rotation": 180.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(0.82, 0, 10.79),
+"rotation": 180.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}, {
+"position": Vector3(1.59, 0, 10.79),
+"rotation": 180.0,
+"animation": "SITTING_USING_LAPTOP_02"
+}]
 
 [node name="LibraryEnvironment" parent="." instance=ExtResource("2_env")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013491631, 0, 0.00074338913)
