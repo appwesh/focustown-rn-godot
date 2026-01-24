@@ -75,7 +75,7 @@ export function TimerOverlay({
   // In landscape: position on right side only
   const containerStyle = isLandscape
     ? { right: insets.right + 16, bottom: insets.bottom + 16, left: undefined }
-    : { left: 16, right: 16, bottom: insets.bottom + 24 };
+    : { left: 16, right: 16, bottom: insets.bottom + 20 };
 
   return (
     <Animated.View style={[styles.container, containerStyle, animatedStyle]}>

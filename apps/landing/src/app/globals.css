@@ -15,11 +15,16 @@
   --font-sans: var(--font-poppins);
 }
 
+html, body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-poppins), system-ui, sans-serif;
-  min-height: 20vh;
 }
 
 /* Main header card - cream/beige with brown border */

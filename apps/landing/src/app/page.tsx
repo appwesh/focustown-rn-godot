@@ -18,7 +18,7 @@ export default function Home() {
     <main className="relative min-h-screen w-full font-[family-name:var(--font-poppins)]">
       {/* Background Image - Mobile */}
       <Image
-        src="/capybaraMobileLanding.png"
+        src="/capybaraMobileLanding.jpg"
         alt="Capybara studying in cozy room"
         fill
         className="object-cover object-center md:hidden"
@@ -29,21 +29,40 @@ export default function Home() {
         src="/capybaraLandscape.png"
         alt="Capybara studying in cozy room"
         fill
-        className="object-cover object-center hidden md:block"
+        className="object-cover object-center hidden md:block opacity-50"
         priority
       />
 
+      {/* Header */}
+      <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 md:px-8 md:py-4">
+        <Image
+          src="/focustownicon.png"
+          alt="Focustown"
+          width={64}
+          height={64}
+          className="w-12 h-12 md:w-16 md:h-16 rounded-xl"
+        />
+      </header>
+
       {/* Content Overlay */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-3 md:px-4">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-start pt-[12vh] md:pt-[14vh] px-3 md:px-4">
         {/* Main Header Card */}
-        <div className="card px-4 py-4 md:px-8 md:py-6 max-w-2xl w-full text-center">
+        <div className="relative max-w-3xl w-full text-center">
+          <Image
+            src="/focustownlogo.png"
+            alt="Focustown logo"
+            width={560}
+            height={180}
+            className="absolute left-1/2 -translate-x-1/2 -top-8 md:-top-22 w-[380px] md:w-[470px] h-auto z-20"
+            priority
+          />
+          <div className="card px-4 py-4 md:px-8 md:py-6 w-full text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
-            <span className="text-[#78ADFD]">Focusing </span>
-            <span className="text-[#3D352A]">feels better</span>
+            <span className="text-[#78ADFD]">Your cozy corner </span>
+            <span className="text-[#3D352A]">to </span>
+            <span className="text-[#3D352A]"></span>
             <br />
-            <span className="text-[#3D352A]">with </span>
-            <span className="underline-blue">friends</span>
-            <span className="text-[#3D352A]">.</span>
+            <span className="text-[#3D352A]"> lock in together</span>
           </h1>
 
           <p className="mt-3 text-[#9C9C9C] text-base md:text-xl font-medium">
@@ -70,6 +89,27 @@ export default function Home() {
               </svg>
               Download on Android
             </button>
+          </div>
+          </div>
+        </div>
+
+        {/* iPhone Outline + Autoplay Video */}
+        <div className="mt-8 md:mt-10 flex items-center justify-center w-full">
+          <div className="relative w-[220px] sm:w-[260px] md:w-[300px] aspect-[9/19.5]">
+            <div className="absolute inset-0 rounded-[40px] border-[10px] border-[#1A1A1A] bg-[#0C0C0C] shadow-[0_20px_50px_rgba(0,0,0,0.2)]" />
+            <div className="absolute inset-[14px] rounded-[28px] overflow-hidden bg-black">
+              <video
+                className="w-full h-full object-cover"
+                src="/landing-demo.mp4"
+                poster="/focusbanner.png"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+              />
+            </div>
+            <div className="absolute top-[10px] left-1/2 -translate-x-1/2 w-[120px] h-[24px] rounded-full bg-black" />
           </div>
         </div>
       </div>

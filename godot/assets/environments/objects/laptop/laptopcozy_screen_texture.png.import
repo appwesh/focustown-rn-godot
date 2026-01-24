@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://mhqhw3svr2mp"
-path.s3tc="res://.godot/imported/laptopcozy_screen_texture.png-0789d3d6ee050d6009bc3e58eac81636.s3tc.ctex"
-path.etc2="res://.godot/imported/laptopcozy_screen_texture.png-0789d3d6ee050d6009bc3e58eac81636.etc2.ctex"
+path.s3tc="res://.godot/imported/laptopcozy_screen_texture.png-6ac3c0d87912e617912ca501c31ed10a.s3tc.ctex"
+path.etc2="res://.godot/imported/laptopcozy_screen_texture.png-6ac3c0d87912e617912ca501c31ed10a.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/environments/objects/laptop/laptopcozy_screen_texture.png"
-dest_files=["res://.godot/imported/laptopcozy_screen_texture.png-0789d3d6ee050d6009bc3e58eac81636.s3tc.ctex", "res://.godot/imported/laptopcozy_screen_texture.png-0789d3d6ee050d6009bc3e58eac81636.etc2.ctex"]
+source_file="res://assets/Environments/objects/laptop/laptopcozy_screen_texture.png"
+dest_files=["res://.godot/imported/laptopcozy_screen_texture.png-6ac3c0d87912e617912ca501c31ed10a.s3tc.ctex", "res://.godot/imported/laptopcozy_screen_texture.png-6ac3c0d87912e617912ca501c31ed10a.etc2.ctex"]
 
 [params]
 

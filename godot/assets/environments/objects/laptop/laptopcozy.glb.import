@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://ccylfxk8hyy0f"
-path="res://.godot/imported/laptopcozy.glb-be4cfd0aea98f581a8b1cf726d14e8ae.scn"
+path="res://.godot/imported/laptopcozy.glb-8592f41c4e910fb58828cdfabfc02898.scn"
 
 [deps]
 
-source_file="res://assets/environments/objects/laptop/laptopcozy.glb"
-dest_files=["res://.godot/imported/laptopcozy.glb-be4cfd0aea98f581a8b1cf726d14e8ae.scn"]
+source_file="res://assets/Environments/objects/laptop/laptopcozy.glb"
+dest_files=["res://.godot/imported/laptopcozy.glb-8592f41c4e910fb58828cdfabfc02898.scn"]
 
 [params]
 
