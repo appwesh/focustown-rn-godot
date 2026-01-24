@@ -1,10 +1,51 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const setupAudio = () => {
+      if (audioContextRef.current) return;
+      
+      const audioContext = new AudioContext();
+      const source = audioContext.createMediaElementSource(video);
+      const gainNode = audioContext.createGain();
+      
+      gainNode.gain.value = 1.8;
+      source.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      audioContextRef.current = audioContext;
+      gainNodeRef.current = gainNode;
+    };
+
+    video.addEventListener('play', setupAudio, { once: true });
+    
+    return () => {
+      video.removeEventListener('play', setupAudio);
+    };
+  }, []);
+
+  const toggleSound = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(!isMuted);
+      
+      if (audioContextRef.current?.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
+    }
+  };
 
   const handleDownloadClick = () => {
     setIsModalOpen(true);
@@ -99,8 +140,9 @@ export default function Home() {
             <div className="absolute inset-0 rounded-[40px] border-[10px] border-[#1A1A1A] bg-[#0C0C0C] shadow-[0_20px_50px_rgba(0,0,0,0.2)]" />
             <div className="absolute inset-[14px] rounded-[28px] overflow-hidden bg-black">
               <video
+                ref={videoRef}
                 className="w-full h-full object-cover"
-                src="/landing-demo.mp4"
+                src="/vid-cafeSelect.mp4"
                 poster="/focusbanner.png"
                 autoPlay
                 muted
@@ -109,7 +151,13 @@ export default function Home() {
                 preload="auto"
               />
             </div>
-            <div className="absolute top-[10px] left-1/2 -translate-x-1/2 w-[120px] h-[24px] rounded-full bg-black" />
+            {/* Sound Toggle Button */}
+            <button
+              onClick={toggleSound}
+              className="absolute -top-4 -right-4 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-xl md:text-2xl hover:scale-110 transition-transform border-2 border-[#83715B]"
+            >
+              {isMuted ? "🔇" : "🔊"}
+            </button>
           </div>
         </div>
       </div>
