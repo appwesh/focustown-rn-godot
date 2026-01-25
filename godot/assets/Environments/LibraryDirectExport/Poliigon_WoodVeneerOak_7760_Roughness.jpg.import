@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bfivqpeew8vgg"
-path.s3tc="res://.godot/imported/Poliigon_WoodVeneerOak_7760_Roughness.jpg-95da34c7d036012f07b942e497f524e8.s3tc.ctex"
-path.etc2="res://.godot/imported/Poliigon_WoodVeneerOak_7760_Roughness.jpg-95da34c7d036012f07b942e497f524e8.etc2.ctex"
+path.s3tc="res://.godot/imported/Poliigon_WoodVeneerOak_7760_Roughness.jpg-34b243d47bdc642a80a4bb95c441ad18.s3tc.ctex"
+path.etc2="res://.godot/imported/Poliigon_WoodVeneerOak_7760_Roughness.jpg-34b243d47bdc642a80a4bb95c441ad18.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Environments/LibraryDirectExport/Poliigon_WoodVeneerOak_7760_Roughness.jpg"
-dest_files=["res://.godot/imported/Poliigon_WoodVeneerOak_7760_Roughness.jpg-95da34c7d036012f07b942e497f524e8.s3tc.ctex", "res://.godot/imported/Poliigon_WoodVeneerOak_7760_Roughness.jpg-95da34c7d036012f07b942e497f524e8.etc2.ctex"]
+source_file="res://assets/environments/LibraryDirectExport/Poliigon_WoodVeneerOak_7760_Roughness.jpg"
+dest_files=["res://.godot/imported/Poliigon_WoodVeneerOak_7760_Roughness.jpg-34b243d47bdc642a80a4bb95c441ad18.s3tc.ctex", "res://.godot/imported/Poliigon_WoodVeneerOak_7760_Roughness.jpg-34b243d47bdc642a80a4bb95c441ad18.etc2.ctex"]
 
 [params]
 

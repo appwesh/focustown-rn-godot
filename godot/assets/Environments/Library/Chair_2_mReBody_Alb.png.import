@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bgfu21ejf8bf4"
-path.s3tc="res://.godot/imported/Chair_2_mReBody_Alb.png-0e56e0a1ecf44b2fcb748da8120e6eb1.s3tc.ctex"
-path.etc2="res://.godot/imported/Chair_2_mReBody_Alb.png-0e56e0a1ecf44b2fcb748da8120e6eb1.etc2.ctex"
+path.s3tc="res://.godot/imported/Chair_2_mReBody_Alb.png-5848679eb164f510c24ba111c72087e3.s3tc.ctex"
+path.etc2="res://.godot/imported/Chair_2_mReBody_Alb.png-5848679eb164f510c24ba111c72087e3.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/Environments/Library/Chair_2_mReBody_Alb.png"
-dest_files=["res://.godot/imported/Chair_2_mReBody_Alb.png-0e56e0a1ecf44b2fcb748da8120e6eb1.s3tc.ctex", "res://.godot/imported/Chair_2_mReBody_Alb.png-0e56e0a1ecf44b2fcb748da8120e6eb1.etc2.ctex"]
+source_file="res://assets/environments/Library/Chair_2_mReBody_Alb.png"
+dest_files=["res://.godot/imported/Chair_2_mReBody_Alb.png-5848679eb164f510c24ba111c72087e3.s3tc.ctex", "res://.godot/imported/Chair_2_mReBody_Alb.png-5848679eb164f510c24ba111c72087e3.etc2.ctex"]
 
 [params]
 

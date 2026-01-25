@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://05pc80ucyrt0"
-path.s3tc="res://.godot/imported/Library4_4_smoothed.jpg-e89f16d35c2e2d2eb334525f665a4abe.s3tc.ctex"
-path.etc2="res://.godot/imported/Library4_4_smoothed.jpg-e89f16d35c2e2d2eb334525f665a4abe.etc2.ctex"
+path.s3tc="res://.godot/imported/Library4_4_smoothed.jpg-882b29b8a6871f7abeea87b3c99ea8b7.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_4_smoothed.jpg-882b29b8a6871f7abeea87b3c99ea8b7.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Environments/LibraryDirectExport/Library4_4_smoothed.jpg"
-dest_files=["res://.godot/imported/Library4_4_smoothed.jpg-e89f16d35c2e2d2eb334525f665a4abe.s3tc.ctex", "res://.godot/imported/Library4_4_smoothed.jpg-e89f16d35c2e2d2eb334525f665a4abe.etc2.ctex"]
+source_file="res://assets/environments/LibraryDirectExport/Library4_4_smoothed.jpg"
+dest_files=["res://.godot/imported/Library4_4_smoothed.jpg-882b29b8a6871f7abeea87b3c99ea8b7.s3tc.ctex", "res://.godot/imported/Library4_4_smoothed.jpg-882b29b8a6871f7abeea87b3c99ea8b7.etc2.ctex"]
 
 [params]
 

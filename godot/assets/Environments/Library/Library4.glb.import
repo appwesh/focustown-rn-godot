@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://2h6x1j17mg5w"
-path="res://.godot/imported/Library4.glb-a8898a5ff5b59525f4a786a1894ff67a.scn"
+path="res://.godot/imported/Library4.glb-d5981a3a5f0ac938513fa496881343d0.scn"
 
 [deps]
 
-source_file="res://assets/Environments/Library/Library4.glb"
-dest_files=["res://.godot/imported/Library4.glb-a8898a5ff5b59525f4a786a1894ff67a.scn"]
+source_file="res://assets/environments/Library/Library4.glb"
+dest_files=["res://.godot/imported/Library4.glb-d5981a3a5f0ac938513fa496881343d0.scn"]
 
 [params]
 
@@ -41,77 +41,77 @@ _subresources={
 "materials": {
 "Computer ": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Computer.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Computer.tres",
 "use_external/path": "uid://c8j73s064k4bb"
 },
 "Computer .001": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Computer .001.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Computer .001.tres",
 "use_external/path": "uid://diafna2akrfqp"
 },
 "Cushion": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Cushion.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Cushion.tres",
 "use_external/path": "uid://wysumuoxy5g1"
 },
 "Gold": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Gold.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Gold.tres",
 "use_external/path": "uid://b4bahdwuyuqbk"
 },
 "Green": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Green.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Green.tres",
 "use_external/path": "uid://qapxyilpojkk"
 },
 "Material": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Material.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Material.tres",
 "use_external/path": "uid://cgedq3juyatgt"
 },
 "Material.002": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Material.002.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Material.002.tres",
 "use_external/path": "uid://dhlbanlp4t8os"
 },
 "Material.003": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Material.003.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Material.003.tres",
 "use_external/path": "uid://dlclyfaps6dhf"
 },
 "Material.004": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Material.004.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Material.004.tres",
 "use_external/path": "uid://bs8nt8emypbdv"
 },
 "Material.005": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Material.005.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Material.005.tres",
 "use_external/path": "uid://p52df43pebmh"
 },
 "Simple wood": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Simple wood.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Simple wood.tres",
 "use_external/path": "uid://ck5h7sogr50g8"
 },
 "Stylized Wood-Table": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Stylized Wood-Table.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Stylized Wood-Table.tres",
 "use_external/path": "uid://c2haq314sr127"
 },
 "Stylized Wood.002": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Stylized Wood.002.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Stylized Wood.002.tres",
 "use_external/path": "uid://cnl3aqtoba3yh"
 },
 "Window": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/Window.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/Window.tres",
 "use_external/path": "uid://3eodfxmvoe5"
 },
 "white": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/Library/Materials/white.tres",
+"use_external/fallback_path": "res://assets/environments/Library/Materials/white.tres",
 "use_external/path": "uid://1rhtt5n50sow"
 }
 }

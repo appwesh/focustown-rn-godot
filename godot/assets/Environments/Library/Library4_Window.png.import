@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d1vscdkf5pd16"
-path.s3tc="res://.godot/imported/Library4_Window.png-4cb05d1cf2c6acdffeee681211cf615c.s3tc.ctex"
-path.etc2="res://.godot/imported/Library4_Window.png-4cb05d1cf2c6acdffeee681211cf615c.etc2.ctex"
+path.s3tc="res://.godot/imported/Library4_Window.png-25c1ce49a458ed419fe1cdf95396c477.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_Window.png-25c1ce49a458ed419fe1cdf95396c477.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/Environments/Library/Library4_Window.png"
-dest_files=["res://.godot/imported/Library4_Window.png-4cb05d1cf2c6acdffeee681211cf615c.s3tc.ctex", "res://.godot/imported/Library4_Window.png-4cb05d1cf2c6acdffeee681211cf615c.etc2.ctex"]
+source_file="res://assets/environments/Library/Library4_Window.png"
+dest_files=["res://.godot/imported/Library4_Window.png-25c1ce49a458ed419fe1cdf95396c477.s3tc.ctex", "res://.godot/imported/Library4_Window.png-25c1ce49a458ed419fe1cdf95396c477.etc2.ctex"]
 
 [params]
 

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bcpfi051npugv"
-path.s3tc="res://.godot/imported/Library4_wood13_opengl_normal.jpg-c09377f85d0219680280aef618fc3dd7.s3tc.ctex"
-path.etc2="res://.godot/imported/Library4_wood13_opengl_normal.jpg-c09377f85d0219680280aef618fc3dd7.etc2.ctex"
+path.s3tc="res://.godot/imported/Library4_wood13_opengl_normal.jpg-09e30fd8f3a8903bd864d283cc2105c4.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_wood13_opengl_normal.jpg-09e30fd8f3a8903bd864d283cc2105c4.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/Environments/Library/Library4_wood13_opengl_normal.jpg"
-dest_files=["res://.godot/imported/Library4_wood13_opengl_normal.jpg-c09377f85d0219680280aef618fc3dd7.s3tc.ctex", "res://.godot/imported/Library4_wood13_opengl_normal.jpg-c09377f85d0219680280aef618fc3dd7.etc2.ctex"]
+source_file="res://assets/environments/Library/Library4_wood13_opengl_normal.jpg"
+dest_files=["res://.godot/imported/Library4_wood13_opengl_normal.jpg-09e30fd8f3a8903bd864d283cc2105c4.s3tc.ctex", "res://.godot/imported/Library4_wood13_opengl_normal.jpg-09e30fd8f3a8903bd864d283cc2105c4.etc2.ctex"]
 
 [params]
 

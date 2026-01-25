@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bl2jdppm36xx"
-path.s3tc="res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-e4cbf8f825d5e0b32601c7e980bb1cd5.s3tc.ctex"
-path.etc2="res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-e4cbf8f825d5e0b32601c7e980bb1cd5.etc2.ctex"
+path.s3tc="res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-6059a0246c36c59e21b5dca833b4a1e9.s3tc.ctex"
+path.etc2="res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-6059a0246c36c59e21b5dca833b4a1e9.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Environments/LibraryDirectExport/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg"
-dest_files=["res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-e4cbf8f825d5e0b32601c7e980bb1cd5.s3tc.ctex", "res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-e4cbf8f825d5e0b32601c7e980bb1cd5.etc2.ctex"]
+source_file="res://assets/environments/LibraryDirectExport/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg"
+dest_files=["res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-6059a0246c36c59e21b5dca833b4a1e9.s3tc.ctex", "res://.godot/imported/Poliigon_WoodVeneerOak_7760_BaseColor_mid_hz.jpg-6059a0246c36c59e21b5dca833b4a1e9.etc2.ctex"]
 
 [params]
 

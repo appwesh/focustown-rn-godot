@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://d05ah5oth8ndf"
-path="res://.godot/imported/Library.gltf-be9af0db5a95b315c982f8f74cfa9bbd.scn"
+path="res://.godot/imported/Library.gltf-4ddd973e6cb13d0d21687713cc2cfe44.scn"
 
 [deps]
 
-source_file="res://assets/Environments/LibraryDirectExport/Library.gltf"
-dest_files=["res://.godot/imported/Library.gltf-be9af0db5a95b315c982f8f74cfa9bbd.scn"]
+source_file="res://assets/environments/LibraryDirectExport/Library.gltf"
+dest_files=["res://.godot/imported/Library.gltf-4ddd973e6cb13d0d21687713cc2cfe44.scn"]
 
 [params]
 
@@ -41,92 +41,92 @@ _subresources={
 "materials": {
 "BookSplines": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/BookSplines.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/BookSplines.tres",
 "use_external/path": "uid://cs87wo7fwjwes"
 },
 "Computer ": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Computer.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Computer.tres",
 "use_external/path": "uid://bbqiye7lvdff3"
 },
 "Computer .001": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Computer .001.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Computer .001.tres",
 "use_external/path": "uid://b6r4k50spyovh"
 },
 "Cushion": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Cushion.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Cushion.tres",
 "use_external/path": "uid://clb08f8e3f5fp"
 },
 "GoldMetal": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/GoldMetal.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/GoldMetal.tres",
 "use_external/path": "uid://kym7j6efagyu"
 },
 "Gold_URP": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Gold_URP.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Gold_URP.tres",
 "use_external/path": "uid://dqwmx4jaohosn"
 },
 "GreenGlass": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/GreenGlass.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/GreenGlass.tres",
 "use_external/path": "uid://dhhl5oxdortxd"
 },
 "Library4": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Library4.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Library4.tres",
 "use_external/path": "uid://mbdreeq5icf2"
 },
 "Material.002": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Material.002.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Material.002.tres",
 "use_external/path": "uid://dokb2lask8beb"
 },
 "Material.003": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Material.003.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Material.003.tres",
 "use_external/path": "uid://bx1cogc5uog4r"
 },
 "Material.004": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Material.004.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Material.004.tres",
 "use_external/path": "uid://dc3yy0eix26al"
 },
 "Material.005": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Material.005.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Material.005.tres",
 "use_external/path": "uid://d6cqfekdkosv"
 },
 "Window": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/Window.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/Window.tres",
 "use_external/path": "uid://euhbop8h2rj2"
 },
 "glTF-Default-Material": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/glTF-Default-Material.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/glTF-Default-Material.tres",
 "use_external/path": "uid://l2tde78vejfj"
 },
 "mReBody.039": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/mReBody.039.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/mReBody.039.tres",
 "use_external/path": "uid://dlrgh7mctgbol"
 },
 "white": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/white.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/white.tres",
 "use_external/path": "uid://8e0kx6a7firj"
 },
 "wood_chair": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/wood_chair.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/wood_chair.tres",
 "use_external/path": "uid://du86sy1m6rw31"
 },
 "wood_table": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/Environments/LibraryDirectExport/wood_table.tres",
+"use_external/fallback_path": "res://assets/environments/LibraryDirectExport/wood_table.tres",
 "use_external/path": "uid://blk07yeg4gc2c"
 }
 }

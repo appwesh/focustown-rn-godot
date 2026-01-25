@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ihnrw4cgovy4"
-path.s3tc="res://.godot/imported/specMap.jpg-15b2591dceed39651775f80cf09e6ce3.s3tc.ctex"
-path.etc2="res://.godot/imported/specMap.jpg-15b2591dceed39651775f80cf09e6ce3.etc2.ctex"
+path.s3tc="res://.godot/imported/specMap.jpg-40fb8a71e1d2b1ad3ab2fa6b42bd54ba.s3tc.ctex"
+path.etc2="res://.godot/imported/specMap.jpg-40fb8a71e1d2b1ad3ab2fa6b42bd54ba.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Environments/LibraryDirectExport/specMap.jpg"
-dest_files=["res://.godot/imported/specMap.jpg-15b2591dceed39651775f80cf09e6ce3.s3tc.ctex", "res://.godot/imported/specMap.jpg-15b2591dceed39651775f80cf09e6ce3.etc2.ctex"]
+source_file="res://assets/environments/LibraryDirectExport/specMap.jpg"
+dest_files=["res://.godot/imported/specMap.jpg-40fb8a71e1d2b1ad3ab2fa6b42bd54ba.s3tc.ctex", "res://.godot/imported/specMap.jpg-40fb8a71e1d2b1ad3ab2fa6b42bd54ba.etc2.ctex"]
 
 [params]
 

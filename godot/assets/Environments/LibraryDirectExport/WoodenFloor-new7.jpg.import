@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ds3wbetkmi0q"
-path.s3tc="res://.godot/imported/WoodenFloor-new7.jpg-00778c0de3ca0ed1de8e3f5acb4932a4.s3tc.ctex"
-path.etc2="res://.godot/imported/WoodenFloor-new7.jpg-00778c0de3ca0ed1de8e3f5acb4932a4.etc2.ctex"
+path.s3tc="res://.godot/imported/WoodenFloor-new7.jpg-d90e62fc0f9b02f843a1491c13769b2c.s3tc.ctex"
+path.etc2="res://.godot/imported/WoodenFloor-new7.jpg-d90e62fc0f9b02f843a1491c13769b2c.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Environments/LibraryDirectExport/WoodenFloor-new7.jpg"
-dest_files=["res://.godot/imported/WoodenFloor-new7.jpg-00778c0de3ca0ed1de8e3f5acb4932a4.s3tc.ctex", "res://.godot/imported/WoodenFloor-new7.jpg-00778c0de3ca0ed1de8e3f5acb4932a4.etc2.ctex"]
+source_file="res://assets/environments/LibraryDirectExport/WoodenFloor-new7.jpg"
+dest_files=["res://.godot/imported/WoodenFloor-new7.jpg-d90e62fc0f9b02f843a1491c13769b2c.s3tc.ctex", "res://.godot/imported/WoodenFloor-new7.jpg-d90e62fc0f9b02f843a1491c13769b2c.etc2.ctex"]
 
 [params]
 

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bj0jwc102oull"
-path.s3tc="res://.godot/imported/Table_2_mReBody_Alb.png-45d7357edb8ff4c37d3595bedd967ef8.s3tc.ctex"
-path.etc2="res://.godot/imported/Table_2_mReBody_Alb.png-45d7357edb8ff4c37d3595bedd967ef8.etc2.ctex"
+path.s3tc="res://.godot/imported/Table_2_mReBody_Alb.png-0280c55123939b80fdb02569df0336c0.s3tc.ctex"
+path.etc2="res://.godot/imported/Table_2_mReBody_Alb.png-0280c55123939b80fdb02569df0336c0.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/Environments/Library/Table_2_mReBody_Alb.png"
-dest_files=["res://.godot/imported/Table_2_mReBody_Alb.png-45d7357edb8ff4c37d3595bedd967ef8.s3tc.ctex", "res://.godot/imported/Table_2_mReBody_Alb.png-45d7357edb8ff4c37d3595bedd967ef8.etc2.ctex"]
+source_file="res://assets/environments/Library/Table_2_mReBody_Alb.png"
+dest_files=["res://.godot/imported/Table_2_mReBody_Alb.png-0280c55123939b80fdb02569df0336c0.s3tc.ctex", "res://.godot/imported/Table_2_mReBody_Alb.png-0280c55123939b80fdb02569df0336c0.etc2.ctex"]
 
 [params]
 

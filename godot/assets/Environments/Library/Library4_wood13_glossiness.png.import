@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b2ew6rffc3yl5"
-path.s3tc="res://.godot/imported/Library4_wood13_glossiness.png-8195d3622ead44a35863660d853f7454.s3tc.ctex"
-path.etc2="res://.godot/imported/Library4_wood13_glossiness.png-8195d3622ead44a35863660d853f7454.etc2.ctex"
+path.s3tc="res://.godot/imported/Library4_wood13_glossiness.png-e32b8f28397099f53b85498fbec11d13.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_wood13_glossiness.png-e32b8f28397099f53b85498fbec11d13.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/Environments/Library/Library4_wood13_glossiness.png"
-dest_files=["res://.godot/imported/Library4_wood13_glossiness.png-8195d3622ead44a35863660d853f7454.s3tc.ctex", "res://.godot/imported/Library4_wood13_glossiness.png-8195d3622ead44a35863660d853f7454.etc2.ctex"]
+source_file="res://assets/environments/Library/Library4_wood13_glossiness.png"
+dest_files=["res://.godot/imported/Library4_wood13_glossiness.png-e32b8f28397099f53b85498fbec11d13.s3tc.ctex", "res://.godot/imported/Library4_wood13_glossiness.png-e32b8f28397099f53b85498fbec11d13.etc2.ctex"]
 
 [params]
 

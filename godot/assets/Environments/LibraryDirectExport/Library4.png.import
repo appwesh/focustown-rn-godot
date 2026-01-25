@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://16elwy51aqux"
-path.s3tc="res://.godot/imported/Library4.png-fbf650b12f0f15ab8015b51e30a429a7.s3tc.ctex"
-path.etc2="res://.godot/imported/Library4.png-fbf650b12f0f15ab8015b51e30a429a7.etc2.ctex"
+path.s3tc="res://.godot/imported/Library4.png-6b46ad16777469729264ab2c8cac5371.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4.png-6b46ad16777469729264ab2c8cac5371.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Environments/LibraryDirectExport/Library4.png"
-dest_files=["res://.godot/imported/Library4.png-fbf650b12f0f15ab8015b51e30a429a7.s3tc.ctex", "res://.godot/imported/Library4.png-fbf650b12f0f15ab8015b51e30a429a7.etc2.ctex"]
+source_file="res://assets/environments/LibraryDirectExport/Library4.png"
+dest_files=["res://.godot/imported/Library4.png-6b46ad16777469729264ab2c8cac5371.s3tc.ctex", "res://.godot/imported/Library4.png-6b46ad16777469729264ab2c8cac5371.etc2.ctex"]
 
 [params]
 
