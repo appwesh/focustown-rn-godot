@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bihepha8x27ns"
-path="res://.godot/imported/SM_MISC_Hat_HeadPhone.fbx-a02b6734f32c806fe6c5085bc29f07da.scn"
+uid="uid://ih05xcnu7sdn"
+path="res://.godot/imported/SM_MISC_Neck_Scarf.fbx-556ab615a90a294fa4cf626e7faa4104.scn"
 
 [deps]
 
-source_file="res://assets/characters/cozylife/custom/Lofi/Models/SM_MISC_Hat_HeadPhone.fbx"
-dest_files=["res://.godot/imported/SM_MISC_Hat_HeadPhone.fbx-a02b6734f32c806fe6c5085bc29f07da.scn"]
+source_file="res://assets/characters/cozylife/custom/Lofi/Models/SM_MISC_Neck_Scarf.fbx"
+dest_files=["res://.godot/imported/SM_MISC_Neck_Scarf.fbx-556ab615a90a294fa4cf626e7faa4104.scn"]
 
 [params]
 

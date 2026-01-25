@@ -66,40 +66,19 @@ const CLOTHES_TEXTURES_PATH := "res://assets/characters/cozylife/clothes/texture
 const HAIRS_PATH := "res://assets/characters/cozylife/hairs/"
 const CUSTOM_SKINS_PATH := "res://assets/characters/cozylife/custom/"
 
-## Custom full-body skins that replace multiple parts at once
-## Each skin defines: display name, folder path, and which parts it includes
-## For FBX files with multiple meshes, use "mesh_parts" to map mesh names to categories
-## Categories: Top, Bottom, Shoes (skinned - SKM_), Hat, Glasses, Neck (head-attached - SM_)
-const CUSTOM_SKINS := {
-	"Lofi": {
-		"display_name": "Lofi Girl",
-		"folder": "Lofi/",
-		"models": [
-			{
-				"file": "Models/Lofi_Top.fbx",
-				"mesh_parts": {
-					# [0] geometry_0_003 Remeshed = unknown/skip
-					# [1] Headphone = skip (using separate file)
-					# [2] TOP_Sweater = the actual top
-					"2": {"category": "Top", "texture": "Textures/Lofi_Top.png"},
-				},
-			},
-			{
-				"file": "Models/Lofi_Bottom.fbx",
-				"mesh_parts": {
-					"0": {"category": "Bottom", "texture": "Textures/Lofi_Pants.png"},
-				},
-			},
-			{
-				"file": "Models/SM_MISC_Hat_HeadPhone.fbx",
-				"mesh_parts": {
-					# Mesh is tiny (~0.007 units), needs scale + position on head
-					# offset: [right/left, up/down, forward/back]
-					"0": {"category": "Hat", "texture": "Textures/headphone/headphone_Untextured_Checker_BaseColor.png", "scale": 40.0, "offset": [0.0, 0.08, 0.0]},
-				},
-			},
-		],
-	},
+## Custom items that use non-standard paths (textures outside CLOTHES_TEXTURES_PATH)
+## Maps part name to full texture path (relative to res://)
+const CUSTOM_ITEM_TEXTURES := {
+	"LofiTop": ["custom/Lofi/Textures/Lofi_Top.png"],
+	"LofiPants": ["custom/Lofi/Textures/Lofi_Pants.png"],
+	"Headphone": ["custom/Lofi/Textures/headphone/headphone_Untextured_Checker_BaseColor.png"],
+	"LofiScarf": ["custom/Lofi/Textures/Lofi_Neck1.png"],
+}
+
+## Position offsets for specific items (applied during equip)
+const ITEM_POSITION_OFFSETS := {
+	"Headphone": Vector3(-0.3, 0.0, 0.0),
+	"LofiScarf": Vector3(-0.05, 0.0, 0.0),
 }
 
 ## Hat adjustments (scale and height offset)
@@ -130,6 +109,7 @@ const TEXTURE_VARIANTS := {
 	"WizardRobe": ["T_TOP_WizardRobe_Beige_D.tga", "T_TOP_WizardRobe_Blue_D.tga", "T_TOP_WizardRobe_Maroon_D.tga", "T_TOP_WizardRobe_Olive_D.tga"],
 	"Tshirt": ["T_TOP_Tshirt_Black_D.tga", "T_TOP_Tshirt_BlackMushroom_D.tga", "T_TOP_Tshirt_BlackSkull_D.tga", "T_TOP_Tshirt_Beige_D.tga", "T_TOP_Tshirt_Blue_D.tga", "T_TOP_Tshirt_BlueStar_D.tga", "T_TOP_Tshirt_Lavender_D.tga", "T_TOP_Tshirt_LavenderStar_D.tga", "T_TOP_Tshirt_Maroon_D.tga", "T_TOP_Tshirt_MaroonCollegiate_D.tga", "T_TOP_Tshirt_Mustard_D.tga", "T_TOP_Tshirt_Olive_D.tga", "T_TOP_Tshirt_OliveLightning_D.tga", "T_TOP_Tshirt_Pumpkin_D.tga", "T_TOP_Tshirt_PumpkinCollegiate_D.tga", "T_TOP_Tshirt_White_D.tga"],
 	"Hoodie": ["T_TOP_Hoodie_Black_D.tga", "T_TOP_Hoodie_BlackSakura_D.tga", "T_TOP_Hoodie_BlackSwirl_D.tga", "T_TOP_Hoodie_Beige_D.tga", "T_TOP_Hoodie_BeigeSakura_D.tga", "T_TOP_Hoodie_OliveCollegiate_D.tga"],
+	"LofiTop": [],  # Uses CUSTOM_ITEM_TEXTURES
 	# Bottoms
 	"Underwear": ["T_BOTTOM_Underwear_White_D.tga"],
 	"Shorts": ["T_BOTTOM_Shorts_Black_D.tga", "T_BOTTOM_Shorts_Denim_D.tga", "T_BOTTOM_Shorts_Khaki_D.tga", "T_BOTTOM_Shorts_Olive_D.tga"],
@@ -137,6 +117,7 @@ const TEXTURE_VARIANTS := {
 	"SkinnyPants": ["T_BOTTOM_SkinnyPants_Brown_D.tga"],
 	"FlarePants": ["T_BOTTOM_FlarePants_Black_D.tga", "T_BOTTOM_FlarePants_Denim_D.tga"],
 	"Skirt": ["T_BOTTOM_Skirt_Black_D.tga", "T_BOTTOM_Skirt_BlueFloral_D.tga", "T_BOTTOM_Skirt_Denim_D.tga", "T_BOTTOM_Skirt_Houndstooth_D.tga", "T_BOTTOM_Skirt_Olive_D.tga"],
+	"LofiPants": [],  # Uses CUSTOM_ITEM_TEXTURES
 	# Shoes
 	"CrewSocks": ["T_SHOES_CrewSocks_Black_D.tga", "T_SHOES_CrewSocks_Beige_D.tga", "T_SHOES_CrewSocks_White_D.tga"],
 	"Oxfords": ["T_SHOES_Oxfords_Black_D.tga", "T_SHOES_Oxfords_Brown_D.tga"],
@@ -159,6 +140,7 @@ const TEXTURE_VARIANTS := {
 	"TopHat": ["T_MISC_Hat_TopHat_Black_D.tga", "T_MISC_Hat_TopHat_White_D.tga"],
 	"Witch": ["T_MISC_Hat_Witch_Black_D.tga", "T_MISC_Hat_Witch_Brown_D.tga", "T_MISC_Hat_Witch_White_D.tga"],
 	"RobotHelmet": ["T_MISC_Helmet_Robot_Blue_D.tga"],
+	"Headphone": [],  # Uses CUSTOM_ITEM_TEXTURES
 	# Glasses
 	"Round": ["T_MISC_Glasses_Round_Brown_D.tga"],
 	"Aviator": ["T_MISC_Glasses_Aviator_Black_D.tga", "T_MISC_Glasses_Aviator_Brown_D.tga"],
@@ -167,6 +149,7 @@ const TEXTURE_VARIANTS := {
 	"HeartSunglasses": ["T_MISC_Glasses_HeartSunglasses_Pink_D.tga", "T_MISC_Glasses_HeartSunglasses_Black_D.tga", "T_MISC_Glasses_HeartSunglasses_Lavender_D.tga"],
 	# Neck
 	"SpikedCollar": ["T_MISC_Neck_SpikedCollar_Black_D.tga"],
+	"LofiScarf": [],  # Uses CUSTOM_ITEM_TEXTURES
 }
 
 ## Skin tone textures
@@ -205,15 +188,17 @@ const FACES := [
 const EYE_COLORS := ["Default", "Blue", "DarkBrown", "Green", "LightBrown", "Pink", "Purple", "Red", "Teal", "White", "Yellow"]
 
 ## Clothing files (SKM = skinned mesh)
-const TOPS := ["", "SKM_TOP_Tank.fbx", "SKM_TOP_LongSleeve.fbx", "SKM_TOP_Sweater.fbx", "SKM_TOP_PuffSleeveDress.fbx", "SKM_TOP_WarriorTunic.fbx", "SKM_TOP_WizardRobe.fbx", "SKM_TOP_Tshirt.fbx", "SKM_TOP_Hoodie.fbx"]
-const BOTTOMS := ["", "SKM_BOTTOM_Underwear.fbx", "SKM_BOTTOM_Shorts.fbx", "SKM_BOTTOM_Pants.fbx", "SKM_BOTTOM_SkinnyPants.fbx", "SKM_BOTTOM_FlarePants.fbx", "SKM_BOTTOM_Skirt.fbx"]
+## Note: "custom/" prefix items load from CUSTOM_SKINS_PATH instead of CLOTHES_PATH
+const TOPS := ["", "SKM_TOP_Tank.fbx", "SKM_TOP_LongSleeve.fbx", "SKM_TOP_Sweater.fbx", "SKM_TOP_PuffSleeveDress.fbx", "SKM_TOP_WarriorTunic.fbx", "SKM_TOP_WizardRobe.fbx", "SKM_TOP_Tshirt.fbx", "SKM_TOP_Hoodie.fbx", "custom/Lofi/Models/SKM_TOP_Lofi.fbx"]
+const BOTTOMS := ["", "SKM_BOTTOM_Underwear.fbx", "SKM_BOTTOM_Shorts.fbx", "SKM_BOTTOM_Pants.fbx", "SKM_BOTTOM_SkinnyPants.fbx", "SKM_BOTTOM_FlarePants.fbx", "SKM_BOTTOM_Skirt.fbx", "custom/Lofi/Models/SKM_BOTTOM_Lofi.fbx"]
 const SHOES := ["", "SKM_SHOES_CrewSocks.fbx", "SKM_SHOES_Oxfords.fbx", "SKM_SHOES_ChunkyBoots.fbx", "SKM_SHOES_RainBoots.fbx", "SKM_SHOES_WarriorBoots.fbx", "SKM_SHOES_WizardBoots.fbx", "SKM_SHOES_OverKneeSocks.fbx", "SKM_SHOES_Sneakers.fbx"]
 
 ## Accessories (SM = static mesh, attach to bone)
+## Note: "custom/" prefix items load from CUSTOM_SKINS_PATH instead of CLOTHES_PATH
 const HAIRS := ["", "Afro/SM_HAIR_Afro.fbx", "BabyBangs/SM_HAIR_BabyBangs.fbx", "LongWavy/SM_HAIR_LongWavy.fbx", "MessyKnotBun/SM_HAIR_MessyKnotBun.fbx", "MessySpiky/SM_HAIR_MessySpiky.fbx", "Mullet/SM_HAIR_Mullet.fbx", "StarBuns/SM_HAIR_StarBuns.fbx", "WavyMiddlePart/SM_HAIR_WavyMiddlePart.fbx"]
-const HATS := ["", "SM_MISC_Hat_Cowboy.fbx", "SM_MISC_Hat_Fisherman.fbx", "SM_MISC_Hat_PartyHat.fbx", "SM_MISC_Hat_PatrolCap.fbx", "SM_MISC_Hat_PorkPie.fbx", "SM_MISC_Hat_PropellerCap.fbx", "SM_MISC_Hat_StrawHat.fbx", "SM_MISC_Hat_Viking.fbx", "SM_MISC_Hat_BaseballCap.fbx", "SM_MISC_Hat_TopHat.fbx", "SM_MISC_Hat_Witch.fbx", "SM_MISC_Helmet_Robot.fbx"]
+const HATS := ["", "SM_MISC_Hat_Cowboy.fbx", "SM_MISC_Hat_Fisherman.fbx", "SM_MISC_Hat_PartyHat.fbx", "SM_MISC_Hat_PatrolCap.fbx", "SM_MISC_Hat_PorkPie.fbx", "SM_MISC_Hat_PropellerCap.fbx", "SM_MISC_Hat_StrawHat.fbx", "SM_MISC_Hat_Viking.fbx", "SM_MISC_Hat_BaseballCap.fbx", "SM_MISC_Hat_TopHat.fbx", "SM_MISC_Hat_Witch.fbx", "SM_MISC_Helmet_Robot.fbx", "custom/Lofi/Models/SM_MISC_Hat_HeadPhone.fbx"]
 const GLASSES := ["", "SM_MISC_Glasses_Round.fbx", "SM_MISC_Glasses_Aviator.fbx", "SM_MISC_Glasses_CatEye.fbx", "SM_MISC_Glasses_CatEyeSunglasses.fbx", "SM_MISC_Glasses_HeartSunglasses.fbx"]
-const NECK := ["", "SM_MISC_Neck_SpikedCollar.fbx"]
+const NECK := ["", "SM_MISC_Neck_SpikedCollar.fbx", "custom/Lofi/Models/SM_MISC_Neck_Scarf.fbx"]
 
 ## Part definitions for UI
 const PARTS := {
@@ -222,16 +207,15 @@ const PARTS := {
 	"EyeColor": EYE_COLORS,
 	"Hair": ["None", "Afro", "BabyBangs", "LongWavy", "MessyKnotBun", "MessySpiky", "Mullet", "StarBuns", "WavyMiddlePart"],
 	"HairColor": HAIR_COLORS,
-	"Top": ["None", "Tank", "LongSleeve", "Sweater", "PuffSleeveDress", "WarriorTunic", "WizardRobe", "Tshirt", "Hoodie"],
-	"Bottom": ["None", "Underwear", "Shorts", "Pants", "SkinnyPants", "FlarePants", "Skirt"],
+	"Top": ["None", "Tank", "LongSleeve", "Sweater", "PuffSleeveDress", "WarriorTunic", "WizardRobe", "Tshirt", "Hoodie", "LofiTop"],
+	"Bottom": ["None", "Underwear", "Shorts", "Pants", "SkinnyPants", "FlarePants", "Skirt", "LofiPants"],
 	"Shoes": ["None", "CrewSocks", "Oxfords", "ChunkyBoots", "RainBoots", "WarriorBoots", "WizardBoots", "OverKneeSocks", "Sneakers"],
-	"Hat": ["None", "Cowboy", "Fisherman", "PartyHat", "PatrolCap", "PorkPie", "PropellerCap", "StrawHat", "Viking", "BaseballCap", "TopHat", "Witch", "RobotHelmet"],
+	"Hat": ["None", "Cowboy", "Fisherman", "PartyHat", "PatrolCap", "PorkPie", "PropellerCap", "StrawHat", "Viking", "BaseballCap", "TopHat", "Witch", "RobotHelmet", "Headphone"],
 	"Glasses": ["None", "Round", "Aviator", "CatEye", "CatEyeSunglasses", "HeartSunglasses"],
-	"Neck": ["None", "SpikedCollar"],
+	"Neck": ["None", "SpikedCollar", "LofiScarf"],
 }
 
 const PART_DISPLAY_NAMES := {
-	"CustomSkin": "Full Skins",
 	"SkinTone": "Skin Tone",
 	"Face": "Face",
 	"EyeColor": "Eye Color",
@@ -252,7 +236,6 @@ const PART_DISPLAY_NAMES := {
 }
 
 const UI_CATEGORIES := {
-	"Skins": ["CustomSkin"],
 	"Body": ["SkinTone", "Face", "EyeColor"],
 	"Clothes": ["Top", "TopVariant", "Bottom", "BottomVariant", "Shoes", "ShoesVariant"],
 	"Accessories": ["Hair", "HairColor", "Hat", "HatVariant", "Glasses", "GlassesVariant", "Neck", "NeckVariant"],
@@ -293,7 +276,6 @@ var _color_modulate: Color = Color.WHITE  ## Color modulation for darkening effe
 var _is_initialized: bool = false  ## True after base model/materials setup
 var _pending_load_data: Dictionary = {}  ## Preset data queued before ready
 var _pending_show: bool = false  ## Show request queued before ready
-var _current_custom_skin: String = ""  ## Currently equipped custom skin name (empty = none)
 
 
 func _ready() -> void:
@@ -489,7 +471,12 @@ func _equip_part(category: String, index: int) -> void:
 		_current_selections[category] = index
 		return
 	
-	var full_path: String = base_path + file_path
+	# Handle custom items (paths starting with "custom/") - use CUSTOM_SKINS_PATH
+	var full_path: String
+	if file_path.begins_with("custom/"):
+		full_path = CUSTOM_SKINS_PATH + file_path.substr(7)  # Remove "custom/" prefix
+	else:
+		full_path = base_path + file_path
 	var part_scene := load(full_path) as PackedScene
 	if not part_scene:
 		print("[ModularCharacter] Failed to load: ", full_path)
@@ -499,7 +486,7 @@ func _equip_part(category: String, index: int) -> void:
 	
 	# Check if this is a skinned mesh (clothing) or static mesh (accessory)
 	var is_head_accessory := category in ["Hair", "Hat", "Glasses", "Neck"]
-	var is_skinned := file_path.begins_with("SKM_")
+	var is_skinned := "SKM_" in file_path  # Handle both regular and custom paths
 	
 	if is_skinned and _skeleton:
 		# For skinned meshes, extract the mesh and add to our skeleton
@@ -527,20 +514,25 @@ func _equip_part(category: String, index: int) -> void:
 				var bone_rest := _skeleton.get_bone_global_rest(head_bone_idx)
 				new_mesh.basis = bone_rest.basis.inverse()
 			
+			# Get part name for lookups
+			var part_name: String = PARTS[category][index]
+			
 			# For hats, make them bigger and higher
 			if category == "Hat":
 				new_mesh.scale = HAT_SCALE
 				new_mesh.position.y += HAT_HEIGHT_OFFSET
 				# Apply per-hat position correction if needed
-				var hat_name: String = PARTS["Hat"][index]
-				if HAT_POSITION_CORRECTIONS.has(hat_name):
-					new_mesh.position += HAT_POSITION_CORRECTIONS[hat_name]
+				if HAT_POSITION_CORRECTIONS.has(part_name):
+					new_mesh.position += HAT_POSITION_CORRECTIONS[part_name]
+			
+			# Apply item-specific position offsets (for custom items like headphones, scarf)
+			if ITEM_POSITION_OFFSETS.has(part_name):
+				new_mesh.position += ITEM_POSITION_OFFSETS[part_name]
 			
 			_head_attachment.add_child(new_mesh)
 			_equipped_parts[category] = new_mesh
 			
 			# Apply textures based on category
-			var part_name: String = PARTS[category][index]
 			if category == "Hair":
 				_apply_hair_texture(new_mesh)
 			else:
@@ -588,8 +580,23 @@ func _attach_skinned_mesh(source_scene: Node, category: String) -> Node3D:
 
 
 func _apply_part_texture(mesh: MeshInstance3D, part_name: String, category: String = "") -> void:
-	## Apply texture to a mesh based on part name using TEXTURE_VARIANTS
+	## Apply texture to a mesh based on part name using TEXTURE_VARIANTS or CUSTOM_ITEM_TEXTURES
 	if not mesh or part_name.is_empty():
+		return
+	
+	# Check for custom item textures first (Lofi items, etc.)
+	if CUSTOM_ITEM_TEXTURES.has(part_name):
+		var custom_textures: Array = CUSTOM_ITEM_TEXTURES[part_name]
+		if not custom_textures.is_empty():
+			var texture_path: String = CUSTOM_SKINS_PATH + custom_textures[0]
+			var texture := load(texture_path) as Texture2D
+			if texture:
+				var material := StandardMaterial3D.new()
+				material.albedo_texture = texture
+				mesh.material_override = material
+				print("[ModularCharacter] Applied custom texture %s to %s" % [texture_path, part_name])
+			else:
+				print("[ModularCharacter] Failed to load custom texture: ", texture_path)
 		return
 	
 	var variants: Array = TEXTURE_VARIANTS.get(part_name, [])
@@ -670,250 +677,6 @@ func _update_hair_color() -> void:
 	var hair_mesh := _equipped_parts.get("Hair") as MeshInstance3D
 	if hair_mesh:
 		_apply_hair_texture(hair_mesh)
-
-
-## Custom Skins
-
-func apply_custom_skin(skin_name: String) -> void:
-	## Apply a full custom skin, replacing multiple parts at once
-	## Pass empty string to clear custom skin and restore default parts
-	
-	if skin_name.is_empty():
-		# Clear custom skin - remove all custom parts
-		if _current_custom_skin.is_empty():
-			return
-		_clear_custom_skin_parts()
-		_current_custom_skin = ""
-		return
-	
-	if not CUSTOM_SKINS.has(skin_name):
-		push_error("[ModularCharacter] Unknown custom skin: %s" % skin_name)
-		return
-	
-	# Clear any existing custom skin first
-	if not _current_custom_skin.is_empty():
-		_clear_custom_skin_parts()
-	
-	var skin_data: Dictionary = CUSTOM_SKINS[skin_name]
-	var skin_folder: String = skin_data.get("folder", "")
-	var models: Array = skin_data.get("models", [])
-	
-	_current_custom_skin = skin_name
-	
-	# Process each model file in the skin
-	for model_data in models:
-		_process_custom_model(skin_folder, model_data as Dictionary)
-	
-	print("[ModularCharacter] Applied custom skin: %s" % skin_name)
-
-
-func _clear_custom_skin_parts() -> void:
-	## Clear all parts from current custom skin
-	if _current_custom_skin.is_empty():
-		return
-	
-	var skin_data: Dictionary = CUSTOM_SKINS.get(_current_custom_skin, {})
-	var models: Array = skin_data.get("models", [])
-	
-	# Collect all categories used by this skin
-	var categories_to_clear: Array[String] = []
-	for model_data in models:
-		var mesh_parts: Dictionary = (model_data as Dictionary).get("mesh_parts", {})
-		for mesh_key in mesh_parts.keys():
-			var part_info: Dictionary = mesh_parts[mesh_key]
-			var category: String = part_info.get("category", "")
-			if not category.is_empty() and category not in categories_to_clear:
-				categories_to_clear.append(category)
-	
-	for category in categories_to_clear:
-		_remove_custom_parts(category)
-
-
-func _process_custom_model(skin_folder: String, model_data: Dictionary) -> void:
-	## Process an FBX file and attach its meshes to appropriate places
-	## Uses index-based matching from mesh_parts config
-	
-	var model_file: String = model_data.get("file", "")
-	var mesh_parts: Dictionary = model_data.get("mesh_parts", {})
-	
-	if model_file.is_empty():
-		print("[ModularCharacter] Empty model file, skipping")
-		return
-	
-	var full_model_path: String = CUSTOM_SKINS_PATH + skin_folder + model_file
-	print("[ModularCharacter] Loading model: %s" % full_model_path)
-	
-	var part_scene := load(full_model_path) as PackedScene
-	if not part_scene:
-		push_error("[ModularCharacter] FAILED to load custom model: %s" % full_model_path)
-		return
-	
-	var part_instance := part_scene.instantiate()
-	print("[ModularCharacter] Instantiated model, finding meshes...")
-	
-	# Find ALL meshes in the FBX
-	var all_meshes: Array[MeshInstance3D] = []
-	_find_all_meshes(part_instance, all_meshes)
-	
-	if all_meshes.is_empty():
-		push_error("[ModularCharacter] No meshes found in: %s" % full_model_path)
-		part_instance.queue_free()
-		return
-	
-	print("[ModularCharacter] Found %d meshes in %s:" % [all_meshes.size(), model_file])
-	for idx in range(all_meshes.size()):
-		print("  [%d] Mesh: %s" % [idx, all_meshes[idx].name])
-	
-	# Process each configured mesh part by index
-	for key in mesh_parts.keys():
-		var part_config: Dictionary = mesh_parts[key]
-		var category: String = part_config.get("category", "")
-		var texture_path: String = part_config.get("texture", "")
-		var mesh_scale: float = part_config.get("scale", 1.0)
-		var offset_array: Array = part_config.get("offset", [0.0, 0.0, 0.0])
-		var mesh_offset := Vector3(offset_array[0], offset_array[1], offset_array[2]) if offset_array.size() >= 3 else Vector3.ZERO
-		
-		if category.is_empty():
-			continue
-		
-		# Get mesh by index
-		var mesh_index: int = int(str(key))
-		if mesh_index < 0 or mesh_index >= all_meshes.size():
-			print("[ModularCharacter] Mesh index %d out of range for %s (has %d meshes)" % [mesh_index, model_file, all_meshes.size()])
-			continue
-		
-		var source_mesh := all_meshes[mesh_index]
-		print("[ModularCharacter] Processing mesh[%d] '%s' as %s (scale: %.1f, offset: %s)" % [mesh_index, source_mesh.name, category, mesh_scale, mesh_offset])
-		
-		# Remove existing part in this category
-		_remove_custom_parts(category)
-		
-		# Determine attachment based on category
-		var is_head_accessory := category in ["Hair", "Hat", "Glasses", "Neck"]
-		
-		if is_head_accessory and _head_attachment:
-			_attach_custom_head_accessory(source_mesh, category, skin_folder, texture_path, mesh_scale, mesh_offset)
-		elif _skeleton:
-			_attach_custom_skinned_mesh(source_mesh, category, skin_folder, texture_path)
-	
-	part_instance.queue_free()
-	print("[ModularCharacter] Finished processing %s" % model_file)
-
-
-func _attach_custom_skinned_mesh(source_mesh: MeshInstance3D, category: String, skin_folder: String, texture_path: String) -> void:
-	## Attach a skinned mesh (clothing) to the skeleton
-	var new_mesh := MeshInstance3D.new()
-	new_mesh.name = category + "_CustomMesh"
-	new_mesh.mesh = source_mesh.mesh
-	new_mesh.skin = source_mesh.skin
-	
-	_skeleton.add_child(new_mesh)
-	new_mesh.skeleton = NodePath("..")
-	
-	_equipped_parts[category] = new_mesh
-	
-	if not texture_path.is_empty():
-		var full_texture_path: String = CUSTOM_SKINS_PATH + skin_folder + texture_path
-		_apply_custom_texture(new_mesh, full_texture_path)
-	
-	print("[ModularCharacter] Attached skinned custom %s" % category)
-
-
-func _attach_custom_head_accessory(source_mesh: MeshInstance3D, category: String, skin_folder: String, texture_path: String, mesh_scale: float = 1.0, mesh_offset: Vector3 = Vector3.ZERO) -> void:
-	## Attach a static mesh accessory to the head bone (like hats, glasses, neck)
-	var new_mesh := MeshInstance3D.new()
-	new_mesh.name = category + "_CustomMesh"
-	new_mesh.mesh = source_mesh.mesh
-	
-	# Apply scale if specified (some custom assets are exported at wrong scale)
-	if mesh_scale != 1.0:
-		new_mesh.scale = Vector3(mesh_scale, mesh_scale, mesh_scale)
-	
-	# Apply position offset
-	new_mesh.position = mesh_offset
-	
-	# Check if this mesh has a skin (is skinned) - if so, set up skeleton reference
-	if source_mesh.skin:
-		new_mesh.skin = source_mesh.skin
-		_skeleton.add_child(new_mesh)
-		new_mesh.skeleton = NodePath("..")
-		print("[ModularCharacter] Custom head accessory '%s' is SKINNED, attached to skeleton" % category)
-	else:
-		# Static mesh - attach to head bone
-		_head_attachment.add_child(new_mesh)
-		print("[ModularCharacter] Custom head accessory '%s' is STATIC, pos: %s, scale: %.1f" % [category, mesh_offset, mesh_scale])
-	
-	_equipped_parts[category] = new_mesh
-	
-	if not texture_path.is_empty():
-		var full_texture_path: String = CUSTOM_SKINS_PATH + skin_folder + texture_path
-		_apply_custom_texture(new_mesh, full_texture_path)
-
-
-func _remove_custom_parts(category: String) -> void:
-	## Remove all meshes for a custom part category
-	if _equipped_parts.has(category):
-		var part = _equipped_parts[category]
-		if is_instance_valid(part):
-			part.queue_free()
-		_equipped_parts.erase(category)
-	
-	# Also remove any individual mesh nodes that were added
-	if _skeleton:
-		var to_remove: Array[Node] = []
-		for child in _skeleton.get_children():
-			if child.name.begins_with(category + "_Mesh_") or child.name.begins_with(category + "_CustomParts"):
-				to_remove.append(child)
-		for node in to_remove:
-			node.queue_free()
-
-
-func _find_all_meshes(node: Node, result: Array[MeshInstance3D]) -> void:
-	## Recursively find all MeshInstance3D nodes
-	if node is MeshInstance3D:
-		result.append(node as MeshInstance3D)
-	for child in node.get_children():
-		_find_all_meshes(child, result)
-
-
-func _apply_custom_texture(mesh: MeshInstance3D, texture_path: String) -> void:
-	## Apply a custom texture to a mesh
-	if not mesh or texture_path.is_empty():
-		return
-	
-	var texture := load(texture_path) as Texture2D
-	if not texture:
-		push_error("[ModularCharacter] Failed to load custom texture: %s" % texture_path)
-		return
-	
-	var material := StandardMaterial3D.new()
-	material.albedo_texture = texture
-	mesh.material_override = material
-	print("[ModularCharacter] Applied custom texture: %s" % texture_path)
-
-
-func get_custom_skin_names() -> Array[String]:
-	## Get list of available custom skin names
-	var names: Array[String] = []
-	for skin_name in CUSTOM_SKINS.keys():
-		names.append(skin_name)
-	return names
-
-
-func get_custom_skin_display_name(skin_name: String) -> String:
-	## Get display name for a custom skin
-	var skin_data: Dictionary = CUSTOM_SKINS.get(skin_name, {})
-	return skin_data.get("display_name", skin_name)
-
-
-func get_current_custom_skin() -> String:
-	## Get currently equipped custom skin name (empty if none)
-	return _current_custom_skin
-
-
-func clear_custom_skin() -> void:
-	## Clear any equipped custom skin
-	apply_custom_skin("")
 
 
 func _load_all_animations() -> void:
@@ -1164,6 +927,7 @@ func load_from_dict(data: Dictionary) -> void:
 	if not _is_initialized:
 		_pending_load_data = data.duplicate()
 		return
+	
 	# First, set all variant selections WITHOUT equipping (so they're ready when items equip)
 	for key in data.keys():
 		if key.ends_with("Variant"):

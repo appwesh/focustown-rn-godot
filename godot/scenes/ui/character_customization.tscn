@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dfmcvh5egs4a8"]
 
-[ext_resource type="Script" path="res://scripts/ui/character_customization_ui.gd" id="1_ui"]
-[ext_resource type="Script" path="res://scripts/characters/modular_character.gd" id="2_char"]
+[ext_resource type="Script" uid="uid://cj1gm323vcdcn" path="res://scripts/ui/character_customization_ui.gd" id="1_ui"]
+[ext_resource type="Script" uid="uid://bwoca6noaa87b" path="res://scripts/characters/modular_character.gd" id="2_char"]
 
 [node name="CharacterCustomization" type="Control"]
 layout_mode = 3
@@ -45,7 +45,7 @@ stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="HSplitContainer/LeftPanel/SubViewportContainer"]
 handle_input_locally = false
-size = Vector2i(500, 600)
+size = Vector2i(840, 996)
 render_target_update_mode = 4
 
 [node name="CharacterScene" type="Node3D" parent="HSplitContainer/LeftPanel/SubViewportContainer/SubViewport"]
@@ -134,11 +134,11 @@ text = "Hair Style"
 horizontal_alignment = 1
 
 [node name="CurrentPartLabel" type="Label" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/PartSelection"]
+modulate = Color(0.7, 0.7, 0.7, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Current: Afro"
 horizontal_alignment = 1
-modulate = Color(0.7, 0.7, 0.7, 1)
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/RightPanel/MainPanel/VBoxContainer/PartSelection"]
 layout_mode = 2

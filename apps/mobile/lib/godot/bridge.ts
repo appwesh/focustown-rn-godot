@@ -972,9 +972,9 @@ export function removeRemotePlayer(odId: string): void {
 
 // Scene paths mapping (must match project structure)
 const SCENE_PATHS: Record<string, string> = {
-  library: 'res://scenes/main/library_cinematic_with_character.tscn',
+  library: 'res://scenes/main/library_main.tscn',
   home_showcase: 'res://scenes/main/home_character_showcase.tscn',
-  character_showcase: 'res://scenes/main/character_customization_showcase.tscn',
+  character_showcase: 'res://scenes/main/character_customization.tscn',
 };
 
 // Track current scene to avoid unnecessary changes
@@ -1059,17 +1059,17 @@ export interface CharacterSkin {
   EyeColor?: number;
   Hair?: number;
   HairColor?: number;
-  Top?: number;
+  Top?: number;        // 0=None, 1-8=standard, 9=LofiTop
   TopVariant?: number;
-  Bottom?: number;
+  Bottom?: number;     // 0=None, 1-6=standard, 7=LofiPants
   BottomVariant?: number;
   Shoes?: number;
   ShoesVariant?: number;
-  Hat?: number;
+  Hat?: number;        // 0=None, 1-12=standard, 13=Headphone
   HatVariant?: number;
   Glasses?: number;
   GlassesVariant?: number;
-  Neck?: number;
+  Neck?: number;       // 0=None, 1=SpikedCollar, 2=LofiScarf
   NeckVariant?: number;
 }
 
@@ -1108,7 +1108,9 @@ export function setUserCharacter(skinData: CharacterSkin): void {
         skinData.Hat ?? -1,
         skinData.HatVariant ?? -1,
         skinData.Glasses ?? -1,
-        skinData.GlassesVariant ?? -1
+        skinData.GlassesVariant ?? -1,
+        skinData.Neck ?? -1,
+        skinData.NeckVariant ?? -1
       );
       console.log('[Bridge] Set user character');
     }

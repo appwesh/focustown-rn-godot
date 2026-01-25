@@ -6,6 +6,7 @@ import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 /**
  * Character appearance data for customization
+ * All items are regular parts that can be mixed and matched
  */
 export interface CharacterSkin {
   SkinTone?: number;
@@ -13,17 +14,17 @@ export interface CharacterSkin {
   EyeColor?: number;
   Hair?: number;
   HairColor?: number;
-  Top?: number;
+  Top?: number;        // 0=None, 1-8=standard, 9=LofiTop
   TopVariant?: number;
-  Bottom?: number;
+  Bottom?: number;     // 0=None, 1-6=standard, 7=LofiPants
   BottomVariant?: number;
   Shoes?: number;
   ShoesVariant?: number;
-  Hat?: number;
+  Hat?: number;        // 0=None, 1-12=standard, 13=Headphone
   HatVariant?: number;
   Glasses?: number;
   GlassesVariant?: number;
-  Neck?: number;
+  Neck?: number;       // 0=None, 1=SpikedCollar, 2=LofiScarf
   NeckVariant?: number;
 }
 
@@ -47,6 +48,7 @@ export interface UserDoc {
 
   // Store / Inventory
   ownedItems: string[]; // Array of item IDs the user has purchased
+  wishlistItem: string | null; // Single wishlisted item ID (only one at a time)
 
   // Game progress (updated frequently via increment())
   totalCoins: number;

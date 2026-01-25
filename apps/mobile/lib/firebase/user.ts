@@ -51,6 +51,7 @@ export const userService = {
       avatarUrl: null,
       characterSkin: null,
       ownedItems: [],
+      wishlistItem: null,
       totalCoins: 0,
       totalFocusTime: 0,
       sessionsCompleted: 0,
@@ -103,12 +104,39 @@ export const userService = {
   /**
    * Purchase an item from the store.
    * Deducts coins and adds item to owned items.
+   * Also clears wishlist if the purchased item was wishlisted.
+   * @param additionalItemIds - Additional items to grant (e.g., individual items from outfit set)
    */
-  async purchaseItem(uid: string, itemId: string, price: number): Promise<void> {
+  async purchaseItem(uid: string, itemId: string, price: number, additionalItemIds?: string[]): Promise<void> {
+    const docRef = doc(usersCollection, uid);
+    // Get current wishlist to check if we need to clear it
+    const docSnap = await getDoc(docRef);
+    const userData = docSnap.data() as UserDoc;
+    
+    // Collect all items to add (main item + any additional items)
+    const allItemIds = [itemId, ...(additionalItemIds ?? [])];
+    
+    const updates: Record<string, unknown> = {
+      totalCoins: increment(-price),
+      ownedItems: arrayUnion(...allItemIds),
+      lastActiveAt: Date.now(),
+    };
+    
+    // Clear wishlist if this item was wishlisted
+    if (userData?.wishlistItem === itemId) {
+      updates.wishlistItem = null;
+    }
+    
+    await updateDoc(docRef, updates);
+  },
+
+  /**
+   * Set wishlist item (only one item at a time).
+   */
+  async setWishlistItem(uid: string, itemId: string | null): Promise<void> {
     const docRef = doc(usersCollection, uid);
     await updateDoc(docRef, {
-      totalCoins: increment(-price),
-      ownedItems: arrayUnion(itemId),
+      wishlistItem: itemId,
       lastActiveAt: Date.now(),
     });
   },

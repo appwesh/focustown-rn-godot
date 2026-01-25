@@ -40,17 +40,73 @@ interface StoreItem {
   isSeasonal?: boolean;
 }
 
+// Outfit set definition - a bundle of regular items sold together
+interface OutfitSet {
+  id: string;
+  name: string;
+  parts: Partial<CharacterSkin>;  // Part indices to apply (all regular items)
+  description: string;
+  price: number;
+  isOwned?: boolean;
+  isOutfitSet: true;              // Discriminator for type narrowing
+}
+
+// Union type for all store items
+type AnyStoreItem = StoreItem | OutfitSet;
+
+// Type guard for outfit sets
+const isOutfitSet = (item: AnyStoreItem): item is OutfitSet => {
+  return 'isOutfitSet' in item && item.isOutfitSet === true;
+};
+
+// Get individual item IDs from an outfit set's parts
+// Used to grant individual items when purchasing a set
+const getOutfitSetItemIds = (set: OutfitSet): string[] => {
+  const itemIds: string[] = [];
+  const parts = set.parts;
+  
+  // Map category keys to their lowercase version for item ID generation
+  const categoryMap: Record<string, ItemCategory> = {
+    Top: 'Top',
+    Bottom: 'Bottom',
+    Shoes: 'Shoes',
+    Hat: 'Hat',
+    Glasses: 'Glasses',
+    Neck: 'Neck',
+  };
+  
+  for (const [key, value] of Object.entries(parts)) {
+    // Skip variant keys and values of 0 (None)
+    if (key.endsWith('Variant') || value === 0) continue;
+    
+    const category = categoryMap[key];
+    if (!category) continue;
+    
+    const partIndex = value as number;
+    const variantKey = `${key}Variant` as keyof typeof parts;
+    const variantIndex = (parts[variantKey] as number) ?? 0;
+    
+    // Generate item ID matching the format used in generateAllStoreItems
+    const itemId = `${category.toLowerCase()}_${partIndex}_${variantIndex}`;
+    itemIds.push(itemId);
+  }
+  
+  return itemIds;
+};
+
 // Base items (index in PARTS array) - index 0 is always "None"
+// Note: Lofi items added at end of each category
 const PARTS: Record<ItemCategory, string[]> = {
-  Top: ['None', 'Tank', 'LongSleeve', 'Sweater', 'PuffSleeveDress', 'WarriorTunic', 'WizardRobe', 'Tshirt', 'Hoodie'],
-  Bottom: ['None', 'Underwear', 'Shorts', 'Pants', 'SkinnyPants', 'FlarePants', 'Skirt'],
+  Top: ['None', 'Tank', 'LongSleeve', 'Sweater', 'PuffSleeveDress', 'WarriorTunic', 'WizardRobe', 'Tshirt', 'Hoodie', 'LofiTop'],
+  Bottom: ['None', 'Underwear', 'Shorts', 'Pants', 'SkinnyPants', 'FlarePants', 'Skirt', 'LofiPants'],
   Shoes: ['None', 'CrewSocks', 'Oxfords', 'ChunkyBoots', 'RainBoots', 'WarriorBoots', 'WizardBoots', 'OverKneeSocks', 'Sneakers'],
-  Hat: ['None', 'Cowboy', 'Fisherman', 'PartyHat', 'PatrolCap', 'PorkPie', 'PropellerCap', 'StrawHat', 'Viking', 'BaseballCap', 'TopHat', 'Witch', 'RobotHelmet'],
+  Hat: ['None', 'Cowboy', 'Fisherman', 'PartyHat', 'PatrolCap', 'PorkPie', 'PropellerCap', 'StrawHat', 'Viking', 'BaseballCap', 'TopHat', 'Witch', 'RobotHelmet', 'Headphone'],
   Glasses: ['None', 'Round', 'Aviator', 'CatEye', 'CatEyeSunglasses', 'HeartSunglasses'],
-  Neck: ['None', 'SpikedCollar'],
+  Neck: ['None', 'SpikedCollar', 'LofiScarf'],
 };
 
 // Texture variants for each item (from Godot's TEXTURE_VARIANTS)
+// Note: Lofi items have a single 'Default' variant (custom textures handled by Godot)
 const TEXTURE_VARIANTS: Record<string, string[]> = {
   // Tops
   Tank: ['Black', 'BlackRadiation', 'Olive', 'White'],
@@ -61,6 +117,7 @@ const TEXTURE_VARIANTS: Record<string, string[]> = {
   WizardRobe: ['Beige', 'Blue', 'Maroon', 'Olive'],
   Tshirt: ['Black', 'BlackMushroom', 'BlackSkull', 'Beige', 'Blue', 'BlueStar', 'Lavender', 'LavenderStar', 'Maroon', 'MaroonCollegiate', 'Mustard', 'Olive', 'OliveLightning', 'Pumpkin', 'PumpkinCollegiate', 'White'],
   Hoodie: ['Black', 'BlackSakura', 'BlackSwirl', 'Beige', 'BeigeSakura', 'OliveCollegiate'],
+  LofiTop: ['Default'],
   // Bottoms
   Underwear: ['White'],
   Shorts: ['Black', 'Denim', 'Khaki', 'Olive'],
@@ -68,6 +125,7 @@ const TEXTURE_VARIANTS: Record<string, string[]> = {
   SkinnyPants: ['Brown'],
   FlarePants: ['Black', 'Denim'],
   Skirt: ['Black', 'BlueFloral', 'Denim', 'Houndstooth', 'Olive'],
+  LofiPants: ['Default'],
   // Shoes
   CrewSocks: ['Black', 'Beige', 'White'],
   Oxfords: ['Black', 'Brown'],
@@ -90,6 +148,7 @@ const TEXTURE_VARIANTS: Record<string, string[]> = {
   TopHat: ['Black', 'White'],
   Witch: ['Black', 'Brown', 'White'],
   RobotHelmet: ['Blue'],
+  Headphone: ['Default'],
   // Glasses
   Round: ['Brown'],
   Aviator: ['Black', 'Brown'],
@@ -98,6 +157,7 @@ const TEXTURE_VARIANTS: Record<string, string[]> = {
   HeartSunglasses: ['Pink', 'Black', 'Lavender'],
   // Neck
   SpikedCollar: ['Black'],
+  LofiScarf: ['Default'],
 };
 
 // Item colors for preview placeholders
@@ -124,6 +184,8 @@ const BASE_PRICES: Record<ItemCategory, number> = {
 const SEASONAL_BASE_ITEMS = new Set([
   'WizardRobe', 'WarriorTunic', 'WizardBoots', 'WarriorBoots',
   'Viking', 'Witch', 'TopHat', 'RobotHelmet', 'SpikedCollar',
+  // Lofi items
+  'LofiTop', 'LofiPants', 'Headphone', 'LofiScarf',
 ]);
 
 // Special variant patterns that cost more
@@ -131,11 +193,60 @@ const PREMIUM_VARIANTS = new Set([
   'Sakura', 'Star', 'Mushroom', 'Skull', 'Lightning', 'Collegiate', 'Floral', 'Froggy', 'Rainbow',
 ]);
 
+// Outfit sets - bundles of regular items sold together at a discount
+// All items are now regular parts that can be mixed and matched once owned
+const OUTFIT_SETS: OutfitSet[] = [
+  // Lofi Girl set - uses custom FBX items registered as regular parts
+  // LofiTop=9, LofiPants=7, Headphone=13, LofiScarf=2
+  {
+    id: 'set_lofi',
+    name: 'Lofi Girl Set',
+    parts: { Top: 9, TopVariant: 0, Bottom: 7, BottomVariant: 0, Hat: 13, HatVariant: 0, Neck: 2, NeckVariant: 0 },
+    description: 'Complete outfit with sweater, pants, headphones & scarf',
+    price: 500,
+    isOutfitSet: true,
+  },
+  // Wizard outfit bundles
+  // WizardRobe = index 6, SkinnyPants = index 4, WizardBoots = index 6
+  {
+    id: 'set_wizard_beige',
+    name: 'Beige Wizard Set',
+    parts: { Top: 6, TopVariant: 0, Bottom: 4, BottomVariant: 0, Shoes: 6, ShoesVariant: 0, Hat: 0, Glasses: 0, Neck: 0 },
+    description: 'Wizard robe, pants & boots in classic beige',
+    price: 400,
+    isOutfitSet: true,
+  },
+  {
+    id: 'set_wizard_blue',
+    name: 'Blue Wizard Set',
+    parts: { Top: 6, TopVariant: 1, Bottom: 4, BottomVariant: 0, Shoes: 6, ShoesVariant: 0, Hat: 0, Glasses: 0, Neck: 0 },
+    description: 'Wizard robe, pants & boots in mystical blue',
+    price: 400,
+    isOutfitSet: true,
+  },
+  {
+    id: 'set_wizard_maroon',
+    name: 'Maroon Wizard Set',
+    parts: { Top: 6, TopVariant: 2, Bottom: 4, BottomVariant: 0, Shoes: 6, ShoesVariant: 0, Hat: 0, Glasses: 0, Neck: 0 },
+    description: 'Wizard robe, pants & boots in deep maroon',
+    price: 400,
+    isOutfitSet: true,
+  },
+  {
+    id: 'set_wizard_olive',
+    name: 'Olive Wizard Set',
+    parts: { Top: 6, TopVariant: 3, Bottom: 4, BottomVariant: 0, Shoes: 6, ShoesVariant: 0, Hat: 0, Glasses: 0, Neck: 0 },
+    description: 'Wizard robe, pants & boots in earthy olive',
+    price: 400,
+    isOutfitSet: true,
+  },
+];
+
 // Format variant name for display
 const formatVariantName = (baseName: string, variant: string): string => {
   const formattedBase = baseName.replace(/([A-Z])/g, ' $1').trim();
   const formattedVariant = variant.replace(/([A-Z])/g, ' $1').trim();
-  return `${formattedBase} (${formattedVariant})`;
+  return `${formattedVariant} ${formattedBase}`;
 };
 
 // Check if variant is premium
@@ -198,26 +309,51 @@ const DEFAULT_CHARACTER: CharacterSkin = {
   HatVariant: 0,
   Glasses: 0,
   GlassesVariant: 0,
+  Neck: 0,
+  NeckVariant: 0,
 };
 
-// Generate daily finds (rotate based on day)
-const generateDailyFinds = (allItems: StoreItem[]): StoreItem[] => {
+// Refresh cost in beans
+const REFRESH_COST = 30;
+
+// Simple seeded random number generator
+const seededRandom = (seed: number): (() => number) => {
+  let s = seed;
+  return () => {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    return s / 0x7fffffff;
+  };
+};
+
+// Generate daily finds (rotate based on day + optional refresh seed)
+const generateDailyFinds = (allItems: StoreItem[], refreshSeed: number = 0): StoreItem[] => {
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+  const seed = dayOfYear * 10000 + refreshSeed; // Combine day with refresh seed
   const nonSeasonalItems = allItems.filter(item => !item.isSeasonal);
   
-  // Shuffle deterministically based on day
-  const shuffled = [...nonSeasonalItems].sort((a, b) => {
-    const hashA = (a.id.charCodeAt(0) + a.id.charCodeAt(a.id.length - 1)) * dayOfYear % 1000;
-    const hashB = (b.id.charCodeAt(0) + b.id.charCodeAt(b.id.length - 1)) * dayOfYear % 1000;
-    return hashA - hashB;
-  });
+  // Fisher-Yates shuffle with seeded random
+  const random = seededRandom(seed);
+  const shuffled = [...nonSeasonalItems];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
   
   return shuffled.slice(0, 8);
 };
 
-// Generate seasonal items
-const generateSeasonalItems = (allItems: StoreItem[]): StoreItem[] => {
-  return allItems.filter(item => item.isSeasonal);
+// Generate seasonal items (includes outfit sets at the top)
+const generateSeasonalItems = (allItems: StoreItem[], ownedItems: string[]): AnyStoreItem[] => {
+  // Add outfit sets first (with ownership status)
+  const outfitSets: AnyStoreItem[] = OUTFIT_SETS.map(set => ({
+    ...set,
+    isOwned: ownedItems.includes(set.id),
+  }));
+  
+  // Then add seasonal individual items
+  const seasonalParts = allItems.filter(item => item.isSeasonal);
+  
+  return [...outfitSets, ...seasonalParts];
 };
 
 // Calculate time until midnight for refresh timer
@@ -245,15 +381,20 @@ export default function StoreScreen() {
   
   const [sceneTransitioning, setSceneTransitioning] = useState(true);
   const [activeTab, setActiveTab] = useState<StoreTab>('Daily Finds');
-  const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<AnyStoreItem | null>(null);
   const [character, setCharacter] = useState<CharacterSkin>(DEFAULT_CHARACTER);
+  const [refreshSeed, setRefreshSeed] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(getTimeUntilMidnight());
   const [ownedItems, setOwnedItems] = useState<string[]>([]);
   
   // Load saved character and owned items from Firestore on mount
   useEffect(() => {
     if (userDoc?.characterSkin) {
-      setCharacter({ ...DEFAULT_CHARACTER, ...userDoc.characterSkin });
+      // Filter out null/undefined values to keep DEFAULT_CHARACTER values
+      const cleanSkin = Object.fromEntries(
+        Object.entries(userDoc.characterSkin).filter(([, v]) => v != null)
+      );
+      setCharacter({ ...DEFAULT_CHARACTER, ...cleanSkin });
     }
     if (userDoc?.ownedItems) {
       setOwnedItems(userDoc.ownedItems);
@@ -269,19 +410,42 @@ export default function StoreScreen() {
   }, []);
 
   // Get items for current tab
-  const items = useMemo(() => {
-    let tabItems: StoreItem[];
+  // Get wishlist item ID from userDoc
+  const wishlistItemId = userDoc?.wishlistItem ?? null;
+
+  const items = useMemo((): AnyStoreItem[] => {
+    let tabItems: AnyStoreItem[];
     
     switch (activeTab) {
-      case 'Daily Finds':
-        tabItems = generateDailyFinds(ALL_STORE_ITEMS);
+      case 'Daily Finds': {
+        // Filter out owned items before generating daily finds
+        const availableItems = ALL_STORE_ITEMS.filter(item => !ownedItems.includes(item.id));
+        let dailyItems = generateDailyFinds(availableItems, refreshSeed);
+        
+        // If there's a wishlisted item, ensure it's at the top
+        if (wishlistItemId) {
+          const wishlistedItem = ALL_STORE_ITEMS.find(item => item.id === wishlistItemId);
+          if (wishlistedItem && !ownedItems.includes(wishlistedItem.id)) {
+            // Remove from current position if present
+            dailyItems = dailyItems.filter(item => item.id !== wishlistItemId);
+            // Add to the beginning
+            dailyItems = [wishlistedItem, ...dailyItems.slice(0, 7)];
+          }
+        }
+        
+        tabItems = dailyItems;
         break;
+      }
       case 'Seasonal':
-        tabItems = generateSeasonalItems(ALL_STORE_ITEMS);
+        tabItems = generateSeasonalItems(ALL_STORE_ITEMS, ownedItems);
         break;
-      case 'Owned':
-        tabItems = ALL_STORE_ITEMS.filter(item => ownedItems.includes(item.id));
+      case 'Owned': {
+        // Include both regular items and outfit sets that are owned
+        const ownedRegularItems = ALL_STORE_ITEMS.filter(item => ownedItems.includes(item.id));
+        const ownedOutfitSets = OUTFIT_SETS.filter(set => ownedItems.includes(set.id));
+        tabItems = [...ownedOutfitSets, ...ownedRegularItems];
         break;
+      }
       default:
         tabItems = [];
     }
@@ -290,7 +454,7 @@ export default function StoreScreen() {
       ...item,
       isOwned: ownedItems.includes(item.id),
     }));
-  }, [activeTab, ownedItems]);
+  }, [activeTab, ownedItems, refreshSeed, wishlistItemId]);
 
   // Get user's display name for the header
   const displayName = userDoc?.displayName || userDoc?.username || 'Your';
@@ -344,7 +508,7 @@ export default function StoreScreen() {
   };
 
   // Handle item tap - toggle selection and preview
-  const handleItemTap = useCallback((item: StoreItem) => {
+  const handleItemTap = useCallback((item: AnyStoreItem) => {
     if (selectedItem?.id === item.id) {
       // Deselect - restore original character
       setSelectedItem(null);
@@ -352,16 +516,29 @@ export default function StoreScreen() {
         setUserCharacter(character);
       }
     } else {
-      // Select and preview - set both part and variant
+      // Select and preview
       setSelectedItem(item);
-      const variantKey = getVariantKey(item.category);
-      const previewCharacter = { 
-        ...character, 
-        [item.category]: item.partIndex,
-        [variantKey]: item.variantIndex,
-      };
-      if (isGodotReady()) {
-        setUserCharacter(previewCharacter);
+      
+      if (isOutfitSet(item)) {
+        // Outfit set - apply all parts
+        const previewCharacter: CharacterSkin = { 
+          ...character, 
+          ...item.parts,
+        };
+        if (isGodotReady()) {
+          setUserCharacter(previewCharacter);
+        }
+      } else {
+        // Regular item - set both part and variant
+        const variantKey = getVariantKey(item.category);
+        const previewCharacter: CharacterSkin = { 
+          ...character, 
+          [item.category]: item.partIndex,
+          [variantKey]: item.variantIndex,
+        };
+        if (isGodotReady()) {
+          setUserCharacter(previewCharacter);
+        }
       }
     }
   }, [selectedItem, character]);
@@ -378,17 +555,41 @@ export default function StoreScreen() {
 
     try {
       // Update owned items and deduct coins
-      const newOwnedItems = [...ownedItems, selectedItem.id];
-      await userService.purchaseItem(user.uid, selectedItem.id, price);
+      let newOwnedItems = [...ownedItems, selectedItem.id];
+      
+      // If purchasing an outfit set, also add individual items
+      if (isOutfitSet(selectedItem)) {
+        const individualItemIds = getOutfitSetItemIds(selectedItem);
+        // Add items that aren't already owned
+        for (const itemId of individualItemIds) {
+          if (!newOwnedItems.includes(itemId)) {
+            newOwnedItems.push(itemId);
+          }
+        }
+      }
+      
+      await userService.purchaseItem(user.uid, selectedItem.id, price, 
+        isOutfitSet(selectedItem) ? getOutfitSetItemIds(selectedItem) : undefined);
       setOwnedItems(newOwnedItems);
       
-      // Apply item to character permanently (with variant)
-      const variantKey = getVariantKey(selectedItem.category);
-      const newCharacter = { 
-        ...character, 
-        [selectedItem.category]: selectedItem.partIndex,
-        [variantKey]: selectedItem.variantIndex,
-      };
+      let newCharacter: CharacterSkin;
+      
+      if (isOutfitSet(selectedItem)) {
+        // Outfit set - apply all parts
+        newCharacter = { 
+          ...character, 
+          ...selectedItem.parts,
+        };
+      } else {
+        // Regular item - apply part and variant
+        const variantKey = getVariantKey(selectedItem.category);
+        newCharacter = { 
+          ...character, 
+          [selectedItem.category]: selectedItem.partIndex,
+          [variantKey]: selectedItem.variantIndex,
+        };
+      }
+      
       setCharacter(newCharacter);
       await userService.updateCharacterSkin(user.uid, newCharacter);
       
@@ -404,23 +605,87 @@ export default function StoreScreen() {
   // Check if we can afford the selected item
   const canAfford = selectedItem ? (userDoc?.totalCoins ?? 0) >= selectedItem.price : false;
 
+  // Check if user can afford refresh
+  const canAffordRefresh = (userDoc?.totalCoins ?? 0) >= REFRESH_COST;
+
+  // Check if selected item is wishlisted
+  const isSelectedWishlisted = selectedItem ? wishlistItemId === selectedItem.id : false;
+
+  // Handle refresh purchase
+  const handleRefresh = useCallback(async () => {
+    if (!user || !canAffordRefresh) return;
+    
+    try {
+      // Deduct beans for refresh
+      await userService.purchaseItem(user.uid, `refresh_${Date.now()}`, REFRESH_COST);
+      // Increment refresh seed to get new items
+      setRefreshSeed(prev => prev + 1);
+      // Clear selection
+      setSelectedItem(null);
+      console.log('[Store] Refreshed daily finds');
+    } catch (error) {
+      console.error('[Store] Refresh failed:', error);
+    }
+  }, [user, canAffordRefresh]);
+
+  // Handle wishlist toggle
+  const handleWishlist = useCallback(async () => {
+    if (!user || !selectedItem) return;
+    
+    try {
+      if (isSelectedWishlisted) {
+        // Remove from wishlist
+        await userService.setWishlistItem(user.uid, null);
+        console.log('[Store] Removed from wishlist:', selectedItem.name);
+      } else {
+        // Add to wishlist (replaces any existing)
+        await userService.setWishlistItem(user.uid, selectedItem.id);
+        console.log('[Store] Added to wishlist:', selectedItem.name);
+      }
+    } catch (error) {
+      console.error('[Store] Wishlist failed:', error);
+    }
+  }, [user, selectedItem, isSelectedWishlisted]);
+
   // Check if an item is currently equipped
-  const isItemEquipped = useCallback((item: StoreItem): boolean => {
+  const isItemEquipped = useCallback((item: AnyStoreItem): boolean => {
+    if (isOutfitSet(item)) {
+      // Outfit set - check if all parts match
+      for (const [key, value] of Object.entries(item.parts)) {
+        if (character[key as keyof CharacterSkin] !== value) {
+          return false;
+        }
+      }
+      return true;
+    }
+    // Regular item - check if part and variant match
     const variantKey = getVariantKey(item.category);
     return character[item.category] === item.partIndex && 
            (character[variantKey as keyof CharacterSkin] ?? 0) === item.variantIndex;
   }, [character]);
 
   // Handle equip item
-  const handleEquip = useCallback(async (item: StoreItem) => {
+  const handleEquip = useCallback(async (item: AnyStoreItem) => {
     if (!user) return;
     
-    const variantKey = getVariantKey(item.category);
-    const newCharacter = { 
-      ...character, 
-      [item.category]: item.partIndex,
-      [variantKey]: item.variantIndex,
-    };
+    let newCharacter: CharacterSkin;
+    
+    if (isOutfitSet(item)) {
+      // Outfit set - apply all parts
+      newCharacter = { 
+        ...character, 
+        ...item.parts,
+      };
+    } else {
+      // Regular item
+      const variantKey = getVariantKey(item.category);
+      newCharacter = { 
+        ...character, 
+        [item.category]: item.partIndex,
+        [variantKey]: item.variantIndex,
+      };
+    }
+    
     setCharacter(newCharacter);
     
     if (isGodotReady()) {
@@ -436,15 +701,26 @@ export default function StoreScreen() {
   }, [character, user]);
 
   // Handle remove/unequip item (set to None/0)
-  const handleRemove = useCallback(async (item: StoreItem) => {
+  const handleRemove = useCallback(async (item: AnyStoreItem) => {
     if (!user) return;
     
-    const variantKey = getVariantKey(item.category);
-    const newCharacter = { 
-      ...character, 
-      [item.category]: 0,  // Set to None
-      [variantKey]: 0,
-    };
+    let newCharacter: CharacterSkin;
+    
+    if (isOutfitSet(item)) {
+      // Outfit set - reset all parts in the set to None/0
+      newCharacter = { ...character };
+      for (const key of Object.keys(item.parts)) {
+        (newCharacter as Record<string, unknown>)[key] = 0;
+      }
+    } else {
+      const variantKey = getVariantKey(item.category);
+      newCharacter = { 
+        ...character, 
+        [item.category]: 0,  // Set to None
+        [variantKey]: 0,
+      };
+    }
+    
     setCharacter(newCharacter);
     
     if (isGodotReady()) {
@@ -535,10 +811,21 @@ export default function StoreScreen() {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{headerTitle}</Text>
           {activeTab === 'Daily Finds' && (
-            <View style={styles.refreshBadge}>
-              <Text style={styles.refreshText}>
-                Items refresh in {formatTimeRemaining(timeRemaining)}
-              </Text>
+            <View style={styles.dailyFindsInfo}>
+              <View style={styles.refreshBadge}>
+                <Text style={styles.refreshText}>
+                  Items refresh in {formatTimeRemaining(timeRemaining)}
+                </Text>
+              </View>
+              <Pressable 
+                style={[styles.refreshButton, !canAffordRefresh && styles.refreshButtonDisabled]}
+                onPress={handleRefresh}
+                disabled={!canAffordRefresh}
+              >
+                <Text style={styles.refreshButtonText}>Refresh</Text>
+                <Text style={styles.refreshButtonPrice}>{REFRESH_COST}</Text>
+                <Image source={require('@/assets/ui/bean.png')} style={styles.refreshBeanIcon} />
+              </Pressable>
             </View>
           )}
         </View>
@@ -567,36 +854,66 @@ export default function StoreScreen() {
                 style={[
                   styles.itemCard,
                   selectedItem?.id === item.id && styles.itemCardSelected,
+                  wishlistItemId === item.id && styles.itemCardWishlisted,
+                  isOutfitSet(item) && styles.itemCardOutfitSet,
                 ]}
                 onPress={() => handleItemTap(item)}
               >
-                {/* Category Badge */}
-                <View style={[styles.categoryBadge, { backgroundColor: CATEGORY_COLORS[item.category] + '40' }]}>
-                  <Text style={[styles.categoryBadgeText, { color: CATEGORY_COLORS[item.category] }]}>
-                    {item.category}
-                  </Text>
-                </View>
+                {/* Wishlist Heart */}
+                {wishlistItemId === item.id && (
+                  <View style={styles.wishlistBadge}>
+                    <Text style={styles.wishlistBadgeText}>❤️</Text>
+                  </View>
+                )}
+                
+                {/* Category Badge or Outfit Set Badge */}
+                {isOutfitSet(item) ? (
+                  <View style={[styles.categoryBadge, styles.outfitSetBadge]}>
+                    <Text style={[styles.categoryBadgeText, styles.outfitSetBadgeText]}>
+                      ✨ Full Set
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={[styles.categoryBadge, { backgroundColor: CATEGORY_COLORS[item.category] + '40' }]}>
+                    <Text style={[styles.categoryBadgeText, { color: CATEGORY_COLORS[item.category] }]}>
+                      {item.category}
+                    </Text>
+                  </View>
+                )}
                 
                 <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
                 
                 {/* Item Preview */}
-                <View style={[
-                  styles.itemPreview,
-                  { backgroundColor: CATEGORY_COLORS[item.category] + '30' },
-                ]}>
-                  <View style={[
-                    styles.itemPreviewInner,
-                    { backgroundColor: CATEGORY_COLORS[item.category] },
-                  ]}>
-                    <Text style={styles.itemPreviewText}>
-                      {item.category.charAt(0)}
-                    </Text>
+                {isOutfitSet(item) ? (
+                  <View style={[styles.itemPreview, styles.outfitSetPreview]}>
+                    <View style={styles.outfitSetPreviewInner}>
+                      <Text style={styles.outfitSetPreviewText}>
+                        {item.id.includes('wizard') ? '🧙‍♂️' : item.id.includes('lofi') ? '🎧' : '👕👖'}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                ) : (
+                  <View style={[
+                    styles.itemPreview,
+                    { backgroundColor: CATEGORY_COLORS[item.category] + '30' },
+                  ]}>
+                    <View style={[
+                      styles.itemPreviewInner,
+                      { backgroundColor: CATEGORY_COLORS[item.category] },
+                    ]}>
+                      <Text style={styles.itemPreviewText}>
+                        {item.category.charAt(0)}
+                      </Text>
+                    </View>
+                  </View>
+                )}
 
                 {/* Price Badge or Equip/Remove Buttons */}
                 {!item.isOwned ? (
-                  <View style={[styles.priceBadge, item.isSeasonal && styles.priceBadgeSeasonal]}>
+                  <View style={[
+                    styles.priceBadge, 
+                    (isOutfitSet(item) || ('isSeasonal' in item && item.isSeasonal)) && styles.priceBadgeSeasonal
+                  ]}>
                     <Text style={styles.priceText}>{item.price}</Text>
                     <Image source={require('@/assets/ui/bean.png')} style={styles.priceBeanIcon} />
                   </View>
@@ -630,24 +947,26 @@ export default function StoreScreen() {
 
       {/* Bottom Buy Bar - shows when item selected */}
       {selectedItem && !selectedItem.isOwned && (
-        <View style={[styles.buyBar, { paddingBottom: insets.bottom + 16 }]}>
-          <View style={styles.buyBarInfo}>
-            <Text style={styles.buyBarItemName} numberOfLines={1}>{selectedItem.name}</Text>
-            <Text style={styles.buyBarCategory}>{selectedItem.category}</Text>
-          </View>
-          <Pressable 
-            style={[
-              styles.buyButton,
-              !canAfford && styles.buyButtonDisabled,
-            ]}
-            onPress={handlePurchase}
-            disabled={!canAfford}
-          >
-            <View style={styles.buyButtonContent}>
+        <View style={[styles.buyBar, { marginBottom: insets.bottom + 12 }]}>
+          <Text style={styles.buyBarItemName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{selectedItem.name}</Text>
+          {canAfford ? (
+            <Pressable 
+              style={styles.buyButton}
+              onPress={handlePurchase}
+            >
               <Text style={styles.buyButtonText}>Buy {selectedItem.price}</Text>
               <Image source={require('@/assets/ui/bean.png')} style={styles.buyBeanIcon} />
-            </View>
-          </Pressable>
+            </Pressable>
+          ) : (
+            <Pressable 
+              style={[styles.wishlistButton, isSelectedWishlisted && styles.wishlistButtonActive]}
+              onPress={handleWishlist}
+            >
+              <Text style={[styles.wishlistButtonText, isSelectedWishlisted && styles.wishlistButtonTextActive]}>
+                {isSelectedWishlisted ? 'Wishlisted' : 'Wishlist'}
+              </Text>
+            </Pressable>
+          )}
         </View>
       )}
     </View>
@@ -790,7 +1109,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   refreshBadge: {
-    marginTop: 8,
     backgroundColor: '#E74C3C',
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -800,6 +1118,39 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '600',
+  },
+  dailyFindsInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 12,
+  },
+  refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3498DB',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 4,
+  },
+  refreshButtonDisabled: {
+    backgroundColor: '#7F8C8D',
+    opacity: 0.7,
+  },
+  refreshButtonText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  refreshButtonPrice: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  refreshBeanIcon: {
+    width: 16,
+    height: 16,
   },
   itemsScroll: {
     flex: 1,
@@ -829,6 +1180,22 @@ const styles = StyleSheet.create({
     borderColor: '#5DADE2',
     backgroundColor: '#E8F6FC',
   },
+  itemCardWishlisted: {
+    borderColor: '#E74C3C',
+  },
+  itemCardOutfitSet: {
+    borderColor: '#9B59B6',
+    backgroundColor: '#FAF0FF',
+  },
+  wishlistBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
+  },
+  wishlistBadgeText: {
+    fontSize: 16,
+  },
   categoryBadge: {
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -838,6 +1205,12 @@ const styles = StyleSheet.create({
   categoryBadgeText: {
     fontSize: 10,
     fontWeight: '700',
+  },
+  outfitSetBadge: {
+    backgroundColor: '#E8D5F2',
+  },
+  outfitSetBadgeText: {
+    color: '#9B59B6',
   },
   itemName: {
     fontSize: 13,
@@ -866,6 +1239,20 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+  outfitSetPreview: {
+    backgroundColor: '#E8D5F2',
+  },
+  outfitSetPreviewInner: {
+    width: '80%',
+    height: '60%',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#D4B8E8',
+  },
+  outfitSetPreviewText: {
+    fontSize: 24,
   },
   priceBadge: {
     flexDirection: 'row',
@@ -940,55 +1327,70 @@ const styles = StyleSheet.create({
   buyBar: {
     position: 'absolute',
     bottom: 0,
-    left: 0,
-    right: 0,
+    left: 16,
+    right: 16,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingLeft: 24,
+    paddingRight: 12,
+    paddingVertical: 12,
+    borderRadius: 40,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
     shadowRadius: 12,
     elevation: 10,
   },
-  buyBarInfo: {
-    flex: 1,
-    marginRight: 16,
-  },
   buyBarItemName: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '600',
     color: '#5A4A3A',
-  },
-  buyBarCategory: {
-    fontSize: 12,
-    color: '#A89880',
-    marginTop: 2,
+    flexShrink: 1,
+    marginRight: 12,
   },
   buyButton: {
     backgroundColor: '#5DADE2',
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 24,
+    gap: 4,
+    flexShrink: 0,
   },
   buyButtonDisabled: {
     backgroundColor: '#BDC3C7',
   },
-  buyButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   buyButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginRight: 6,
   },
   buyBeanIcon: {
-    width: 20,
-    height: 20,
+    width: 22,
+    height: 22,
+  },
+  wishlistButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#E74C3C',
+    backgroundColor: '#FFFFFF',
+  },
+  wishlistButtonActive: {
+    backgroundColor: '#E74C3C',
+  },
+  wishlistButtonText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#E74C3C',
+  },
+  wishlistButtonTextActive: {
+    color: '#FFFFFF',
   },
 });

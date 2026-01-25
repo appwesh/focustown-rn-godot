@@ -17,25 +17,25 @@ class_name CharacterPreset
 @export_range(0, 20) var hair_color: int = 0
 
 @export_group("Clothing")
-@export_range(0, 8) var top: int = 1
+@export_range(0, 9) var top: int = 1  ## 0=None, 1-8=standard, 9=LofiTop
 @export_range(0, 15) var top_variant: int = 0
-@export_range(0, 6) var bottom: int = 3
+@export_range(0, 7) var bottom: int = 3  ## 0=None, 1-6=standard, 7=LofiPants
 @export_range(0, 5) var bottom_variant: int = 0
 @export_range(0, 8) var shoes: int = 2
 @export_range(0, 3) var shoes_variant: int = 0
 
 @export_group("Accessories")
-@export_range(0, 12) var hat: int = 0
+@export_range(0, 13) var hat: int = 0  ## 0=None, 1-12=standard, 13=Headphone
 @export_range(0, 7) var hat_variant: int = 0
 @export_range(0, 5) var glasses: int = 0
 @export_range(0, 2) var glasses_variant: int = 0
-@export_range(0, 1) var neck: int = 0
+@export_range(0, 2) var neck: int = 0  ## 0=None, 1=SpikedCollar, 2=LofiScarf
 @export_range(0, 0) var neck_variant: int = 0
 
 
 ## Convert preset to dictionary for ModularCharacter.load_from_dict()
 func to_dict() -> Dictionary:
-	return {
+	var result := {
 		"SkinTone": skin_tone,
 		"Face": face,
 		"EyeColor": eye_color,
@@ -54,6 +54,7 @@ func to_dict() -> Dictionary:
 		"Neck": neck,
 		"NeckVariant": neck_variant,
 	}
+	return result
 
 
 ## Load preset from dictionary

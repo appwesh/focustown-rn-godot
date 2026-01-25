@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cghwre0d67mh7"
-path="res://.godot/imported/Lofi_Bottom.fbx-6bf51808b1c980b1be6860191d261b4e.scn"
+uid="uid://cvtlco3pnfxmr"
+path="res://.godot/imported/SKM_TOP_Lofi.fbx-184db526ca3204b1e4b9c783bb6f37d9.scn"
 
 [deps]
 
-source_file="res://assets/characters/cozylife/custom/Lofi/Models/Lofi_Bottom.fbx"
-dest_files=["res://.godot/imported/Lofi_Bottom.fbx-6bf51808b1c980b1be6860191d261b4e.scn"]
+source_file="res://assets/characters/cozylife/custom/Lofi/Models/SKM_TOP_Lofi.fbx"
+dest_files=["res://.godot/imported/SKM_TOP_Lofi.fbx-184db526ca3204b1e4b9c783bb6f37d9.scn"]
 
 [params]
 

@@ -224,10 +224,14 @@ export function GodotGame({ style, pckUrl, onLoadingChange }: GodotGameProps) {
   const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Store callback in ref to avoid infinite loops from changing function references
+  const onLoadingChangeRef = useRef(onLoadingChange);
+  onLoadingChangeRef.current = onLoadingChange;
+
   // Notify parent of loading state changes
   useEffect(() => {
-    onLoadingChange?.(isLoading, downloadProgress ?? undefined);
-  }, [isLoading, downloadProgress, onLoadingChange]);
+    onLoadingChangeRef.current?.(isLoading, downloadProgress ?? undefined);
+  }, [isLoading, downloadProgress]);
 
   useEffect(() => {
     if (initialized.current) return;

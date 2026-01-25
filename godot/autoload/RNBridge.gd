@@ -611,9 +611,9 @@ var _user_character_data: Dictionary = {}
 
 ## Scene paths for switching
 const SCENE_PATHS := {
-	"library": "res://scenes/main/library_cinematic_with_character.tscn",
+	"library": "res://scenes/main/library_main.tscn",
 	"home_showcase": "res://scenes/main/home_character_showcase.tscn",
-	"character_showcase": "res://scenes/main/character_customization_showcase.tscn",
+	"character_showcase": "res://scenes/main/character_customization.tscn",
 }
 
 
@@ -701,7 +701,7 @@ func set_user_character_values(
 	skin_tone: int, face: int, eye_color: int, hair: int, hair_color: int,
 	top: int, top_variant: int, bottom: int, bottom_variant: int,
 	shoes: int, shoes_variant: int, hat: int, hat_variant: int,
-	glasses: int, glasses_variant: int
+	glasses: int, glasses_variant: int, neck: int, neck_variant: int
 ) -> void:
 	var skin_data := {}
 	if skin_tone >= 0: skin_data["SkinTone"] = skin_tone
@@ -719,6 +719,8 @@ func set_user_character_values(
 	if hat_variant >= 0: skin_data["HatVariant"] = hat_variant
 	if glasses >= 0: skin_data["Glasses"] = glasses
 	if glasses_variant >= 0: skin_data["GlassesVariant"] = glasses_variant
+	if neck >= 0: skin_data["Neck"] = neck
+	if neck_variant >= 0: skin_data["NeckVariant"] = neck_variant
 	
 	set_user_character(skin_data)
 
