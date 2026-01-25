@@ -1,8 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dlclyfaps6dhf"]
-
-[ext_resource type="Texture2D" uid="uid://78867y56cyv5" path="res://assets/environments/library/Library4_BookSplines.png" id="1_uofxl"]
-
-[resource]
-resource_name = "Material.003"
-cull_mode = 2
-albedo_texture = ExtResource("1_uofxl")
+version https://git-lfs.github.com/spec/v1
+oid sha256:9b495717783db506242d6f79beec1679e6ba8e03a89383f658efdb580b3734e6
+size 322
