@@ -1,8 +1,8 @@
 [gd_scene load_steps=14 format=3 uid="uid://clexbd78x14ah"]
 
-[ext_resource type="PackedScene" uid="uid://cey1ja8kg6h6" path="res://assets/environments/library/blendfiles/Cafe/Phase 2 CafeteriaSet.blend" id="1_eat8h"]
-[ext_resource type="PackedScene" path="res://scenes/characters/cinematic_character.tscn" id="2_bpjeq"]
-[ext_resource type="PackedScene" uid="uid://b3utl0mrf8ui" path="res://assets/environments/library/tree-oak.glb" id="2_peehc"]
+[ext_resource type="PackedScene" uid="uid://cey1ja8kg6h6" path="res://assets/environments/Library/blendfiles/Cafe/Phase 2 CafeteriaSet.blend" id="1_eat8h"]
+[ext_resource type="PackedScene" uid="uid://crhc76uj2vnw2" path="res://scenes/characters/cinematic_character.tscn" id="2_bpjeq"]
+[ext_resource type="PackedScene" uid="uid://b3utl0mrf8ui" path="res://assets/environments/Library/tree-oak.glb" id="2_peehc"]
 [ext_resource type="Script" uid="uid://c3charpreset" path="res://scripts/characters/character_preset.gd" id="3_w5xe0"]
 
 [sub_resource type="Sky" id="Sky_eat8h"]
