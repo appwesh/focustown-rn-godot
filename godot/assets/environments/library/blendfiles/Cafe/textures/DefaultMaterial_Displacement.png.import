@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bgllj16pipa1b"
-path="res://.godot/imported/DefaultMaterial_Displacement.png-ce9be8156da1dcc7065407e204a48ef7.ctex"
+path="res://.godot/imported/DefaultMaterial_Displacement.png-48bff73be5d0772c2ad5638f73ede2e8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/DefaultMaterial_Displacement.png"
-dest_files=["res://.godot/imported/DefaultMaterial_Displacement.png-ce9be8156da1dcc7065407e204a48ef7.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/DefaultMaterial_Displacement.png"
+dest_files=["res://.godot/imported/DefaultMaterial_Displacement.png-48bff73be5d0772c2ad5638f73ede2e8.ctex"]
 
 [params]
 

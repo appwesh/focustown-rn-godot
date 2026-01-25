@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cw14g1w8ikx7j"
-path="res://.godot/imported/Brush Square 02.png-a17ac71bca593a79adf84580c436afb1.ctex"
+path="res://.godot/imported/Brush Square 02.png-1f97ece4ad9bf81212fdc5278d355340.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Brush Square 02.png"
-dest_files=["res://.godot/imported/Brush Square 02.png-a17ac71bca593a79adf84580c436afb1.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Brush Square 02.png"
+dest_files=["res://.godot/imported/Brush Square 02.png-1f97ece4ad9bf81212fdc5278d355340.ctex"]
 
 [params]
 

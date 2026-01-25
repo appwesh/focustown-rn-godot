@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dcin2cc2ag8yc"
-path.s3tc="res://.godot/imported/DefaultMaterial_Normal.png-5bbcc070ad4a6069725275b8f9c5cc6a.s3tc.ctex"
-path.etc2="res://.godot/imported/DefaultMaterial_Normal.png-5bbcc070ad4a6069725275b8f9c5cc6a.etc2.ctex"
+path.s3tc="res://.godot/imported/DefaultMaterial_Normal.png-f1b41d96f16ceb42d6bd8157d499dcfc.s3tc.ctex"
+path.etc2="res://.godot/imported/DefaultMaterial_Normal.png-f1b41d96f16ceb42d6bd8157d499dcfc.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_Normal.png"
-dest_files=["res://.godot/imported/DefaultMaterial_Normal.png-5bbcc070ad4a6069725275b8f9c5cc6a.s3tc.ctex", "res://.godot/imported/DefaultMaterial_Normal.png-5bbcc070ad4a6069725275b8f9c5cc6a.etc2.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_Normal.png"
+dest_files=["res://.godot/imported/DefaultMaterial_Normal.png-f1b41d96f16ceb42d6bd8157d499dcfc.s3tc.ctex", "res://.godot/imported/DefaultMaterial_Normal.png-f1b41d96f16ceb42d6bd8157d499dcfc.etc2.ctex"]
 
 [params]
 

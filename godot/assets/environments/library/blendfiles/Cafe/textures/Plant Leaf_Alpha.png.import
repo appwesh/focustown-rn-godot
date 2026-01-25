@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://4pp4i2mq80q7"
-path.s3tc="res://.godot/imported/Plant Leaf_Alpha.png-73cd1d33b6c4510eb103285190789f22.s3tc.ctex"
-path.etc2="res://.godot/imported/Plant Leaf_Alpha.png-73cd1d33b6c4510eb103285190789f22.etc2.ctex"
+path.s3tc="res://.godot/imported/Plant Leaf_Alpha.png-c4eb7a58dd91300b7c670d649c5d54b8.s3tc.ctex"
+path.etc2="res://.godot/imported/Plant Leaf_Alpha.png-c4eb7a58dd91300b7c670d649c5d54b8.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -13,8 +13,8 @@ generator_parameters={}
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Plant Leaf_Alpha.png"
-dest_files=["res://.godot/imported/Plant Leaf_Alpha.png-73cd1d33b6c4510eb103285190789f22.s3tc.ctex", "res://.godot/imported/Plant Leaf_Alpha.png-73cd1d33b6c4510eb103285190789f22.etc2.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Plant Leaf_Alpha.png"
+dest_files=["res://.godot/imported/Plant Leaf_Alpha.png-c4eb7a58dd91300b7c670d649c5d54b8.s3tc.ctex", "res://.godot/imported/Plant Leaf_Alpha.png-c4eb7a58dd91300b7c670d649c5d54b8.etc2.ctex"]
 
 [params]
 

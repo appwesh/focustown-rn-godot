@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d2rptrpy700ig"
-path.s3tc="res://.godot/imported/DefaultMaterial_BaseColor_Darker.png-8347deb3bfca2253ae171a47e33fa38c.s3tc.ctex"
-path.etc2="res://.godot/imported/DefaultMaterial_BaseColor_Darker.png-8347deb3bfca2253ae171a47e33fa38c.etc2.ctex"
+path.s3tc="res://.godot/imported/DefaultMaterial_BaseColor_Darker.png-492c2d3301d945b20888e31654dad608.s3tc.ctex"
+path.etc2="res://.godot/imported/DefaultMaterial_BaseColor_Darker.png-492c2d3301d945b20888e31654dad608.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_BaseColor_Darker.png"
-dest_files=["res://.godot/imported/DefaultMaterial_BaseColor_Darker.png-8347deb3bfca2253ae171a47e33fa38c.s3tc.ctex", "res://.godot/imported/DefaultMaterial_BaseColor_Darker.png-8347deb3bfca2253ae171a47e33fa38c.etc2.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Plants_2/DefaultMaterial_BaseColor_Darker.png"
+dest_files=["res://.godot/imported/DefaultMaterial_BaseColor_Darker.png-492c2d3301d945b20888e31654dad608.s3tc.ctex", "res://.godot/imported/DefaultMaterial_BaseColor_Darker.png-492c2d3301d945b20888e31654dad608.etc2.ctex"]
 
 [params]
 

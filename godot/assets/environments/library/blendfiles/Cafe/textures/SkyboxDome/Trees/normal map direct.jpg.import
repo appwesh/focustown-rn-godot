@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bji7fj6dnpu8a"
-path="res://.godot/imported/normal map direct.jpg-3e4201159f07940d41c1def8968fe73c.ctex"
+path="res://.godot/imported/normal map direct.jpg-efb3a543d142541f45881ca10d7cc853.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/SkyboxDome/Trees/normal map direct.jpg"
-dest_files=["res://.godot/imported/normal map direct.jpg-3e4201159f07940d41c1def8968fe73c.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/SkyboxDome/Trees/normal map direct.jpg"
+dest_files=["res://.godot/imported/normal map direct.jpg-efb3a543d142541f45881ca10d7cc853.ctex"]
 
 [params]
 

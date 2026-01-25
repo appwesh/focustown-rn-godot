@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://jw4yeg7q8fa4"
-path.s3tc="res://.godot/imported/base color000.png-d45d8e0b30c07087026d9e80ee9c34b3.s3tc.ctex"
-path.etc2="res://.godot/imported/base color000.png-d45d8e0b30c07087026d9e80ee9c34b3.etc2.ctex"
+path.s3tc="res://.godot/imported/base color000.png-0bdae1e85ad34822c7e982807f6d66a8.s3tc.ctex"
+path.etc2="res://.godot/imported/base color000.png-0bdae1e85ad34822c7e982807f6d66a8.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/SkyboxDome/Trees/base color000.png"
-dest_files=["res://.godot/imported/base color000.png-d45d8e0b30c07087026d9e80ee9c34b3.s3tc.ctex", "res://.godot/imported/base color000.png-d45d8e0b30c07087026d9e80ee9c34b3.etc2.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/SkyboxDome/Trees/base color000.png"
+dest_files=["res://.godot/imported/base color000.png-0bdae1e85ad34822c7e982807f6d66a8.s3tc.ctex", "res://.godot/imported/base color000.png-0bdae1e85ad34822c7e982807f6d66a8.etc2.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://vpf8hp3ypp4x"
-path="res://.godot/imported/tri.png-6fc5eaec21f76a5451568037a06fc071.ctex"
+path="res://.godot/imported/tri.png-c92216c75779a0bd31eb0f02ea544d06.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/tri.png"
-dest_files=["res://.godot/imported/tri.png-6fc5eaec21f76a5451568037a06fc071.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/tri.png"
+dest_files=["res://.godot/imported/tri.png-c92216c75779a0bd31eb0f02ea544d06.ctex"]
 
 [params]
 

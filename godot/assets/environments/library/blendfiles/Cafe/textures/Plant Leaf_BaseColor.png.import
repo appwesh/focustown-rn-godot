@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b5onnphvjcr7s"
-path="res://.godot/imported/Plant Leaf_BaseColor.png-4011abe8c2350932cdbc54c8968b786d.ctex"
+path="res://.godot/imported/Plant Leaf_BaseColor.png-441406915d91eeee32a9969b914bd778.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Plant Leaf_BaseColor.png"
-dest_files=["res://.godot/imported/Plant Leaf_BaseColor.png-4011abe8c2350932cdbc54c8968b786d.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Plant Leaf_BaseColor.png"
+dest_files=["res://.godot/imported/Plant Leaf_BaseColor.png-441406915d91eeee32a9969b914bd778.ctex"]
 
 [params]
 

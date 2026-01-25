@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bsd55q6s3dw1e"
-path.s3tc="res://.godot/imported/Lofi_Neck1.png-ec37345c8edccafbb87bb7e2a9440916.s3tc.ctex"
-path.etc2="res://.godot/imported/Lofi_Neck1.png-ec37345c8edccafbb87bb7e2a9440916.etc2.ctex"
+path.s3tc="res://.godot/imported/Lofi_Neck1.png-87bb6f111c4efc5f02b2b71eff19bd57.s3tc.ctex"
+path.etc2="res://.godot/imported/Lofi_Neck1.png-87bb6f111c4efc5f02b2b71eff19bd57.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/characters/cozylife/custom/Lofi/textures/Lofi_Neck1.png"
-dest_files=["res://.godot/imported/Lofi_Neck1.png-ec37345c8edccafbb87bb7e2a9440916.s3tc.ctex", "res://.godot/imported/Lofi_Neck1.png-ec37345c8edccafbb87bb7e2a9440916.etc2.ctex"]
+source_file="res://assets/characters/cozylife/custom/Lofi/Textures/Lofi_Neck1.png"
+dest_files=["res://.godot/imported/Lofi_Neck1.png-87bb6f111c4efc5f02b2b71eff19bd57.s3tc.ctex", "res://.godot/imported/Lofi_Neck1.png-87bb6f111c4efc5f02b2b71eff19bd57.etc2.ctex"]
 
 [params]
 

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://df14xal5x6btu"
-path.s3tc="res://.godot/imported/DefaultMaterial_Normal.png-6e88747531ddd5c57c5b08c8cfaae055.s3tc.ctex"
-path.etc2="res://.godot/imported/DefaultMaterial_Normal.png-6e88747531ddd5c57c5b08c8cfaae055.etc2.ctex"
+path.s3tc="res://.godot/imported/DefaultMaterial_Normal.png-b0e103196a279c2b4cef180bab38354e.s3tc.ctex"
+path.etc2="res://.godot/imported/DefaultMaterial_Normal.png-b0e103196a279c2b4cef180bab38354e.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Furniture_5/DefaultMaterial_Normal.png"
-dest_files=["res://.godot/imported/DefaultMaterial_Normal.png-6e88747531ddd5c57c5b08c8cfaae055.s3tc.ctex", "res://.godot/imported/DefaultMaterial_Normal.png-6e88747531ddd5c57c5b08c8cfaae055.etc2.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Furniture_5/DefaultMaterial_Normal.png"
+dest_files=["res://.godot/imported/DefaultMaterial_Normal.png-b0e103196a279c2b4cef180bab38354e.s3tc.ctex", "res://.godot/imported/DefaultMaterial_Normal.png-b0e103196a279c2b4cef180bab38354e.etc2.ctex"]
 
 [params]
 

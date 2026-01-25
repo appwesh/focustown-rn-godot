@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d4hd2oaaj4pdy"
-path.s3tc="res://.godot/imported/Plant Leaf_Emission.png-93e711ec3dff972bffaddd17c29a97a8.s3tc.ctex"
-path.etc2="res://.godot/imported/Plant Leaf_Emission.png-93e711ec3dff972bffaddd17c29a97a8.etc2.ctex"
+path.s3tc="res://.godot/imported/Plant Leaf_Emission.png-dd0764aaf8990066e3dccd6dab142090.s3tc.ctex"
+path.etc2="res://.godot/imported/Plant Leaf_Emission.png-dd0764aaf8990066e3dccd6dab142090.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Emission.png"
-dest_files=["res://.godot/imported/Plant Leaf_Emission.png-93e711ec3dff972bffaddd17c29a97a8.s3tc.ctex", "res://.godot/imported/Plant Leaf_Emission.png-93e711ec3dff972bffaddd17c29a97a8.etc2.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Emission.png"
+dest_files=["res://.godot/imported/Plant Leaf_Emission.png-dd0764aaf8990066e3dccd6dab142090.s3tc.ctex", "res://.godot/imported/Plant Leaf_Emission.png-dd0764aaf8990066e3dccd6dab142090.etc2.ctex"]
 
 [params]
 

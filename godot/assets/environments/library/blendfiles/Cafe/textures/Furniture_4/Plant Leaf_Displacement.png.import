@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c25j154ngxngm"
-path="res://.godot/imported/Plant Leaf_Displacement.png-05bd6e3bc1f9484b6d671d596887b1eb.ctex"
+path="res://.godot/imported/Plant Leaf_Displacement.png-ce528371482a1ca7acc1a91be5a4fce2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Displacement.png"
-dest_files=["res://.godot/imported/Plant Leaf_Displacement.png-05bd6e3bc1f9484b6d671d596887b1eb.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_Displacement.png"
+dest_files=["res://.godot/imported/Plant Leaf_Displacement.png-ce528371482a1ca7acc1a91be5a4fce2.ctex"]
 
 [params]
 

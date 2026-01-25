@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c6u0ne0oikdnb"
-path.s3tc="res://.godot/imported/Plant Leaf_Roughness.png-a8c5f05498402658be915c693a19d246.s3tc.ctex"
-path.etc2="res://.godot/imported/Plant Leaf_Roughness.png-a8c5f05498402658be915c693a19d246.etc2.ctex"
+path.s3tc="res://.godot/imported/Plant Leaf_Roughness.png-2b137468356829c02b0b621370ba0f1d.s3tc.ctex"
+path.etc2="res://.godot/imported/Plant Leaf_Roughness.png-2b137468356829c02b0b621370ba0f1d.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -13,8 +13,8 @@ generator_parameters={}
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Plant Leaf_Roughness.png"
-dest_files=["res://.godot/imported/Plant Leaf_Roughness.png-a8c5f05498402658be915c693a19d246.s3tc.ctex", "res://.godot/imported/Plant Leaf_Roughness.png-a8c5f05498402658be915c693a19d246.etc2.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Plant Leaf_Roughness.png"
+dest_files=["res://.godot/imported/Plant Leaf_Roughness.png-2b137468356829c02b0b621370ba0f1d.s3tc.ctex", "res://.godot/imported/Plant Leaf_Roughness.png-2b137468356829c02b0b621370ba0f1d.etc2.ctex"]
 
 [params]
 

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://k4fve77r1mnf"
-path.s3tc="res://.godot/imported/Plant Leaf_BaseColor.png-ad912b96034656a36dfd574a0e1c20b9.s3tc.ctex"
-path.etc2="res://.godot/imported/Plant Leaf_BaseColor.png-ad912b96034656a36dfd574a0e1c20b9.etc2.ctex"
+path.s3tc="res://.godot/imported/Plant Leaf_BaseColor.png-cafdeea86646ede3778aefd832e1c1b7.s3tc.ctex"
+path.etc2="res://.godot/imported/Plant Leaf_BaseColor.png-cafdeea86646ede3778aefd832e1c1b7.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/library/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_BaseColor.png"
-dest_files=["res://.godot/imported/Plant Leaf_BaseColor.png-ad912b96034656a36dfd574a0e1c20b9.s3tc.ctex", "res://.godot/imported/Plant Leaf_BaseColor.png-ad912b96034656a36dfd574a0e1c20b9.etc2.ctex"]
+source_file="res://assets/environments/Library/blendfiles/Cafe/textures/Furniture_4/Plant Leaf_BaseColor.png"
+dest_files=["res://.godot/imported/Plant Leaf_BaseColor.png-cafdeea86646ede3778aefd832e1c1b7.s3tc.ctex", "res://.godot/imported/Plant Leaf_BaseColor.png-cafdeea86646ede3778aefd832e1c1b7.etc2.ctex"]
 
 [params]
 
