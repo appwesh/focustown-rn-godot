@@ -131,7 +131,7 @@ _subresources={
 },
 "mReBody.004": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/mReBody.004.tres",
+"use_external/fallback_path": "res://assets/environments/costalScene/materials/GrassPot.tres",
 "use_external/path": "uid://bhb5fb7buds6x"
 },
 "mReBody.029": {
