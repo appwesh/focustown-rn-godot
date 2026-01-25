@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://bscreenshotstudio"]
+
+[ext_resource type="Script" path="res://scripts/tools/screenshot_studio.gd" id="1_studio"]
+
+[node name="ScreenshotStudio" type="Node3D"]
+script = ExtResource("1_studio")
+output_folder = "res://screenshots/items/"
+image_size = Vector2i(512, 512)
+background_color = Color(0.15, 0.15, 0.15, 1)
+camera_distance = 2.5
+camera_height = 0.8
+camera_angle = 30.0
+auto_start = true
+quit_when_done = true

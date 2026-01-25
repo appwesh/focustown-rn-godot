@@ -124,11 +124,6 @@ func _update_part_grid() -> void:
 	if not modular_character:
 		return
 	
-	# Special handling for CustomSkin category
-	if _current_part_category == "CustomSkin":
-		_update_skin_grid()
-		return
-	
 	var max_count := modular_character.get_part_count(_current_part_category)
 	var current_index := modular_character.get_part(_current_part_category)
 	
@@ -151,40 +146,6 @@ func _update_part_grid() -> void:
 		_part_buttons.append(btn)
 	
 	_update_current_label()
-
-
-func _update_skin_grid() -> void:
-	## Update grid for custom skin selection
-	var skin_names := modular_character.get_custom_skin_names()
-	var current_skin := modular_character.get_current_custom_skin()
-	
-	# Add "None" button first
-	var none_btn := _create_skin_button("None", "", current_skin.is_empty())
-	part_grid.add_child(none_btn)
-	_part_buttons.append(none_btn)
-	
-	# Add buttons for each custom skin
-	for skin_name in skin_names:
-		var display_name := modular_character.get_custom_skin_display_name(skin_name)
-		var btn := _create_skin_button(display_name, skin_name, skin_name == current_skin)
-		part_grid.add_child(btn)
-		_part_buttons.append(btn)
-	
-	_update_current_label()
-
-
-func _create_skin_button(display_name: String, skin_name: String, selected: bool) -> Button:
-	var btn := Button.new()
-	btn.text = display_name
-	btn.custom_minimum_size = Vector2(100, 50)
-	btn.toggle_mode = true
-	btn.button_pressed = selected
-	btn.pressed.connect(_on_skin_selected.bind(skin_name))
-	
-	if selected:
-		btn.add_theme_color_override("font_color", Color(0.2, 0.8, 0.4))
-	
-	return btn
 
 
 func _create_part_button(text: String, index: int, selected: bool) -> Button:
@@ -214,17 +175,9 @@ func _update_button_selection(selected_index: int) -> void:
 
 func _update_current_label() -> void:
 	if current_part_label and modular_character:
-		if _current_part_category == "CustomSkin":
-			var current_skin := modular_character.get_current_custom_skin()
-			if current_skin.is_empty():
-				current_part_label.text = "Current: None"
-			else:
-				var display_name := modular_character.get_custom_skin_display_name(current_skin)
-				current_part_label.text = "Current: %s" % display_name
-		else:
-			var index := modular_character.get_part(_current_part_category)
-			var name := modular_character.get_part_name(_current_part_category, index)
-			current_part_label.text = "Current: %s" % name
+		var index := modular_character.get_part(_current_part_category)
+		var name := modular_character.get_part_name(_current_part_category, index)
+		current_part_label.text = "Current: %s" % name
 
 
 ## Event Handlers
@@ -250,30 +203,6 @@ func _on_part_selected(index: int) -> void:
 		modular_character.set_part(_current_part_category, index)
 	_update_button_selection(index)
 	_update_current_label()
-
-
-func _on_skin_selected(skin_name: String) -> void:
-	if modular_character:
-		modular_character.apply_custom_skin(skin_name)
-	_update_skin_button_selection(skin_name)
-	_update_current_label()
-
-
-func _update_skin_button_selection(selected_skin: String) -> void:
-	## Update skin button selection state
-	var skin_names := modular_character.get_custom_skin_names()
-	var all_names: Array[String] = [""]  # Empty string for "None"
-	all_names.append_array(skin_names)
-	
-	for i in range(_part_buttons.size()):
-		var btn := _part_buttons[i]
-		if is_instance_valid(btn):
-			var is_selected := (i < all_names.size() and all_names[i] == selected_skin)
-			btn.button_pressed = is_selected
-			if is_selected:
-				btn.add_theme_color_override("font_color", Color(0.2, 0.8, 0.4))
-			else:
-				btn.remove_theme_color_override("font_color")
 
 
 func _on_animation_selected(index: int) -> void:

@@ -13,16 +13,35 @@ signal characters_ready
 @export var user_scale: float = 1.15
 @export var user_idle_animation: String = "Idle_F"
 
+## Camera zoom targets
+@export_group("Camera Zoom")
+@export var default_camera_position: Vector3 = Vector3(0, 1.2, 4)
+@export var default_camera_rotation_x: float = -10.0  # dgrees
+@export var head_camera_position: Vector3 = Vector3(0, 1.3, 3.2)
+@export var head_camera_rotation_x: float = -5.0
+@export var feet_camera_position: Vector3 = Vector3(0, 0.1, 2.2)
+@export var feet_camera_rotation_x: float = 8.0
+@export var camera_zoom_duration: float = 0.4
+
 ## Reference to the user character
 var _user_character: CinematicCharacter
 ## Packed scene for CinematicCharacter
 var _character_scene: PackedScene
 ## Stored user character data from RN
 var _user_character_data: Dictionary = {}
+## Reference to the camera for zoom control
+var _camera: Camera3D = null
+## Current zoom target
+var _current_zoom_target: String = "default"
+## Camera tween
+var _camera_tween: Tween = null
 
 
 func _ready() -> void:
 	_character_scene = preload("res://scenes/characters/cinematic_character.tscn")
+	
+	# Get camera reference
+	_camera = get_node_or_null("Camera3D")
 	
 	# Spawn user character
 	_spawn_user_character()
@@ -120,3 +139,47 @@ func get_user_character() -> CinematicCharacter:
 func set_user_animation(anim_name: String) -> void:
 	if _user_character:
 		_user_character.transition_to_animation(anim_name)
+
+
+## Set camera zoom target for item preview
+## target can be: "default", "head", "feet"
+func set_camera_zoom(target: String) -> void:
+	if not _camera:
+		push_warning("[CharacterCustomizationShowcase] Camera not found for zoom")
+		return
+	
+	# Skip if already at target
+	if target == _current_zoom_target:
+		return
+	
+	_current_zoom_target = target
+	
+	# Kill existing tween
+	if _camera_tween and _camera_tween.is_valid():
+		_camera_tween.kill()
+	
+	# Determine target position and rotation
+	var target_pos: Vector3
+	var target_rot_x: float
+	
+	match target:
+		"head":
+			target_pos = head_camera_position
+			target_rot_x = head_camera_rotation_x
+		"feet":
+			target_pos = feet_camera_position
+			target_rot_x = feet_camera_rotation_x
+		_:  # default
+			target_pos = default_camera_position
+			target_rot_x = default_camera_rotation_x
+	
+	# Create smooth tween
+	_camera_tween = create_tween()
+	_camera_tween.set_ease(Tween.EASE_OUT)
+	_camera_tween.set_trans(Tween.TRANS_CUBIC)
+	_camera_tween.set_parallel(true)
+	
+	_camera_tween.tween_property(_camera, "position", target_pos, camera_zoom_duration)
+	_camera_tween.tween_property(_camera, "rotation_degrees:x", target_rot_x, camera_zoom_duration)
+	
+	print("[CharacterCustomizationShowcase] Camera zoom to: %s" % target)

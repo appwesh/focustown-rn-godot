@@ -1074,6 +1074,36 @@ export interface CharacterSkin {
 }
 
 /**
+ * Camera zoom target for character customization
+ */
+export type CameraZoomTarget = 'default' | 'head' | 'feet';
+
+/**
+ * Set camera zoom target for character customization preview
+ * Used to focus on specific body parts when previewing items
+ * @param target - 'default', 'head', or 'feet'
+ */
+export function setShowcaseCameraZoom(target: CameraZoomTarget): void {
+  runOnGodotThread(() => {
+    'worklet';
+    const instance = RTNGodot.getInstance();
+    if (!instance) return;
+
+    const Godot = RTNGodot.API();
+    const engine = Godot.Engine;
+    const sceneTree = engine.get_main_loop();
+    const root = sceneTree.get_root();
+    const rnBridge = root.get_node_or_null('/root/RNBridge');
+
+    if (rnBridge) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (rnBridge as any).set_showcase_camera_zoom(target);
+      console.log('[Bridge] Set showcase camera zoom:', target);
+    }
+  });
+}
+
+/**
  * Set the user's character appearance in Godot
  * Used by the homescreen character showcase
  * @param skinData - Character appearance data

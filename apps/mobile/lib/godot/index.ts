@@ -18,7 +18,7 @@
 
 // Types
 export type { JoystickInput, SessionResult, SpotLocation } from './types';
-export type { CharacterSkin } from './bridge';
+export type { CharacterSkin, CameraZoomTarget } from './bridge';
 
 // Bridge functions (for direct use)
 export {
@@ -71,6 +71,7 @@ export {
   // Character customization
   setUserCharacter,
   refreshShowcaseNpcs,
+  setShowcaseCameraZoom,
   // Café switching
   setSelectedCafe,
 } from './bridge';

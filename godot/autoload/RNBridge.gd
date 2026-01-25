@@ -749,6 +749,16 @@ func set_user_character_animation(anim_name: String) -> void:
 		push_warning("[RNBridge] No showcase active")
 
 
+## Set camera zoom target for character customization preview
+## target can be: "default", "head", "feet"
+func set_showcase_camera_zoom(target: String) -> void:
+	if _character_showcase:
+		_character_showcase.set_camera_zoom(target)
+		print("[RNBridge] Set showcase camera zoom: %s" % target)
+	else:
+		push_warning("[RNBridge] CharacterCustomizationShowcase not active")
+
+
 ## Set the selected café index (switches NPC groups with animation)
 ## cafe_index: 0 = boston-library, 1 = korea-cafe, 2 = europe-cafe, 3 = ghibli-cafe, 4 = japan-cafe
 func set_selected_cafe(cafe_index: int) -> void:

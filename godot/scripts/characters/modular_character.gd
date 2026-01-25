@@ -69,10 +69,10 @@ const CUSTOM_SKINS_PATH := "res://assets/characters/cozylife/custom/"
 ## Custom items that use non-standard paths (textures outside CLOTHES_TEXTURES_PATH)
 ## Maps part name to full texture path (relative to res://)
 const CUSTOM_ITEM_TEXTURES := {
-	"LofiTop": ["custom/Lofi/Textures/Lofi_Top.png"],
-	"LofiPants": ["custom/Lofi/Textures/Lofi_Pants.png"],
-	"Headphone": ["custom/Lofi/Textures/headphone/headphone_Untextured_Checker_BaseColor.png"],
-	"LofiScarf": ["custom/Lofi/Textures/Lofi_Neck1.png"],
+	"LofiTop": ["Lofi/Textures/Lofi_Top.png"],
+	"LofiPants": ["Lofi/Textures/Lofi_Pants.png"],
+	"Headphone": ["Lofi/Textures/headphone/headphone_Untextured_Checker_BaseColor.png"],
+	"LofiScarf": ["Lofi/Textures/Lofi_Neck1.png"],
 }
 
 ## Position offsets for specific items (applied during equip)
@@ -874,6 +874,21 @@ func is_appearance_ready() -> bool:
 func set_character_visible(is_visible: bool) -> void:
 	if _base_model:
 		_base_model.visible = is_visible
+
+
+## Hide/show just the body mesh (keeps clothes and accessories visible)
+func set_body_visible(is_visible: bool) -> void:
+	if _mesh_instance:
+		_mesh_instance.visible = is_visible
+
+
+## Stop all animations (set to T-pose/rest pose)
+func stop_animations() -> void:
+	if _anim_player:
+		_anim_player.stop()
+		# Reset to rest pose
+		if _skeleton:
+			_skeleton.reset_bone_poses()
 
 
 ## Set color modulation (for darkening back row characters)

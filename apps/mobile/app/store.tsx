@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -13,9 +13,10 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
-import { isGodotReady, changeScene, setUserCharacter, type CharacterSkin } from '@/lib/godot';
+import { isGodotReady, changeScene, setUserCharacter, setShowcaseCameraZoom, type CharacterSkin, type CameraZoomTarget } from '@/lib/godot';
 import { useAuth, userService } from '@/lib/firebase';
 import { PCK_URL } from '@/constants/game';
+import { getItemThumbnail } from '@/assets/thumbnails';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLUMNS = 2;
@@ -418,9 +419,8 @@ export default function StoreScreen() {
     
     switch (activeTab) {
       case 'Daily Finds': {
-        // Filter out owned items before generating daily finds
-        const availableItems = ALL_STORE_ITEMS.filter(item => !ownedItems.includes(item.id));
-        let dailyItems = generateDailyFinds(availableItems, refreshSeed);
+        // Generate daily finds from all items (don't filter owned items to keep list stable)
+        let dailyItems = generateDailyFinds(ALL_STORE_ITEMS, refreshSeed);
         
         // If there's a wishlisted item, ensure it's at the top
         if (wishlistItemId) {
@@ -464,12 +464,16 @@ export default function StoreScreen() {
     ? 'SEASONAL COLLECTION'
     : 'YOUR COLLECTION';
 
+  // Track if initial character has been sent to Godot
+  const initialCharacterSentRef = useRef(false);
+  
   // Switch to character_showcase scene when screen is focused
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
       
       setSceneTransitioning(true);
+      initialCharacterSentRef.current = false;
       
       const attemptSceneChange = () => {
         if (cancelled) return;
@@ -483,7 +487,8 @@ export default function StoreScreen() {
         
         setTimeout(() => {
           if (cancelled) return;
-          setUserCharacter(character);
+          // Character will be sent via the separate effect below
+          initialCharacterSentRef.current = true;
           
           setTimeout(() => {
             if (!cancelled) {
@@ -499,25 +504,55 @@ export default function StoreScreen() {
         cancelled = true;
         clearTimeout(timer);
       };
-    }, [character])
+    }, [])
   );
+  
+  // Send character to Godot when it changes (separate from scene change)
+  useEffect(() => {
+    if (initialCharacterSentRef.current && isGodotReady()) {
+      setUserCharacter(character);
+    }
+  }, [character]);
 
   // Get variant key for a category
   const getVariantKey = (category: ItemCategory): string => {
     return `${category}Variant`;
   };
 
+  // Get camera zoom target based on item category
+  const getCameraZoomTarget = (item: AnyStoreItem): CameraZoomTarget => {
+    if (isOutfitSet(item)) {
+      return 'default'; // Full body view for outfit sets
+    }
+    switch (item.category) {
+      case 'Hat':
+      case 'Glasses':
+        return 'head';
+      case 'Shoes':
+        return 'feet';
+      default:
+        return 'default';
+    }
+  };
+
   // Handle item tap - toggle selection and preview
   const handleItemTap = useCallback((item: AnyStoreItem) => {
     if (selectedItem?.id === item.id) {
-      // Deselect - restore original character
+      // Deselect - restore original character and reset camera
       setSelectedItem(null);
       if (isGodotReady()) {
         setUserCharacter(character);
+        setShowcaseCameraZoom('default');
       }
     } else {
       // Select and preview
       setSelectedItem(item);
+      
+      // Zoom camera to relevant body part
+      const zoomTarget = getCameraZoomTarget(item);
+      if (isGodotReady()) {
+        setShowcaseCameraZoom(zoomTarget);
+      }
       
       if (isOutfitSet(item)) {
         // Outfit set - apply all parts
@@ -593,8 +628,11 @@ export default function StoreScreen() {
       setCharacter(newCharacter);
       await userService.updateCharacterSkin(user.uid, newCharacter);
       
-      // Clear selection
+      // Clear selection and reset camera
       setSelectedItem(null);
+      if (isGodotReady()) {
+        setShowcaseCameraZoom('default');
+      }
       
       console.log('[Store] Purchased:', selectedItem.name);
     } catch (error) {
@@ -620,8 +658,11 @@ export default function StoreScreen() {
       await userService.purchaseItem(user.uid, `refresh_${Date.now()}`, REFRESH_COST);
       // Increment refresh seed to get new items
       setRefreshSeed(prev => prev + 1);
-      // Clear selection
+      // Clear selection and reset camera
       setSelectedItem(null);
+      if (isGodotReady()) {
+        setShowcaseCameraZoom('default');
+      }
       console.log('[Store] Refreshed daily finds');
     } catch (error) {
       console.error('[Store] Refresh failed:', error);
@@ -700,24 +741,37 @@ export default function StoreScreen() {
     }
   }, [character, user]);
 
-  // Handle remove/unequip item (set to None/0)
+  // Handle remove/unequip item (reset to default for Top/Bottom, None/0 for accessories)
   const handleRemove = useCallback(async (item: AnyStoreItem) => {
     if (!user) return;
+    
+    // Default values for parts that shouldn't be "None" (avoid naked character)
+    const REMOVE_DEFAULTS: Partial<CharacterSkin> = {
+      Top: DEFAULT_CHARACTER.Top,
+      TopVariant: DEFAULT_CHARACTER.TopVariant,
+      Bottom: DEFAULT_CHARACTER.Bottom,
+      BottomVariant: DEFAULT_CHARACTER.BottomVariant,
+    };
     
     let newCharacter: CharacterSkin;
     
     if (isOutfitSet(item)) {
-      // Outfit set - reset all parts in the set to None/0
+      // Outfit set - reset all parts in the set
       newCharacter = { ...character };
       for (const key of Object.keys(item.parts)) {
-        (newCharacter as Record<string, unknown>)[key] = 0;
+        // Use default if available (for Top/Bottom), otherwise 0
+        const defaultValue = REMOVE_DEFAULTS[key as keyof CharacterSkin];
+        (newCharacter as Record<string, unknown>)[key] = defaultValue ?? 0;
       }
     } else {
       const variantKey = getVariantKey(item.category);
+      // Use default if available (for Top/Bottom), otherwise 0
+      const defaultIndex = REMOVE_DEFAULTS[item.category as keyof CharacterSkin] ?? 0;
+      const defaultVariant = REMOVE_DEFAULTS[variantKey as keyof CharacterSkin] ?? 0;
       newCharacter = { 
         ...character, 
-        [item.category]: 0,  // Set to None
-        [variantKey]: 0,
+        [item.category]: defaultIndex,
+        [variantKey]: defaultVariant,
       };
     }
     
@@ -794,6 +848,7 @@ export default function StoreScreen() {
                 setSelectedItem(null);
                 if (isGodotReady()) {
                   setUserCharacter(character);
+                  setShowcaseCameraZoom('default');
                 }
               }}
             >
@@ -848,99 +903,87 @@ export default function StoreScreen() {
               </Text>
             </View>
           ) : (
-            items.map((item) => (
-              <Pressable
-                key={item.id}
-                style={[
-                  styles.itemCard,
-                  selectedItem?.id === item.id && styles.itemCardSelected,
-                  wishlistItemId === item.id && styles.itemCardWishlisted,
-                  isOutfitSet(item) && styles.itemCardOutfitSet,
-                ]}
-                onPress={() => handleItemTap(item)}
-              >
-                {/* Wishlist Heart */}
-                {wishlistItemId === item.id && (
-                  <View style={styles.wishlistBadge}>
-                    <Text style={styles.wishlistBadgeText}>❤️</Text>
-                  </View>
-                )}
-                
-                {/* Category Badge or Outfit Set Badge */}
-                {isOutfitSet(item) ? (
-                  <View style={[styles.categoryBadge, styles.outfitSetBadge]}>
-                    <Text style={[styles.categoryBadgeText, styles.outfitSetBadgeText]}>
-                      ✨ Full Set
-                    </Text>
-                  </View>
-                ) : (
-                  <View style={[styles.categoryBadge, { backgroundColor: CATEGORY_COLORS[item.category] + '40' }]}>
-                    <Text style={[styles.categoryBadgeText, { color: CATEGORY_COLORS[item.category] }]}>
-                      {item.category}
-                    </Text>
-                  </View>
-                )}
-                
-                <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
-                
-                {/* Item Preview */}
-                {isOutfitSet(item) ? (
-                  <View style={[styles.itemPreview, styles.outfitSetPreview]}>
-                    <View style={styles.outfitSetPreviewInner}>
-                      <Text style={styles.outfitSetPreviewText}>
+            items.map((item) => {
+              const thumbnail = getItemThumbnail(item.id);
+              return (
+                <Pressable
+                  key={item.id}
+                  style={[
+                    styles.itemCard,
+                    selectedItem?.id === item.id && styles.itemCardSelected,
+                    wishlistItemId === item.id && styles.itemCardWishlisted,
+                    isOutfitSet(item) && styles.itemCardOutfitSet,
+                  ]}
+                  onPress={() => handleItemTap(item)}
+                >
+                  {/* Background Image */}
+                  {thumbnail ? (
+                    <Image 
+                      source={thumbnail} 
+                      style={styles.itemCardBackgroundImage}
+                      resizeMode="contain"
+                    />
+                  ) : isOutfitSet(item) ? (
+                    <View style={styles.itemCardBackground}>
+                      <Text style={styles.outfitSetEmoji}>
                         {item.id.includes('wizard') ? '🧙‍♂️' : item.id.includes('lofi') ? '🎧' : '👕👖'}
                       </Text>
                     </View>
-                  </View>
-                ) : (
-                  <View style={[
-                    styles.itemPreview,
-                    { backgroundColor: CATEGORY_COLORS[item.category] + '30' },
-                  ]}>
-                    <View style={[
-                      styles.itemPreviewInner,
-                      { backgroundColor: CATEGORY_COLORS[item.category] },
-                    ]}>
-                      <Text style={styles.itemPreviewText}>
+                  ) : (
+                    <View style={[styles.itemCardBackground, { backgroundColor: CATEGORY_COLORS[item.category] + '30' }]}>
+                      <Text style={[styles.itemCardPlaceholderText, { color: CATEGORY_COLORS[item.category] }]}>
                         {item.category.charAt(0)}
                       </Text>
                     </View>
-                  </View>
-                )}
+                  )}
 
-                {/* Price Badge or Equip/Remove Buttons */}
-                {!item.isOwned ? (
-                  <View style={[
-                    styles.priceBadge, 
-                    (isOutfitSet(item) || ('isSeasonal' in item && item.isSeasonal)) && styles.priceBadgeSeasonal
-                  ]}>
-                    <Text style={styles.priceText}>{item.price}</Text>
-                    <Image source={require('@/assets/ui/bean.png')} style={styles.priceBeanIcon} />
+                  {/* Wishlist Heart - top right */}
+                  {wishlistItemId === item.id && (
+                    <View style={styles.wishlistBadge}>
+                      <Text style={styles.wishlistBadgeText}>❤️</Text>
+                    </View>
+                  )}
+
+                  {/* Item Name - top center */}
+                  <View style={styles.itemNameContainer}>
+                    <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
                   </View>
-                ) : activeTab === 'Owned' ? (
-                  // In Owned tab: show Equip or Remove button
-                  isItemEquipped(item) ? (
-                    <Pressable 
-                      style={styles.removeButton}
-                      onPress={() => handleRemove(item)}
-                    >
-                      <Text style={styles.removeButtonText}>Remove</Text>
-                    </Pressable>
-                  ) : (
-                    <Pressable 
-                      style={styles.equipButton}
-                      onPress={() => handleEquip(item)}
-                    >
-                      <Text style={styles.equipButtonText}>Equip</Text>
-                    </Pressable>
-                  )
-                ) : (
-                  <View style={styles.ownedBadge}>
-                    <Text style={styles.ownedText}>Owned</Text>
+
+                  {/* Price/Status Badge - bottom left */}
+                  <View style={styles.itemBottomOverlay}>
+                    {!item.isOwned ? (
+                      <View style={[
+                        styles.priceBadge, 
+                        (isOutfitSet(item) || ('isSeasonal' in item && item.isSeasonal)) && styles.priceBadgeSeasonal
+                      ]}>
+                        <Text style={styles.priceText}>{item.price}</Text>
+                        <Image source={require('@/assets/ui/bean.png')} style={styles.priceBeanIcon} />
+                      </View>
+                    ) : activeTab === 'Owned' ? (
+                      isItemEquipped(item) ? (
+                        <Pressable 
+                          style={styles.removeButton}
+                          onPress={() => handleRemove(item)}
+                        >
+                          <Text style={styles.removeButtonText}>Remove</Text>
+                        </Pressable>
+                      ) : (
+                        <Pressable 
+                          style={styles.equipButton}
+                          onPress={() => handleEquip(item)}
+                        >
+                          <Text style={styles.equipButtonText}>Equip</Text>
+                        </Pressable>
+                      )
+                    ) : (
+                      <View style={styles.ownedBadge}>
+                        <Text style={styles.ownedText}>Owned</Text>
+                      </View>
+                    )}
                   </View>
-                )}
-              </Pressable>
-            ))
+                </Pressable>
+              );
+            })
           )}
         </ScrollView>
       </View>
@@ -1164,12 +1207,12 @@ const styles = StyleSheet.create({
   },
   itemCard: {
     width: GRID_ITEM_SIZE,
-    backgroundColor: '#FFF8E7',
+    height: GRID_ITEM_SIZE,
+    backgroundColor: '#FFF9E3',
     borderRadius: 20,
-    padding: 12,
-    alignItems: 'center',
+    overflow: 'hidden',
     borderWidth: 3,
-    borderColor: '#F5E6D3',
+    borderColor: '#E8E0D0',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -1178,14 +1221,30 @@ const styles = StyleSheet.create({
   },
   itemCardSelected: {
     borderColor: '#5DADE2',
-    backgroundColor: '#E8F6FC',
   },
   itemCardWishlisted: {
     borderColor: '#E74C3C',
   },
   itemCardOutfitSet: {
     borderColor: '#9B59B6',
-    backgroundColor: '#FAF0FF',
+  },
+  itemCardBackground: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  itemCardBackgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  itemCardPlaceholderText: {
+    fontSize: 48,
+    fontWeight: '700',
+    opacity: 0.5,
+  },
+  outfitSetEmoji: {
+    fontSize: 48,
   },
   wishlistBadge: {
     position: 'absolute',
@@ -1196,63 +1255,25 @@ const styles = StyleSheet.create({
   wishlistBadgeText: {
     fontSize: 16,
   },
-  categoryBadge: {
+  itemNameContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 12,
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-    marginBottom: 4,
-  },
-  categoryBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  outfitSetBadge: {
-    backgroundColor: '#E8D5F2',
-  },
-  outfitSetBadgeText: {
-    color: '#9B59B6',
+    alignItems: 'center',
   },
   itemName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
     color: '#5A4A3A',
-    marginBottom: 6,
     textAlign: 'center',
-    height: 36,
   },
-  itemPreview: {
-    width: '100%',
-    aspectRatio: 1.2,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  itemPreviewInner: {
-    width: '50%',
-    height: '50%',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  itemPreviewText: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  outfitSetPreview: {
-    backgroundColor: '#E8D5F2',
-  },
-  outfitSetPreviewInner: {
-    width: '80%',
-    height: '60%',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#D4B8E8',
-  },
-  outfitSetPreviewText: {
-    fontSize: 24,
+  itemBottomOverlay: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
   },
   priceBadge: {
     flexDirection: 'row',

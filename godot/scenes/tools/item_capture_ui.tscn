@@ -1,0 +1,253 @@
+[gd_scene load_steps=3 format=3 uid="uid://dem236814wrgy"]
+
+[ext_resource type="Script" path="res://scripts/tools/item_capture_ui.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bwoca6noaa87b" path="res://scripts/characters/modular_character.gd" id="2_modchar"]
+
+[node name="ItemCaptureUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+split_offset = 300
+
+[node name="LeftPanel" type="PanelContainer" parent="HSplitContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="HSplitContainer/LeftPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Item Capture Tool"
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="CategoryLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+text = "Category"
+
+[node name="CategoryOption" type="OptionButton" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ItemLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+text = "Item"
+
+[node name="ItemOption" type="OptionButton" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="VariantLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+text = "Variant / Color"
+
+[node name="VariantOption" type="OptionButton" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Sep2" type="HSeparator" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="CameraLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Camera Settings"
+
+[node name="DistanceBox" type="HBoxContainer" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/DistanceBox"]
+layout_mode = 2
+text = "Distance:"
+
+[node name="DistanceSlider" type="HSlider" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/DistanceBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.5
+max_value = 5.0
+step = 0.1
+value = 1.5
+
+[node name="DistanceLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/DistanceBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(40, 0)
+text = "1.5"
+
+[node name="HeightBox" type="HBoxContainer" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/HeightBox"]
+layout_mode = 2
+text = "Height:"
+
+[node name="HeightSlider" type="HSlider" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/HeightBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -2.0
+max_value = 2.0
+step = 0.05
+value = 0.0
+
+[node name="HeightLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/HeightBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(40, 0)
+text = "0.0"
+
+[node name="AngleBox" type="HBoxContainer" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/AngleBox"]
+layout_mode = 2
+text = "Angle:"
+
+[node name="AngleSlider" type="HSlider" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/AngleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 360.0
+step = 5.0
+value = 25.0
+
+[node name="AngleLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/AngleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(40, 0)
+text = "25°"
+
+[node name="BgColorBox" type="HBoxContainer" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/BgColorBox"]
+layout_mode = 2
+text = "Background:"
+
+[node name="BgColorPicker" type="ColorPickerButton" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/BgColorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.35, 0.35, 0.35, 1)
+
+[node name="Sep3" type="HSeparator" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="ExportLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Export Settings"
+
+[node name="ResolutionBox" type="HBoxContainer" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/ResolutionBox"]
+layout_mode = 2
+text = "Resolution:"
+
+[node name="ResolutionOption" type="OptionButton" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox/ResolutionBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FolderLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+text = "Output Folder:"
+
+[node name="OutputFolderEdit" type="LineEdit" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "res://screenshots/character_items/"
+
+[node name="Sep4" type="HSeparator" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="ExportCurrentBtn" type="Button" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+text = "Export Current Item"
+
+[node name="ExportCategoryBtn" type="Button" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+text = "Export All in Category"
+
+[node name="ExportAllBtn" type="Button" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+text = "Export Everything"
+
+[node name="Sep5" type="HSeparator" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="OutfitLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Outfit Sets"
+
+[node name="OutfitSetOption" type="OptionButton" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ExportOutfitButton" type="Button" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Export Outfit Set"
+
+[node name="ExportAllOutfitsButton" type="Button" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Export All Outfit Sets"
+
+[node name="Sep6" type="HSeparator" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="HSplitContainer/LeftPanel/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "Ready"
+
+[node name="PreviewPanel" type="PanelContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PreviewContainer" type="SubViewportContainer" parent="HSplitContainer/PreviewPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+stretch = true
+
+[node name="PreviewViewport" type="SubViewport" parent="HSplitContainer/PreviewPanel/PreviewContainer"]
+unique_name_in_owner = true
+transparent_bg = false
+handle_input_locally = false
+msaa_3d = 2
+size = Vector2i(512, 512)
+render_target_update_mode = 4
+
+[node name="OutfitCharacter" type="Node3D" parent="HSplitContainer/PreviewPanel/PreviewContainer/PreviewViewport"]
+unique_name_in_owner = true
+visible = false
+script = ExtResource("2_modchar")
+
+[connection signal="pressed" from="HSplitContainer/LeftPanel/ScrollContainer/VBox/ExportCurrentBtn" to="." method="_on_export_current_pressed"]
+[connection signal="pressed" from="HSplitContainer/LeftPanel/ScrollContainer/VBox/ExportCategoryBtn" to="." method="_on_export_category_pressed"]
+[connection signal="pressed" from="HSplitContainer/LeftPanel/ScrollContainer/VBox/ExportAllBtn" to="." method="_on_export_all_pressed"]

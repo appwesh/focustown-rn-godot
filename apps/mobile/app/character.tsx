@@ -13,7 +13,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
-import { isGodotReady, changeScene, setUserCharacter, type CharacterSkin } from '@/lib/godot';
+import { isGodotReady, changeScene, setUserCharacter, setShowcaseCameraZoom, type CharacterSkin, type CameraZoomTarget } from '@/lib/godot';
 import { useAuth, userService } from '@/lib/firebase';
 import { PCK_URL } from '@/constants/game';
 
@@ -149,11 +149,15 @@ export default function CharacterScreen() {
     }
   }, [userDoc, isInitialized]);
 
+  // Track if initial character has been sent to Godot
+  const initialCharacterSentRef = useRef(false);
+  
   // Switch to character_showcase scene when screen is focused
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
       setSceneTransitioning(true);
+      initialCharacterSentRef.current = false;
       
       const attemptSceneChange = () => {
         if (cancelled) return;
@@ -166,7 +170,8 @@ export default function CharacterScreen() {
         
         setTimeout(() => {
           if (cancelled) return;
-          setUserCharacter(character);
+          // Character will be sent via the separate effect below
+          initialCharacterSentRef.current = true;
           setTimeout(() => {
             if (!cancelled) setSceneTransitioning(false);
           }, 100);
@@ -178,8 +183,15 @@ export default function CharacterScreen() {
         cancelled = true;
         clearTimeout(timer);
       };
-    }, [character])
+    }, [])
   );
+  
+  // Send character to Godot when it changes (separate from scene change)
+  useEffect(() => {
+    if (initialCharacterSentRef.current && isGodotReady()) {
+      setUserCharacter(character);
+    }
+  }, [character]);
 
   // Save character to Firestore (debounced)
   const saveCharacterToFirestore = useCallback((newCharacter: CharacterSkin) => {
@@ -208,6 +220,26 @@ export default function CharacterScreen() {
     if (isGodotReady()) setUserCharacter(newCharacter);
     saveCharacterToFirestore(newCharacter);
   }, [character, saveCharacterToFirestore]);
+
+  // Get camera zoom target based on tab
+  const getCameraZoomForTab = (tab: TabType): CameraZoomTarget => {
+    switch (tab) {
+      case 'Face':
+      case 'Hair':
+        return 'head';
+      case 'Skin tone':
+      default:
+        return 'default';
+    }
+  };
+
+  // Handle tab change with camera zoom
+  const handleTabChange = useCallback((tab: TabType) => {
+    setActiveTab(tab);
+    if (isGodotReady()) {
+      setShowcaseCameraZoom(getCameraZoomForTab(tab));
+    }
+  }, []);
 
   // Render color swatch row (horizontal scrolling)
   const renderColorRow = (colors: string[], selectedIndex: number, onSelect: (index: number) => void) => (
@@ -350,7 +382,7 @@ export default function CharacterScreen() {
             <Pressable
               key={tab}
               style={[styles.tab, activeTab === tab && styles.tabActive]}
-              onPress={() => setActiveTab(tab)}
+              onPress={() => handleTabChange(tab)}
             >
               <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
                 {tab}

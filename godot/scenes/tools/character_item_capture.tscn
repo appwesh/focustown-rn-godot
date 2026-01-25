@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://ccharitemcapture"]
+
+[ext_resource type="Script" path="res://scripts/tools/character_item_capture.gd" id="1_capture"]
+
+[node name="CharacterItemCapture" type="Node3D"]
+script = ExtResource("1_capture")
+capture_categories = Array[String](["Top", "Bottom", "Shoes", "Hair", "Hat", "Glasses", "Neck"])
+capture_all_variants = true
+capture_hair_colors = true
+output_folder = "res://screenshots/character_items/"
+image_size = Vector2i(512, 512)
+background_color = Color(0.35, 0.35, 0.35, 1)
+camera_angle = 25.0
+clothing_distance = 1.8
+accessory_distance = 0.8
+auto_start = true
+quit_when_done = true
