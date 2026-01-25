@@ -139,6 +139,21 @@ _subresources={
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/mReBody.029.tres",
 "use_external/path": "uid://4w7m5sd1rpw4"
 },
+"metal brushed": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/costalScene/materials/metal brushed.tres",
+"use_external/path": "uid://dkhh34x8lcnof"
+},
+"plastic ": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/costalScene/materials/plastic.tres",
+"use_external/path": "uid://duihybgedcefq"
+},
+"plastic black": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/costalScene/materials/plastic black.tres",
+"use_external/path": "uid://bd46urhd6ffam"
+},
 "stylized bush.001": {
 "use_external/enabled": true,
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/stylized bush.001.tres",
