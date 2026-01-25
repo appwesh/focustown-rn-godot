@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text, Pressable, ViewStyle } from 'react-native';
 
 type ButtonVariant = 'primary' | 'secondary' | 'muted' | 'disabled' | 'break' | 'danger';
-type ButtonSize = 'small' | 'medium' | 'big';
+type ButtonSize = 'tiny' | 'small' | 'medium' | 'big';
 
 interface ButtonProps {
   title: string;
@@ -46,6 +46,14 @@ const COLORS = {
 };
 
 const SIZES = {
+  tiny: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    fontSize: 11,
+    borderWidth: 1.5,
+    borderBottomWidth: 3,
+    pressedMarginTop: 1.5,
+  },
   small: {
     paddingVertical: 10,
     paddingHorizontal: 12,

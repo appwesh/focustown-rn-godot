@@ -399,16 +399,22 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft} />
-        <Pressable
-          style={({ pressed }) => [styles.profilePill, pressed && styles.profilePillPressed]}
-          onPress={() => router.push('/settings')}
-        >
-          {/* <Image 
-            source={require('@/assets/ui/settings.png')} 
-            style={styles.profileAvatar} 
-          /> */}
-          <BeanCounter size="small" />
-        </Pressable>
+        <View style={styles.headerRight}>
+          {/* Profile Button */}
+          <Pressable
+            style={({ pressed }) => [styles.profileButton, pressed && styles.profileButtonPressed]}
+            onPress={() => router.push('/profile')}
+          >
+            <Text style={styles.profileButtonIcon}>👤</Text>
+          </Pressable>
+          
+          <Pressable
+            style={({ pressed }) => [styles.profilePill, pressed && styles.profilePillPressed]}
+            onPress={() => router.push('/settings')}
+          >
+            <BeanCounter size="small" />
+          </Pressable>
+        </View>
       </View>
 
       {/* Main Content */}
@@ -631,6 +637,28 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  profileButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFF8E7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#F5D98C',
+  },
+  profileButtonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.95 }],
+  },
+  profileButtonIcon: {
+    fontSize: 22,
   },
   profilePill: {
     // flexDirection: 'row',

@@ -17,6 +17,7 @@ import { isGodotReady, changeScene, setUserCharacter, setShowcaseCameraZoom, typ
 import { useAuth, userService } from '@/lib/firebase';
 import { PCK_URL } from '@/constants/game';
 import { getItemThumbnail } from '@/assets/thumbnails';
+import { BackButton, BeanCounter, Button } from '@/components/ui';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLUMNS = 2;
@@ -327,14 +328,15 @@ const seededRandom = (seed: number): (() => number) => {
 };
 
 // Generate daily finds (rotate based on day + optional refresh seed)
-const generateDailyFinds = (allItems: StoreItem[], refreshSeed: number = 0): StoreItem[] => {
+const generateDailyFinds = (allItems: StoreItem[], ownedItems: string[], refreshSeed: number = 0): StoreItem[] => {
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
   const seed = dayOfYear * 10000 + refreshSeed; // Combine day with refresh seed
-  const nonSeasonalItems = allItems.filter(item => !item.isSeasonal);
+  // Filter out seasonal items and already owned items
+  const availableItems = allItems.filter(item => !item.isSeasonal && !ownedItems.includes(item.id));
   
   // Fisher-Yates shuffle with seeded random
   const random = seededRandom(seed);
-  const shuffled = [...nonSeasonalItems];
+  const shuffled = [...availableItems];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -384,23 +386,48 @@ export default function StoreScreen() {
   const [activeTab, setActiveTab] = useState<StoreTab>('Daily Finds');
   const [selectedItem, setSelectedItem] = useState<AnyStoreItem | null>(null);
   const [character, setCharacter] = useState<CharacterSkin>(DEFAULT_CHARACTER);
-  const [refreshSeed, setRefreshSeed] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(getTimeUntilMidnight());
   const [ownedItems, setOwnedItems] = useState<string[]>([]);
+  // Owned items snapshot used for filtering daily finds (only updates on init/refresh)
+  const [ownedItemsAtRefresh, setOwnedItemsAtRefresh] = useState<string[]>([]);
+  // Server-side seed for daily finds (persists across sessions)
+  const [refreshSeed, setRefreshSeed] = useState<number | null>(null);
+  const [seedInitialized, setSeedInitialized] = useState(false);
   
-  // Load saved character and owned items from Firestore on mount
+  // Load saved character, owned items, and daily refresh seed from Firestore on mount
   useEffect(() => {
-    if (userDoc?.characterSkin) {
+    if (!userDoc) return;
+    
+    if (userDoc.characterSkin) {
       // Filter out null/undefined values to keep DEFAULT_CHARACTER values
       const cleanSkin = Object.fromEntries(
         Object.entries(userDoc.characterSkin).filter(([, v]) => v != null)
       );
       setCharacter({ ...DEFAULT_CHARACTER, ...cleanSkin });
     }
-    if (userDoc?.ownedItems) {
+    if (userDoc.ownedItems) {
       setOwnedItems(userDoc.ownedItems);
+      // Only set ownedItemsAtRefresh on first load (not on every userDoc update)
+      if (!seedInitialized) {
+        setOwnedItemsAtRefresh(userDoc.ownedItems);
+      }
     }
-  }, [userDoc]);
+    
+    // Load or reset daily refresh seed based on date
+    if (!seedInitialized) {
+      const today = new Date().toISOString().split('T')[0];
+      const storedDate = userDoc.dailyRefreshDate;
+      
+      if (storedDate === today) {
+        // Same day - use stored seed
+        setRefreshSeed(userDoc.dailyRefreshSeed ?? 0);
+      } else {
+        // New day - reset to 0
+        setRefreshSeed(0);
+      }
+      setSeedInitialized(true);
+    }
+  }, [userDoc, seedInitialized]);
 
   // Refresh timer countdown
   useEffect(() => {
@@ -419,13 +446,18 @@ export default function StoreScreen() {
     
     switch (activeTab) {
       case 'Daily Finds': {
-        // Generate daily finds from all items (don't filter owned items to keep list stable)
-        let dailyItems = generateDailyFinds(ALL_STORE_ITEMS, refreshSeed);
+        // Wait for seed to be initialized
+        if (refreshSeed === null) {
+          tabItems = [];
+          break;
+        }
+        // Generate daily finds from all items, excluding owned items at time of refresh
+        let dailyItems = generateDailyFinds(ALL_STORE_ITEMS, ownedItemsAtRefresh, refreshSeed);
         
-        // If there's a wishlisted item, ensure it's at the top
-        if (wishlistItemId) {
+        // If there's a wishlisted item, ensure it's at the top (use snapshot to keep stable)
+        if (wishlistItemId && !ownedItemsAtRefresh.includes(wishlistItemId)) {
           const wishlistedItem = ALL_STORE_ITEMS.find(item => item.id === wishlistItemId);
-          if (wishlistedItem && !ownedItems.includes(wishlistedItem.id)) {
+          if (wishlistedItem) {
             // Remove from current position if present
             dailyItems = dailyItems.filter(item => item.id !== wishlistItemId);
             // Add to the beginning
@@ -454,7 +486,7 @@ export default function StoreScreen() {
       ...item,
       isOwned: ownedItems.includes(item.id),
     }));
-  }, [activeTab, ownedItems, refreshSeed, wishlistItemId]);
+  }, [activeTab, ownedItems, ownedItemsAtRefresh, refreshSeed, wishlistItemId]);
 
   // Get user's display name for the header
   const displayName = userDoc?.displayName || userDoc?.username || 'Your';
@@ -651,23 +683,29 @@ export default function StoreScreen() {
 
   // Handle refresh purchase
   const handleRefresh = useCallback(async () => {
-    if (!user || !canAffordRefresh) return;
+    if (!user || !canAffordRefresh || refreshSeed === null) return;
+    
+    const newSeed = refreshSeed + 1;
     
     try {
       // Deduct beans for refresh
       await userService.purchaseItem(user.uid, `refresh_${Date.now()}`, REFRESH_COST);
-      // Increment refresh seed to get new items
-      setRefreshSeed(prev => prev + 1);
+      // Save new seed to Firestore (persists across sessions)
+      await userService.updateDailyRefreshSeed(user.uid, newSeed);
+      // Update owned items snapshot for filtering
+      setOwnedItemsAtRefresh(ownedItems);
+      // Update local seed state
+      setRefreshSeed(newSeed);
       // Clear selection and reset camera
       setSelectedItem(null);
       if (isGodotReady()) {
         setShowcaseCameraZoom('default');
       }
-      console.log('[Store] Refreshed daily finds');
+      console.log('[Store] Refreshed daily finds, seed:', newSeed);
     } catch (error) {
       console.error('[Store] Refresh failed:', error);
     }
-  }, [user, canAffordRefresh]);
+  }, [user, canAffordRefresh, ownedItems, refreshSeed]);
 
   // Handle wishlist toggle
   const handleWishlist = useCallback(async () => {
@@ -793,27 +831,21 @@ export default function StoreScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
         
         <View style={styles.headerRight}>
           {/* Customize Character Button */}
-          <Pressable 
-            style={styles.customizeButton}
+          <Button 
+            title="edit character"
             onPress={() => router.push('/character')}
-          >
-            <Text style={styles.customizeButtonText}>✨</Text>
-          </Pressable>
+            size="tiny"
+          />
           
           {/* Bean Display */}
-          <View style={styles.beanDisplay}>
-            <Text style={styles.beanAmount}>{userDoc?.totalCoins ?? 0}</Text>
-            <Image source={require('@/assets/ui/bean.png')} style={styles.beanIcon} />
-          </View>
+          <BeanCounter
+            size="small"
+            onPress={() => router.push('/settings')}
+          />
         </View>
       </View>
 
@@ -872,15 +904,13 @@ export default function StoreScreen() {
                   Items refresh in {formatTimeRemaining(timeRemaining)}
                 </Text>
               </View>
-              <Pressable 
-                style={[styles.refreshButton, !canAffordRefresh && styles.refreshButtonDisabled]}
+              <Button 
+                title={`Refresh ${REFRESH_COST}`}
                 onPress={handleRefresh}
                 disabled={!canAffordRefresh}
-              >
-                <Text style={styles.refreshButtonText}>Refresh</Text>
-                <Text style={styles.refreshButtonPrice}>{REFRESH_COST}</Text>
-                <Image source={require('@/assets/ui/bean.png')} style={styles.refreshBeanIcon} />
-              </Pressable>
+                size="tiny"
+                variant="primary"
+              />
             </View>
           )}
         </View>
@@ -961,19 +991,19 @@ export default function StoreScreen() {
                       </View>
                     ) : activeTab === 'Owned' ? (
                       isItemEquipped(item) ? (
-                        <Pressable 
-                          style={styles.removeButton}
+                        <Button 
+                          title="Remove"
                           onPress={() => handleRemove(item)}
-                        >
-                          <Text style={styles.removeButtonText}>Remove</Text>
-                        </Pressable>
+                          size="tiny"
+                          variant="danger"
+                        />
                       ) : (
-                        <Pressable 
-                          style={styles.equipButton}
+                        <Button 
+                          title="Equip"
                           onPress={() => handleEquip(item)}
-                        >
-                          <Text style={styles.equipButtonText}>Equip</Text>
-                        </Pressable>
+                          size="tiny"
+                          variant="secondary"
+                        />
                       )
                     ) : (
                       <View style={styles.ownedBadge}>
@@ -988,27 +1018,24 @@ export default function StoreScreen() {
         </ScrollView>
       </View>
 
-      {/* Bottom Buy Bar - shows when item selected */}
-      {selectedItem && !selectedItem.isOwned && (
+      {/* Bottom Buy Bar - shows when item selected and not owned */}
+      {selectedItem && !ownedItems.includes(selectedItem.id) && (
         <View style={[styles.buyBar, { marginBottom: insets.bottom + 12 }]}>
           <Text style={styles.buyBarItemName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{selectedItem.name}</Text>
           {canAfford ? (
-            <Pressable 
-              style={styles.buyButton}
+            <Button 
+              title={`Buy ${selectedItem.price}`}
               onPress={handlePurchase}
-            >
-              <Text style={styles.buyButtonText}>Buy {selectedItem.price}</Text>
-              <Image source={require('@/assets/ui/bean.png')} style={styles.buyBeanIcon} />
-            </Pressable>
+              size="small"
+              variant="primary"
+            />
           ) : (
-            <Pressable 
-              style={[styles.wishlistButton, isSelectedWishlisted && styles.wishlistButtonActive]}
+            <Button 
+              title={isSelectedWishlisted ? 'Wishlisted' : 'Wishlist'}
               onPress={handleWishlist}
-            >
-              <Text style={[styles.wishlistButtonText, isSelectedWishlisted && styles.wishlistButtonTextActive]}>
-                {isSelectedWishlisted ? 'Wishlisted' : 'Wishlist'}
-              </Text>
-            </Pressable>
+              size="small"
+              variant={isSelectedWishlisted ? 'secondary' : 'muted'}
+            />
           )}
         </View>
       )}
@@ -1027,24 +1054,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#8B7355',
-    fontWeight: '600',
   },
   headerRight: {
     flexDirection: 'row',
@@ -1116,29 +1125,29 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 8,
+    marginHorizontal: 24,
+    marginTop: 12,
+    marginBottom: 8,
+    backgroundColor: '#F5EFE6',
+    borderRadius: 24,
+    padding: 4,
   },
   tab: {
     flex: 1,
     paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderRadius: 16,
-    backgroundColor: '#F5EFE6',
+    borderRadius: 20,
     alignItems: 'center',
   },
   tabActive: {
-    backgroundColor: '#5DADE2',
+    backgroundColor: '#E8DDD0',
   },
   tabText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#A89880',
   },
   tabTextActive: {
-    color: '#FFFFFF',
+    color: '#5A4A3A',
   },
   sectionHeader: {
     paddingHorizontal: 16,
@@ -1152,15 +1161,17 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   refreshBadge: {
-    backgroundColor: '#E74C3C',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    backgroundColor: '#E85A4F',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 100,
+    borderWidth: 3,
+    borderColor: '#9E3D35',
   },
   refreshText: {
     color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 12,
+    fontFamily: 'Poppins_700Bold',
   },
   dailyFindsInfo: {
     flexDirection: 'row',

@@ -24,6 +24,7 @@ import { useAuth } from '@/lib/firebase';
 import { useSocialStore, type FriendWithStatus } from '@/lib/social';
 import { FriendCard } from '@/components/social/friend-card';
 import { AddFriendModal } from '@/components/social/add-friend-modal';
+import { BackButton } from '@/components/ui';
 
 export default function SocialScreen() {
   const router = useRouter();
@@ -99,12 +100,7 @@ export default function SocialScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-          onPress={() => router.back()}
-        >
-          <Text style={styles.backIcon}>←</Text>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
         
         <Text style={styles.title}>Friends</Text>
         
@@ -218,22 +214,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: '#FFF8E7',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonPressed: {
-    opacity: 0.8,
-    transform: [{ scale: 0.95 }],
-  },
-  backIcon: {
-    fontSize: 24,
-    color: '#5D4037',
   },
   title: {
     fontSize: 24,

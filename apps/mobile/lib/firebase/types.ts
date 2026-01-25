@@ -49,6 +49,8 @@ export interface UserDoc {
   // Store / Inventory
   ownedItems: string[]; // Array of item IDs the user has purchased
   wishlistItem: string | null; // Single wishlisted item ID (only one at a time)
+  dailyRefreshSeed: number; // Seed for daily finds generation
+  dailyRefreshDate: string; // YYYY-MM-DD of last refresh (resets when day changes)
 
   // Game progress (updated frequently via increment())
   totalCoins: number;

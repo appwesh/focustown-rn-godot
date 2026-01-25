@@ -6,7 +6,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
 import { DebugModal } from '@/components/debug-modal';
-import { BeanCounter } from '@/components/ui';
+import { BackButton, BeanCounter } from '@/components/ui';
 import {
   SessionSetupModal,
   SessionCompleteModal,
@@ -513,16 +513,10 @@ export default function GameScreen() {
       {showTopBar && phase === 'idle' && (
         <>
           {/* Back Button */}
-          <Pressable
-            style={({ pressed }) => [
-              styles.backButton,
-              { top: insets.top + 12 },
-              pressed && styles.backButtonPressed,
-            ]}
+          <BackButton
+            style={{ position: 'absolute', left: 16, top: insets.top + 12, zIndex: 2 }}
             onPress={() => router.dismissTo('/home')}
-          >
-            <Text style={styles.backArrow}>←</Text>
-          </Pressable>
+          />
 
           {/* Pick your spot text - only show after entrance cinematic */}
           {cinematicFinished && (
@@ -566,27 +560,6 @@ const styles = StyleSheet.create({
   },
   game: {
     flex: 1,
-  },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    backgroundColor: '#FFF8E7',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    borderWidth: 3,
-    borderColor: '#83715B',
-    borderBottomWidth: 7,
-    zIndex: 2,
-  },
-  backButtonPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.95 }],
-  },
-  backArrow: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: '#9A835A',
   },
   pickSpotContainer: {
     position: 'absolute',

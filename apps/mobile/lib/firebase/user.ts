@@ -52,6 +52,8 @@ export const userService = {
       characterSkin: null,
       ownedItems: [],
       wishlistItem: null,
+      dailyRefreshSeed: 0,
+      dailyRefreshDate: new Date().toISOString().split('T')[0],
       totalCoins: 0,
       totalFocusTime: 0,
       sessionsCompleted: 0,
@@ -137,6 +139,18 @@ export const userService = {
     const docRef = doc(usersCollection, uid);
     await updateDoc(docRef, {
       wishlistItem: itemId,
+      lastActiveAt: Date.now(),
+    });
+  },
+
+  /**
+   * Update the daily refresh seed (called when user pays to refresh daily finds).
+   */
+  async updateDailyRefreshSeed(uid: string, seed: number): Promise<void> {
+    const docRef = doc(usersCollection, uid);
+    await updateDoc(docRef, {
+      dailyRefreshSeed: seed,
+      dailyRefreshDate: new Date().toISOString().split('T')[0],
       lastActiveAt: Date.now(),
     });
   },

@@ -2,6 +2,7 @@
  * UI Components
  */
 
+export { BackButton } from './back-button';
 export { BeanCounter } from './bean-counter';
 export { Button } from './button';
 export { Collapsible } from './collapsible';

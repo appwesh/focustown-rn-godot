@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
 import { isGodotReady, changeScene, setUserCharacter, setShowcaseCameraZoom, type CharacterSkin, type CameraZoomTarget } from '@/lib/godot';
+import { BackButton } from '@/components/ui';
 import { useAuth, userService } from '@/lib/firebase';
 import { PCK_URL } from '@/constants/game';
 
@@ -170,6 +171,10 @@ export default function CharacterScreen() {
         
         setTimeout(() => {
           if (cancelled) return;
+          
+          // Reset camera to full body (default) view
+          setShowcaseCameraZoom('default');
+          
           // Character will be sent via the separate effect below
           initialCharacterSentRef.current = true;
           setTimeout(() => {
@@ -359,18 +364,16 @@ export default function CharacterScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>←</Text>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
         <Text style={styles.headerTitle}>Customize</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       {/* Character Preview */}
       <View style={styles.previewContainer}>
-        <LinearGradient colors={['#C5E8F7', '#E8F4F8', '#F5FAFC']} style={styles.previewGradient}>
+        <LinearGradient colors={['#FFF5E6', '#FFF8F0', '#FFFAF5']} style={styles.previewGradient}>
           <GodotGame style={styles.godotView} pckUrl={PCK_URL} />
-          <SceneTransition visible={sceneTransitioning} backgroundColor="#C5E8F7" fadeDuration={400} />
+          <SceneTransition visible={sceneTransitioning} backgroundColor="#FFF5E6" fadeDuration={400} />
         </LinearGradient>
       </View>
 
@@ -413,24 +416,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#8B7355',
-    fontWeight: '600',
   },
   headerTitle: {
     fontSize: 20,
