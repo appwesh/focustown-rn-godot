@@ -2,15 +2,12 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cnr33bhj3ddpa"
+uid="uid://dsapi078rt4c7"
 path.s3tc="res://.godot/imported/OakTree_Albedo.png-7508aac88b96f3fde1daccfbb6709226.s3tc.ctex"
 path.etc2="res://.godot/imported/OakTree_Albedo.png-7508aac88b96f3fde1daccfbb6709226.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "9db981cd908a7aa3befe892953c7de9a"
 }
 
 [deps]

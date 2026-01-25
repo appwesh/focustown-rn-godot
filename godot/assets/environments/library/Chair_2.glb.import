@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://eh7elfk6twbg"
+uid="uid://dk8tn6m18oulv"
 path="res://.godot/imported/Chair_2.glb-fac8560180c6e8f346b6d5a092257f85.scn"
 
 [deps]
@@ -38,5 +38,5 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-gltf/naming_version=2
+gltf/naming_version=0
 gltf/embedded_image_handling=1
