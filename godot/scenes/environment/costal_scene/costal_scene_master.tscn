@@ -24,6 +24,21 @@
 [ext_resource type="Material" uid="uid://d3gmh4ur43mbs" path="res://assets/environments/costalScene/materials/Leaf-1.tres" id="18_tqscf"]
 [ext_resource type="Material" uid="uid://bhb5fb7buds6x" path="res://assets/environments/costalScene/materials/mReBody.004.tres" id="19_sc4ul"]
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_6vc52"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2pykp"]
+noise = SubResource("FastNoiseLite_6vc52")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c4pcc"]
+render_priority = 0
+shader = ExtResource("2_pt1nt")
+shader_parameter/TextureSpeed = Vector2(0.01, 0)
+shader_parameter/distort1Speed = Vector2(-0.1, 0)
+shader_parameter/DistortTexture1 = SubResource("NoiseTexture2D_2pykp")
+shader_parameter/Distort1Strength = 0.0070000003325
+shader_parameter/OceanTexture = ExtResource("3_pjyq3")
+
 [sub_resource type="ArrayMesh" id="ArrayMesh_x3c7g"]
 _surfaces = [{
 "aabb": AABB(-0.36761618, -0.36761624, -0.36761618, 0.73523235, 0.86400044, 0.73523235),
@@ -2294,21 +2309,6 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ml62u")
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_6vc52"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2pykp"]
-noise = SubResource("FastNoiseLite_6vc52")
-seamless = true
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_c4pcc"]
-render_priority = 0
-shader = ExtResource("2_pt1nt")
-shader_parameter/TextureSpeed = Vector2(0.01, 0)
-shader_parameter/distort1Speed = Vector2(-0.1, 0)
-shader_parameter/DistortTexture1 = SubResource("NoiseTexture2D_2pykp")
-shader_parameter/Distort1Strength = 0.0070000003325
-shader_parameter/OceanTexture = ExtResource("3_pjyq3")
-
 [sub_resource type="Resource" id="Resource_c4pcc"]
 script = ExtResource("7_2pykp")
 skin_tone = 2
@@ -2441,6 +2441,76 @@ fov = 66.7
 [node name="Orange" parent="coastal-cafe-v1-Clean" index="20"]
 transform = Transform3D(0.54881036, 0.41928154, -0.11406221, -0.33358932, 0.52430236, 0.32221916, 0.27843374, -0.1982675, 0.610872, 5.3210015, 2.9924293, -7.023215)
 
+[node name="stylized bush_003" parent="coastal-cafe-v1-Clean" index="24"]
+transform = Transform3D(0.89499974, 0, -2.0350084, 0, 2.0709279, 0, 1.8675437, 0, 0.97525537, -8.382666, -0.20568097, 9.722037)
+
+[node name="stylized bush_004" parent="coastal-cafe-v1-Clean" index="25"]
+transform = Transform3D(0.97107714, 0, -2.20799, 0, 2.2469633, 0, 2.02629, 0, 1.0581548, 1.6826293, -0.18018329, 10.9824705)
+
+[node name="Flower_018" parent="coastal-cafe-v1-Clean" index="50"]
+transform = Transform3D(-0.16556317, 0.50499666, 0.7692152, 0.20514347, 0.7821536, -0.46933612, -0.897012, 0.085667744, -0.2493115, -5.5861335, 1.6837444, 12.121029)
+
+[node name="Flower_019" parent="coastal-cafe-v1-Clean" index="51"]
+transform = Transform3D(-0.3037629, 0.017900385, 0.55103016, -0.19217446, 0.5862377, -0.12498298, -0.5167434, -0.22854185, -0.27743763, -6.077214, 1.8603876, 11.40318)
+
+[node name="Flower_020" parent="coastal-cafe-v1-Clean" index="52"]
+transform = Transform3D(-0.8015156, 0.23732442, 0.2063749, 0.2994286, 0.7486588, 0.30198234, -0.09620842, 0.352885, -0.7794592, -6.101523, 1.8947198, 12.664357)
+
+[node name="Flower_021" parent="coastal-cafe-v1-Clean" index="53"]
+transform = Transform3D(-0.8840635, 0.011388155, -0.30401862, 0.106576785, 0.8866802, -0.27670345, 0.28495333, -0.29630002, -0.8397221, -8.553344, 1.6641337, 9.627005)
+
+[node name="Flower_022" parent="coastal-cafe-v1-Clean" index="54"]
+transform = Transform3D(-0.5094819, -0.09615412, -0.2975086, -0.165718, 0.56537825, 0.10106226, 0.26513097, 0.16861324, -0.50853115, -8.976835, 1.7213278, 0.19248603)
+
+[node name="Flower_023" parent="coastal-cafe-v1-Clean" index="55"]
+transform = Transform3D(0.13752076, -0.0010599763, -0.64441323, -0.23650008, 0.61286134, -0.051478315, 0.5994473, 0.2420355, 0.12752678, -8.567682, 1.8358489, -0.1967)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="coastal-cafe-v1-Clean/CeilingCover_low__mReBody" index="0"]
+transform = Transform3D(11.066897, 0, 0, 0, -11.066897, 9.674989e-07, 0, -9.674989e-07, -11.066897, 0, 1.9073486e-06, 8.875761)
+light_color = Color(1, 0.835, 0.55, 1)
+light_energy = 1.351
+spot_range = 1.6498313
+spot_attenuation = -1.45
+spot_angle = 27.143633
+
+[node name="Fence_002" parent="coastal-cafe-v1-Clean" index="68"]
+transform = Transform3D(0.51703554, 0, 0.85596395, 0, 1, 0, -0.85596395, 0, 0.51703554, -3.5978413, 0.9105585, 10.673561)
+
+[node name="Fence_003" parent="coastal-cafe-v1-Clean" index="69"]
+transform = Transform3D(0.51703554, 0, 0.85596395, 0, 1, 0, -0.85596395, 0, 0.51703554, 6.8950586, 0.9105585, 11.211175)
+
+[node name="image" parent="coastal-cafe-v1-Clean" index="72"]
+transform = Transform3D(0.026857901, 5.1391377, 0.0036569738, 0.033953663, 0.0034794973, -5.139096, -5.139027, 0.026881468, -0.03393501, 44.57596, 4.129809, 19.831553)
+
+[node name="image_001" parent="coastal-cafe-v1-Clean" index="73"]
+transform = Transform3D(0, 6.492219, 0, 0, 0, -8.606324, -8.898917, 0, 0, 58.367424, 9.699145, 9.280038)
+
+[node name="image_005" parent="coastal-cafe-v1-Clean" index="74"]
+transform = Transform3D(-0.34555078, 9.778539, 0.012369361, 0.30705136, 0.035681684, -6.5384746, -7.7661824, -0.4336785, -0.2590619, 52.53103, 2.6907423, -16.80262)
+
+[node name="image_006" parent="coastal-cafe-v1-Clean" index="75"]
+transform = Transform3D(-0.020823108, 122.12166, 0.0018088085, -0.026324736, 0.08267629, -2.5421045, 3.9843223, 0.63878584, -0.016786436, 48.88089, 3.7386832, 13.005355)
+
+[node name="Cube_009" parent="coastal-cafe-v1-Clean" index="77"]
+transform = Transform3D(-0.0005297661, 0, -0.99999976, 0, 0.99999976, 0, 0.99999976, 0, -0.0005297661, 7.9149833, 1.0349003, 3.4915261)
+
+[node name="Cube_008" parent="coastal-cafe-v1-Clean" index="78"]
+transform = Transform3D(-0.00052952766, 0, -0.9999998, 0, 0.99999994, 0, 0.9999998, 0, -0.00052952766, 7.9132237, 4.8074646, 3.537222)
+
+[node name="Ground-1" parent="coastal-cafe-v1-Clean" index="83"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31734586, 0, 1.4236007)
+
+[node name="Sky_Clouds_Photo_Texture_A_P1119218" parent="coastal-cafe-v1-Clean" index="84"]
+transform = Transform3D(0, -56.182056, 0, 0, 0, -56.182056, 56.182056, 0, 0, 55.555973, 4.52718, 6.458094)
+visible = false
+
+[node name="Ground-1_001" parent="coastal-cafe-v1-Clean" index="85"]
+transform = Transform3D(0.9822145, 0.1863302, 0.00192267, -0.18664084, 0.98059237, 0.0062015723, -0.000521295, -0.004592108, 1.4022906, 38.207733, -4.8305593, 1.4889848)
+surface_material_override/0 = SubResource("ShaderMaterial_c4pcc")
+
+[node name="Ground-1_002" parent="coastal-cafe-v1-Clean" index="86"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31734586, 0, 30.240473)
+
 [node name="Orange2" type="MeshInstance3D" parent="coastal-cafe-v1-Clean"]
 transform = Transform3D(0.91188604, 0.22699516, -0.34196046, -0.1648286, 0.96554244, 0.20139332, 0.37589267, -0.12728289, 0.91788, 9.62769, 2.6917698, -6.065003)
 mesh = SubResource("ArrayMesh_xfcdy")
@@ -2496,16 +2566,10 @@ transform = Transform3D(2.4509928, 0, -0.5369119, 0, 2.5, 0, 0.49257976, 0, 2.67
 mesh = SubResource("ArrayMesh_1bgwy")
 skeleton = NodePath("")
 
-[node name="stylized bush_003" parent="coastal-cafe-v1-Clean" index="35"]
-transform = Transform3D(0.89499974, 0, -2.0350084, 0, 2.0709279, 0, 1.8675437, 0, 0.97525537, -8.382666, -0.20568097, 9.722037)
-
 [node name="stylized bush_010" type="MeshInstance3D" parent="coastal-cafe-v1-Clean"]
 transform = Transform3D(2.1770077, 0, -0.6061913, 0, 2.246963, 0, 0.55630636, 0, 2.3722234, 3.1464767, -0.18018329, 12.637075)
 mesh = SubResource("ArrayMesh_ta7fd")
 skeleton = NodePath("")
-
-[node name="stylized bush_004" parent="coastal-cafe-v1-Clean" index="37"]
-transform = Transform3D(0.97107714, 0, -2.20799, 0, 2.2469633, 0, 2.02629, 0, 1.0581548, 1.6826293, -0.18018329, 10.9824705)
 
 [node name="Flower2" type="MeshInstance3D" parent="coastal-cafe-v1-Clean"]
 transform = Transform3D(-0.0032428028, -0.39273292, -0.13930276, -0.373969, -0.058710754, 0.17422745, -0.18382503, 0.12636773, -0.35198662, 6.7017717, 4.023321, -0.8261588)
@@ -2536,38 +2600,6 @@ skeleton = NodePath("")
 transform = Transform3D(0.08669501, 0.070599265, -0.8537217, -0.52265203, 0.68422455, 0.003507536, 0.6787189, 0.5178735, 0.11174961, 2.4672062, 2.2781134, -6.319182)
 mesh = SubResource("ArrayMesh_57vt8")
 skeleton = NodePath("")
-
-[node name="Flower_018" parent="coastal-cafe-v1-Clean" index="68"]
-transform = Transform3D(-0.16556317, 0.50499666, 0.7692152, 0.20514347, 0.7821536, -0.46933612, -0.897012, 0.085667744, -0.2493115, -5.5861335, 1.6837444, 12.121029)
-
-[node name="Flower_019" parent="coastal-cafe-v1-Clean" index="69"]
-transform = Transform3D(-0.3037629, 0.017900385, 0.55103016, -0.19217446, 0.5862377, -0.12498298, -0.5167434, -0.22854185, -0.27743763, -6.077214, 1.8603876, 11.40318)
-
-[node name="Flower_020" parent="coastal-cafe-v1-Clean" index="70"]
-transform = Transform3D(-0.8015156, 0.23732442, 0.2063749, 0.2994286, 0.7486588, 0.30198234, -0.09620842, 0.352885, -0.7794592, -6.101523, 1.8947198, 12.664357)
-
-[node name="Flower_021" parent="coastal-cafe-v1-Clean" index="71"]
-transform = Transform3D(-0.8840635, 0.011388155, -0.30401862, 0.106576785, 0.8866802, -0.27670345, 0.28495333, -0.29630002, -0.8397221, -8.553344, 1.6641337, 9.627005)
-
-[node name="Flower_022" parent="coastal-cafe-v1-Clean" index="72"]
-transform = Transform3D(-0.5094819, -0.09615412, -0.2975086, -0.165718, 0.56537825, 0.10106226, 0.26513097, 0.16861324, -0.50853115, -8.976835, 1.7213278, 0.19248603)
-
-[node name="Flower_023" parent="coastal-cafe-v1-Clean" index="73"]
-transform = Transform3D(0.13752076, -0.0010599763, -0.64441323, -0.23650008, 0.61286134, -0.051478315, 0.5994473, 0.2420355, 0.12752678, -8.567682, 1.8358489, -0.1967)
-
-[node name="SpotLight3D" type="SpotLight3D" parent="coastal-cafe-v1-Clean/CeilingCover_low__mReBody" index="0"]
-transform = Transform3D(11.066897, 0, 0, 0, -11.066897, 9.674989e-07, 0, -9.674989e-07, -11.066897, 0, 1.9073486e-06, 8.875761)
-light_color = Color(1, 0.835, 0.55, 1)
-light_energy = 1.351
-spot_range = 1.6498313
-spot_attenuation = -1.45
-spot_angle = 27.143633
-
-[node name="Fence_002" parent="coastal-cafe-v1-Clean" index="86"]
-transform = Transform3D(0.51703554, 0, 0.85596395, 0, 1, 0, -0.85596395, 0, 0.51703554, -3.5978413, 0.9105585, 10.673561)
-
-[node name="Fence_003" parent="coastal-cafe-v1-Clean" index="87"]
-transform = Transform3D(0.51703554, 0, 0.85596395, 0, 1, 0, -0.85596395, 0, 0.51703554, 6.8950586, 0.9105585, 11.211175)
 
 [node name="CashMachine" type="MeshInstance3D" parent="coastal-cafe-v1-Clean"]
 transform = Transform3D(0, 0, 1.2324312, 0, 1.2324312, 0, -1.2324312, 0, 0, 8.147336, 1.2066016, 6.3977327)
@@ -2791,42 +2823,10 @@ mesh = SubResource("ArrayMesh_iuydk")
 skeleton = NodePath("")
 surface_material_override/0 = ExtResource("12_cs34t")
 
-[node name="image" parent="coastal-cafe-v1-Clean" index="129"]
-transform = Transform3D(0.026857901, 5.1391377, 0.0036569738, 0.033953663, 0.0034794973, -5.139096, -5.139027, 0.026881468, -0.03393501, 44.57596, 4.129809, 19.831553)
-
-[node name="image_001" parent="coastal-cafe-v1-Clean" index="130"]
-transform = Transform3D(0, 6.492219, 0, 0, 0, -8.606324, -8.898917, 0, 0, 58.367424, 9.699145, 9.280038)
-
-[node name="image_005" parent="coastal-cafe-v1-Clean" index="131"]
-transform = Transform3D(-0.34555078, 9.778539, 0.012369361, 0.30705136, 0.035681684, -6.5384746, -7.7661824, -0.4336785, -0.2590619, 52.53103, 2.6907423, -16.80262)
-
-[node name="image_006" parent="coastal-cafe-v1-Clean" index="132"]
-transform = Transform3D(-0.020823108, 122.12166, 0.0018088085, -0.026324736, 0.08267629, -2.5421045, 3.9843223, 0.63878584, -0.016786436, 48.88089, 3.7386832, 13.005355)
-
-[node name="Cube_009" parent="coastal-cafe-v1-Clean" index="134"]
-transform = Transform3D(-0.0005297661, 0, -0.99999976, 0, 0.99999976, 0, 0.99999976, 0, -0.0005297661, 7.9149833, 1.0349003, 3.4915261)
-
-[node name="Cube_008" parent="coastal-cafe-v1-Clean" index="135"]
-transform = Transform3D(-0.00052952766, 0, -0.9999998, 0, 0.99999994, 0, 0.9999998, 0, -0.00052952766, 7.9132237, 4.8074646, 3.537222)
-
 [node name="image_007" type="MeshInstance3D" parent="coastal-cafe-v1-Clean"]
 transform = Transform3D(0.020142332, 120.01379, 0.0024695662, 0.025464099, 0.08124927, -3.470735, -3.8540623, 0.62776, -0.022918519, 53.439594, 3.7386832, -6.686981)
 mesh = SubResource("ArrayMesh_b64xl")
 skeleton = NodePath("")
-
-[node name="Ground-1" parent="coastal-cafe-v1-Clean" index="141"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31734586, 0, 1.4236007)
-
-[node name="Sky_Clouds_Photo_Texture_A_P1119218" parent="coastal-cafe-v1-Clean" index="142"]
-transform = Transform3D(0, -56.182056, 0, 0, 0, -56.182056, 56.182056, 0, 0, 55.555973, 4.52718, 6.458094)
-visible = false
-
-[node name="Ground-1_001" parent="coastal-cafe-v1-Clean" index="143"]
-transform = Transform3D(0.9822145, 0.1863302, 0.00192267, -0.18664084, 0.98059237, 0.0062015723, -0.000521295, -0.004592108, 1.4022906, 38.207733, -4.8305593, 1.4889848)
-surface_material_override/0 = SubResource("ShaderMaterial_c4pcc")
-
-[node name="Ground-1_002" parent="coastal-cafe-v1-Clean" index="144"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31734586, 0, 30.240473)
 
 [node name="CinematicCharacter" parent="." instance=ExtResource("6_6vc52")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.558171, 0.2116465, 2.5126915)
