@@ -101,12 +101,12 @@ _subresources={
 },
 "Material.002": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/focusTown/materials/Material.002.tres",
+"use_external/fallback_path": "res://assets/environments/focusTown/materials/Restaurant.tres",
 "use_external/path": "uid://bp3uj8coey2cc"
 },
 "Material.003": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/focusTown/materials/Material.003.tres",
+"use_external/fallback_path": "res://assets/environments/focusTown/materials/BookStore.tres",
 "use_external/path": "uid://bwpxh8v13xeh4"
 },
 "Material.004": {
