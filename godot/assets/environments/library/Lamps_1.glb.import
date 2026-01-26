@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://b4u7s8ih1yegn"
-path="res://.godot/imported/Lamps_1.glb-69cee3c830005e118cc472b2aa587c89.scn"
+uid="uid://y3o327e3rle5"
+path="res://.godot/imported/Lamps_1.glb-ec2018adb81b907be75f83fb9c5f60ec.scn"
 
 [deps]
 
-source_file="res://assets/environments/library/Lamps_1.glb"
-dest_files=["res://.godot/imported/Lamps_1.glb-69cee3c830005e118cc472b2aa587c89.scn"]
+source_file="res://assets/environments/Library/Lamps_1.glb"
+dest_files=["res://.godot/imported/Lamps_1.glb-ec2018adb81b907be75f83fb9c5f60ec.scn"]
 
 [params]
 
@@ -38,5 +38,5 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-gltf/naming_version=2
+gltf/naming_version=0
 gltf/embedded_image_handling=1

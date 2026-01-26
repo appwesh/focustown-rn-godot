@@ -1,0 +1,142 @@
+[remap]
+
+importer="scene"
+importer_version=1
+type="PackedScene"
+uid="uid://cey1ja8kg6h6"
+path="res://.godot/imported/Phase 2 CafeteriaSet.blend-fc547db3066fb0a5769d6769a7db4a4e.scn"
+
+[deps]
+
+source_file="res://assets/environments/Library/blendfiles/Cafe/Phase 2 CafeteriaSet.blend"
+dest_files=["res://.godot/imported/Phase 2 CafeteriaSet.blend-fc547db3066fb0a5769d6769a7db4a4e.scn"]
+
+[params]
+
+nodes/root_type=""
+nodes/root_name=""
+nodes/root_script=null
+nodes/apply_root_scale=true
+nodes/root_scale=1.0
+nodes/import_as_skeleton_bones=false
+nodes/use_name_suffixes=true
+nodes/use_node_type_suffixes=true
+meshes/ensure_tangents=true
+meshes/generate_lods=true
+meshes/create_shadow_meshes=true
+meshes/light_baking=1
+meshes/lightmap_texel_size=0.2
+meshes/force_disable_compression=false
+skins/use_named_skins=true
+animation/import=true
+animation/fps=30
+animation/trimming=false
+animation/remove_immutable_tracks=true
+animation/import_rest_as_RESET=false
+import_script/path=""
+materials/extract=0
+materials/extract_format=0
+materials/extract_path=""
+_subresources={
+"materials": {
+"BoxesAndBooks": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/BoxesAndBooks.tres",
+"use_external/path": "uid://baxi5qph25fnf"
+},
+"CafeBuilding": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/CafeBuilding.tres",
+"use_external/path": "uid://c27tm1n25h87o"
+},
+"ChairsAndOther": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/ChairsAndOther.tres",
+"use_external/path": "uid://hxgkbjditnx7"
+},
+"GroundPlane": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/GroundPlane.tres",
+"use_external/path": "uid://cub75jfl0fxv2"
+},
+"Mirror": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/Mirror.tres",
+"use_external/path": "uid://b3asygrga1s7t"
+},
+"PaintingsAndLights": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/PaintingsAndLights.tres",
+"use_external/path": "uid://bkyymm6nhjsc0"
+},
+"PastryGlass": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/PastryGlass.tres",
+"use_external/path": "uid://qtujpr6spuw5"
+},
+"PlantLeafy": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/PlantLeafy.tres",
+"use_external/path": "uid://b6l1qjfdd40mp"
+},
+"Skybox": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/Skybox.tres",
+"use_external/path": "uid://ih0v56to5mnp"
+},
+"SmallPlants": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/SmallPlants.tres",
+"use_external/path": "uid://rsw4sj08gwnw"
+},
+"SofaArea": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/SofaArea.tres",
+"use_external/path": "uid://b8lxdf7m8hrv0"
+},
+"TreeCards": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/TreeCards.tres",
+"use_external/path": "uid://dfiibtekpedfx"
+},
+"TreeCards2": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/TreeCards2.tres",
+"use_external/path": "uid://dtsx3fn6ono0p"
+},
+"TreeCards3": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/TreeCards3.tres",
+"use_external/path": "uid://kp0oyai6vfwe"
+},
+"Window": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/Window.tres",
+"use_external/path": "uid://d3osbm0lnwkpl"
+},
+"WoodenChair": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environments/Library/blendfiles/Cafe/Materials/WoodenChair.tres",
+"use_external/path": "uid://b8fbxpb1mjs35"
+}
+}
+}
+blender/nodes/visible=0
+blender/nodes/active_collection_only=false
+blender/nodes/punctual_lights=true
+blender/nodes/cameras=true
+blender/nodes/custom_properties=true
+blender/nodes/modifiers=1
+blender/meshes/colors=false
+blender/meshes/uvs=true
+blender/meshes/normals=true
+blender/meshes/export_geometry_nodes_instances=false
+blender/meshes/tangents=true
+blender/meshes/skins=2
+blender/meshes/export_bones_deforming_mesh_only=false
+blender/materials/unpack_enabled=true
+blender/materials/export_materials=1
+blender/animation/limit_playback=true
+blender/animation/always_sample=true
+blender/animation/group_tracks=true
+gltf/naming_version=2

@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://c3cinematic_char"]
+[gd_scene load_steps=4 format=3 uid="uid://crhc76uj2vnw2"]
 
-[ext_resource type="Script" path="res://scripts/characters/cinematic_character.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://mwy5k4m3gvxl" path="res://scripts/characters/cinematic_character.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bgg5vnw1bywbs" path="res://assets/characters/cozylife/SKM_Human.fbx" id="2_dgd3v"]
+[ext_resource type="Script" uid="uid://c2penfl2kghrh" path="res://assets/characters/cozylife/humanpreview.gd" id="3_alhsg"]
 
 [node name="CinematicCharacter" type="Node3D"]
 script = ExtResource("1_script")
+
+[node name="EditorPreview" parent="." instance=ExtResource("2_dgd3v")]
+script = ExtResource("3_alhsg")

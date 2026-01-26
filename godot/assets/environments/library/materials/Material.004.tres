@@ -1,6 +1,3 @@
-[gd_resource type="StandardMaterial3D" format=3 uid="uid://bs8nt8emypbdv"]
-
-[resource]
-resource_name = "Material.004"
-cull_mode = 2
-albedo_color = Color(0.18353918, 0.18353918, 0.18353918, 1)
+version https://git-lfs.github.com/spec/v1
+oid sha256:94a627d67a0fd09acaaf5647ab3ba1230dba67948c36d33cdeb9cc25dba566b2
+size 192

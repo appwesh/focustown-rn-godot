@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bj6rkkbtofug2"
-path="res://.godot/imported/Table_2.glb-adcd0c88ab41f89e44196cfb557e02ac.scn"
+uid="uid://b4f6cap7cx3b0"
+path="res://.godot/imported/Table_2.glb-df1602d3c4dde82561635b43cf11fd22.scn"
 
 [deps]
 
-source_file="res://assets/environments/library/Table_2.glb"
-dest_files=["res://.godot/imported/Table_2.glb-adcd0c88ab41f89e44196cfb557e02ac.scn"]
+source_file="res://assets/environments/Library/Table_2.glb"
+dest_files=["res://.godot/imported/Table_2.glb-df1602d3c4dde82561635b43cf11fd22.scn"]
 
 [params]
 
@@ -38,5 +38,5 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-gltf/naming_version=2
+gltf/naming_version=0
 gltf/embedded_image_handling=1

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://curyp4k71lxe"
-path.s3tc="res://.godot/imported/Lofi_Top.png-d6b1203e5da8affce8e593fa41c250d9.s3tc.ctex"
-path.etc2="res://.godot/imported/Lofi_Top.png-d6b1203e5da8affce8e593fa41c250d9.etc2.ctex"
+path.s3tc="res://.godot/imported/Lofi_Top.png-32aa89b2d347a01c649347c76f05597d.s3tc.ctex"
+path.etc2="res://.godot/imported/Lofi_Top.png-32aa89b2d347a01c649347c76f05597d.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/characters/cozylife/custom/Lofi/textures/Lofi_Top.png"
-dest_files=["res://.godot/imported/Lofi_Top.png-d6b1203e5da8affce8e593fa41c250d9.s3tc.ctex", "res://.godot/imported/Lofi_Top.png-d6b1203e5da8affce8e593fa41c250d9.etc2.ctex"]
+source_file="res://assets/characters/cozylife/custom/Lofi/Textures/Lofi_Top.png"
+dest_files=["res://.godot/imported/Lofi_Top.png-32aa89b2d347a01c649347c76f05597d.s3tc.ctex", "res://.godot/imported/Lofi_Top.png-32aa89b2d347a01c649347c76f05597d.etc2.ctex"]
 
 [params]
 

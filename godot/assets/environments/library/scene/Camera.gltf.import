@@ -3,12 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://xxwoffks3si"
-valid=false
+uid="uid://u17d6d7jajnx"
+path="res://.godot/imported/Camera.gltf-00b8179ebcc0aef69ae63e0c47cf02e8.scn"
 
 [deps]
 
-source_file="res://assets/environments/library/scene/Camera.gltf"
+source_file="res://assets/environments/Library/scene/Camera.gltf"
+dest_files=["res://.godot/imported/Camera.gltf-00b8179ebcc0aef69ae63e0c47cf02e8.scn"]
 
 [params]
 
@@ -37,5 +38,5 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-gltf/naming_version=2
+gltf/naming_version=0
 gltf/embedded_image_handling=1

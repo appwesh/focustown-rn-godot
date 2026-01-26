@@ -1,6 +1,3 @@
-[gd_resource type="StandardMaterial3D" format=3 uid="uid://wysumuoxy5g1"]
-
-[resource]
-resource_name = "Cushion"
-cull_mode = 2
-albedo_color = Color(0.76580316, 0.5364334, 0.38392028, 1)
+version https://git-lfs.github.com/spec/v1
+oid sha256:27c17cc4410aae4a4de2a71323676d9cfd8a481953dab029ab3b760c96e01501
+size 185

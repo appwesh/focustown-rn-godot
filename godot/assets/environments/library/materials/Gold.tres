@@ -1,13 +1,3 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://b4bahdwuyuqbk"]
-
-[ext_resource type="Texture2D" uid="uid://djuf0crlgklc5" path="res://assets/environments/library/Library4_Gold.png" id="1_enrcy"]
-
-[resource]
-resource_name = "Gold"
-cull_mode = 2
-albedo_color = Color(0.8591677, 0.5775417, 0.24534424, 1)
-metallic = 1.0
-metallic_texture = ExtResource("1_enrcy")
-metallic_texture_channel = 2
-roughness_texture = ExtResource("1_enrcy")
-roughness_texture_channel = 1
+version https://git-lfs.github.com/spec/v1
+oid sha256:6262cb64f9942cf01f6f56f1c04de108e6c318d2b636f04ac0afe966b6fdf175
+size 485
