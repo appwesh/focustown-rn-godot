@@ -24,6 +24,9 @@ godot/export/
 *.pck
 *.translation
 
+# Blender backups
+*.blend1
+
 # IDE
 .idea/
 .vscode/
