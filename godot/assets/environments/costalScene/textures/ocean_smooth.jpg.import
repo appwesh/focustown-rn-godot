@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/ocean_smooth.jpg-d22b8c7f8f9e7006693a93c0fd83
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -3,21 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dcjt4u2oj4bu8"
-path.s3tc="res://.godot/imported/texture_normal.png-5c78956708a43f29f70d75f1aee3b4ca.s3tc.ctex"
-path.etc2="res://.godot/imported/texture_normal.png-5c78956708a43f29f70d75f1aee3b4ca.etc2.ctex"
+path="res://.godot/imported/texture_normal.png-5c78956708a43f29f70d75f1aee3b4ca.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://assets/characters/capybara/AI_genearated_model/texture_normal.png"
-dest_files=["res://.godot/imported/texture_normal.png-5c78956708a43f29f70d75f1aee3b4ca.s3tc.ctex", "res://.godot/imported/texture_normal.png-5c78956708a43f29f70d75f1aee3b4ca.etc2.ctex"]
+dest_files=["res://.godot/imported/texture_normal.png-5c78956708a43f29f70d75f1aee3b4ca.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -25,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=1
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=1
 roughness/src_normal="res://assets/characters/capybara/AI_genearated_model/texture_normal.png"

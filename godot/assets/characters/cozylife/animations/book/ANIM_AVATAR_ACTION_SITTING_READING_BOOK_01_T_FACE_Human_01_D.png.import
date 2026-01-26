@@ -3,11 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://48vdyyolo8wa"
-path.s3tc="res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01_T_FACE_Human_01_D.png-3b15c52dc71cb639ec97ee527c2ff2ab.s3tc.ctex"
-path.etc2="res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01_T_FACE_Human_01_D.png-3b15c52dc71cb639ec97ee527c2ff2ab.etc2.ctex"
+path="res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01_T_FACE_Human_01_D.png-3b15c52dc71cb639ec97ee527c2ff2ab.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "fb3d10fc03865fc548b5809ab2168c54"
@@ -16,11 +14,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/characters/cozylife/animations/book/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01_T_FACE_Human_01_D.png"
-dest_files=["res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01_T_FACE_Human_01_D.png-3b15c52dc71cb639ec97ee527c2ff2ab.s3tc.ctex", "res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01_T_FACE_Human_01_D.png-3b15c52dc71cb639ec97ee527c2ff2ab.etc2.ctex"]
+dest_files=["res://.godot/imported/ANIM_AVATAR_ACTION_SITTING_READING_BOOK_01_T_FACE_Human_01_D.png-3b15c52dc71cb639ec97ee527c2ff2ab.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -28,7 +26,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

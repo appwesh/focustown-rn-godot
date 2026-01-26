@@ -3,21 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dumo3pl37n1s"
-path.s3tc="res://.godot/imported/image.png-0c0b85db9673a2aa193b780d091d5af0.s3tc.ctex"
-path.etc2="res://.godot/imported/image.png-0c0b85db9673a2aa193b780d091d5af0.etc2.ctex"
+path="res://.godot/imported/image.png-0c0b85db9673a2aa193b780d091d5af0.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://assets/environments/costalScene/textures/image.png"
-dest_files=["res://.godot/imported/image.png-0c0b85db9673a2aa193b780d091d5af0.s3tc.ctex", "res://.godot/imported/image.png-0c0b85db9673a2aa193b780d091d5af0.etc2.ctex"]
+dest_files=["res://.godot/imported/image.png-0c0b85db9673a2aa193b780d091d5af0.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -25,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

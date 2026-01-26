@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Stylized_Wood_Flat_roughness.jpg-82e673f1a94e
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

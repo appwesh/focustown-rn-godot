@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Sky_Clouds_Photo_Texture_A_P1119218.jpg-c15ad
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

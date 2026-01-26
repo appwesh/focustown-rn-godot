@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Gemini_Generated_Image_1fsg5w1fsg5w1fsg.png-6
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

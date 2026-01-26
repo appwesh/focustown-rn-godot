@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Brush Splash 01.png-d2784e8666e5954c6c9161cd1
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

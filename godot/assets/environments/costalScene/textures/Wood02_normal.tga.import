@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Wood02_normal.tga-2bb0b642f3252eac1bab4da8ed0
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

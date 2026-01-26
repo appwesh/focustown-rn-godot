@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://b5yn4sjsainvo"]
 
-[ext_resource type="Texture2D" uid="uid://c5vvm3oetthwf" path="res://Assets/FX/Glowing_circle.png" id="1_uj6pr"]
+[ext_resource type="Texture2D" uid="uid://c5vvm3oetthwf" path="res://assets/FX/Glowing_circle.png" id="1_uj6pr"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ylwhp"]
 transparency = 1

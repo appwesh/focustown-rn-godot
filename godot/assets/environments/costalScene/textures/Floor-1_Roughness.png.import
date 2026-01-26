@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Floor-1_Roughness.png-dd9d1abce193db92b92e459
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

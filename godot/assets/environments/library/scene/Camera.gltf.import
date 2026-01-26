@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://u17d6d7jajnx"
-path="res://.godot/imported/Camera.gltf-00b8179ebcc0aef69ae63e0c47cf02e8.scn"
+path="res://.godot/imported/Camera.gltf-077fa85d0582af8df4e89b2971e3fe3c.scn"
 
 [deps]
 
-source_file="res://assets/environments/Library/scene/Camera.gltf"
-dest_files=["res://.godot/imported/Camera.gltf-00b8179ebcc0aef69ae63e0c47cf02e8.scn"]
+source_file="res://assets/environments/library/scene/Camera.gltf"
+dest_files=["res://.godot/imported/Camera.gltf-077fa85d0582af8df4e89b2971e3fe3c.scn"]
 
 [params]
 

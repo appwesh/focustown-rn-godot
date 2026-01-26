@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_TOP_Tshirt_Maroon_D.tga-b5531d51c8906f21e9f
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

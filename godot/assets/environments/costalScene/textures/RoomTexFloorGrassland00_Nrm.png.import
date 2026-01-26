@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/RoomTexFloorGrassland00_Nrm.png-1bcf3ebd96738
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

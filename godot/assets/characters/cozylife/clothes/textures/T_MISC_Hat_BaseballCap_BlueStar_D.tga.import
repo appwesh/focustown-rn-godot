@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_MISC_Hat_BaseballCap_BlueStar_D.tga-4b2f1dc
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

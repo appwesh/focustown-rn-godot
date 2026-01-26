@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Floor-1_Albedo.png-6da3fe335b17251d457b902aba
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/wood_height.jpg-d45383243c428f3bbd6349ea38627
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/texture_metallic.png-86050f8cd48b2ec4f1e2d589
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

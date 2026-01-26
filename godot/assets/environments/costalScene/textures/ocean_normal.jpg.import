@@ -3,21 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cjaf5qwnf5leq"
-path.s3tc="res://.godot/imported/ocean_normal.jpg-fb37d386ca15dc1dff0fe82a1a5edd17.s3tc.ctex"
-path.etc2="res://.godot/imported/ocean_normal.jpg-fb37d386ca15dc1dff0fe82a1a5edd17.etc2.ctex"
+path="res://.godot/imported/ocean_normal.jpg-fb37d386ca15dc1dff0fe82a1a5edd17.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://assets/environments/costalScene/textures/ocean_normal.jpg"
-dest_files=["res://.godot/imported/ocean_normal.jpg-fb37d386ca15dc1dff0fe82a1a5edd17.s3tc.ctex", "res://.godot/imported/ocean_normal.jpg-fb37d386ca15dc1dff0fe82a1a5edd17.etc2.ctex"]
+dest_files=["res://.godot/imported/ocean_normal.jpg-fb37d386ca15dc1dff0fe82a1a5edd17.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -25,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

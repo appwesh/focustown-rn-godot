@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Table_Cafe.png-c25f59039759c5629d5ea90bebd3ac
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/08 Rope.jpg-620aaa3a69d339dcf02abde9156041e9.
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

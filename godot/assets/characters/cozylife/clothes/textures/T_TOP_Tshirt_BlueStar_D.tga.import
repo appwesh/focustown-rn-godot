@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_TOP_Tshirt_BlueStar_D.tga-00b9b04a053cba932
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

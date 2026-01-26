@@ -3,11 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dhihk2jihprbr"
-path.s3tc="res://.godot/imported/CashMachine_DefaultMaterial_Normal.png-166299db5a49ad6a2cbfbd07162cac4b.s3tc.ctex"
-path.etc2="res://.godot/imported/CashMachine_DefaultMaterial_Normal.png-166299db5a49ad6a2cbfbd07162cac4b.etc2.ctex"
+path="res://.godot/imported/CashMachine_DefaultMaterial_Normal.png-166299db5a49ad6a2cbfbd07162cac4b.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "7feaddecc84e6a55dca4255a5239a286"
@@ -16,11 +14,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/environments/costalScene/models/CashMachine_DefaultMaterial_Normal.png"
-dest_files=["res://.godot/imported/CashMachine_DefaultMaterial_Normal.png-166299db5a49ad6a2cbfbd07162cac4b.s3tc.ctex", "res://.godot/imported/CashMachine_DefaultMaterial_Normal.png-166299db5a49ad6a2cbfbd07162cac4b.etc2.ctex"]
+dest_files=["res://.godot/imported/CashMachine_DefaultMaterial_Normal.png-166299db5a49ad6a2cbfbd07162cac4b.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -28,7 +26,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=1
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=1
 roughness/src_normal="res://assets/environments/costalScene/models/CashMachine_DefaultMaterial_Normal.png"

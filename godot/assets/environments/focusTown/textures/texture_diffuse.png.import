@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/texture_diffuse.png-df2a2cd44f6793f8b3ded0268
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

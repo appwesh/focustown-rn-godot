@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Wood02_basecolor.tga-e5066c4cdcf529efaefc2a82
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

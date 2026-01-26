@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/mBody_Alb.png-6c97cc48f20c7a00a3d92186bd34cbc
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

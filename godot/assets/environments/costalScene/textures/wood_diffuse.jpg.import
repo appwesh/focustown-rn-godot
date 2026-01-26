@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/wood_diffuse.jpg-e85020f04315e95c2500fc3c7f48
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

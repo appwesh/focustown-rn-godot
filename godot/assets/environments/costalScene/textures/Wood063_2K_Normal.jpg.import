@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Wood063_2K_Normal.jpg-e85e0fc07c7d672488a4904
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Brush Square 01.png-f0134df44f245ba98cf8fd972
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

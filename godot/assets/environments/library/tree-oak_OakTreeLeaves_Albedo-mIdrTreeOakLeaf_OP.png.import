@@ -3,11 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c8avmrw2rpcq4"
-path.s3tc="res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-4d5bd8fc7536eeeb19a1d839fbc78d05.s3tc.ctex"
-path.etc2="res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-4d5bd8fc7536eeeb19a1d839fbc78d05.etc2.ctex"
+path="res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-c5b9f32ef00bd34b99d7094bfdf542e3.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "9db981cd908a7aa3befe892953c7de9a"
@@ -15,12 +13,12 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/environments/Library/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png"
-dest_files=["res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-4d5bd8fc7536eeeb19a1d839fbc78d05.s3tc.ctex", "res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-4d5bd8fc7536eeeb19a1d839fbc78d05.etc2.ctex"]
+source_file="res://assets/environments/library/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png"
+dest_files=["res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-c5b9f32ef00bd34b99d7094bfdf542e3.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -28,7 +26,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

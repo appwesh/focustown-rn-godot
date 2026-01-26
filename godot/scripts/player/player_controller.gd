@@ -16,7 +16,7 @@ var _state: State = State.IDLE
 var _target_rotation: float = 0.0
 var _nearby_study_spot: StudySpot = null
 var _current_spot: StudySpot = null
-var _target_spot: StudySpot = null  # Spot we're walking towards
+var _target_spot: StudySpot = null  # Spot we're walking towardsea
 
 # Idle bobbing
 var _bob_time: float = 0.0

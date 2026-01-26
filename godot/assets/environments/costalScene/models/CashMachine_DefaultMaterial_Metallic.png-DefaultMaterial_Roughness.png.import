@@ -3,11 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://rixwr4srk8s4"
-path.s3tc="res://.godot/imported/CashMachine_DefaultMaterial_Metallic.png-DefaultMaterial_Roughness.png-dd8d49d481145080ba25707e16cbe346.s3tc.ctex"
-path.etc2="res://.godot/imported/CashMachine_DefaultMaterial_Metallic.png-DefaultMaterial_Roughness.png-dd8d49d481145080ba25707e16cbe346.etc2.ctex"
+path="res://.godot/imported/CashMachine_DefaultMaterial_Metallic.png-DefaultMaterial_Roughness.png-dd8d49d481145080ba25707e16cbe346.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "17e246c646f3fc5cab2c67db03ff238b"
@@ -16,11 +14,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/environments/costalScene/models/CashMachine_DefaultMaterial_Metallic.png-DefaultMaterial_Roughness.png"
-dest_files=["res://.godot/imported/CashMachine_DefaultMaterial_Metallic.png-DefaultMaterial_Roughness.png-dd8d49d481145080ba25707e16cbe346.s3tc.ctex", "res://.godot/imported/CashMachine_DefaultMaterial_Metallic.png-DefaultMaterial_Roughness.png-dd8d49d481145080ba25707e16cbe346.etc2.ctex"]
+dest_files=["res://.godot/imported/CashMachine_DefaultMaterial_Metallic.png-DefaultMaterial_Roughness.png-dd8d49d481145080ba25707e16cbe346.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -28,7 +26,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

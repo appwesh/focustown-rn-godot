@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/ocean height.jpg-e63819fabb1247e6043c09195039
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

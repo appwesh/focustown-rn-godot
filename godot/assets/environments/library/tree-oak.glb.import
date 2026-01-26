@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://b3utl0mrf8ui"
-path="res://.godot/imported/tree-oak.glb-50f4773630fe985b9c43010b7e265a52.scn"
+path="res://.godot/imported/tree-oak.glb-20390994c626976a8f2fbe5397fecbd5.scn"
 
 [deps]
 
-source_file="res://assets/environments/Library/tree-oak.glb"
-dest_files=["res://.godot/imported/tree-oak.glb-50f4773630fe985b9c43010b7e265a52.scn"]
+source_file="res://assets/environments/library/tree-oak.glb"
+dest_files=["res://.godot/imported/tree-oak.glb-20390994c626976a8f2fbe5397fecbd5.scn"]
 
 [params]
 

@@ -72,4 +72,3 @@ func _generate_blip_sound() -> AudioStream:
 	
 	audio.data = data
 	return audio
-
