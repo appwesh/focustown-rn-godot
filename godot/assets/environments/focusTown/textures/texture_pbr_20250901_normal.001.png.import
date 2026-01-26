@@ -3,20 +3,22 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dyft6survs747"
-path="res://.godot/imported/texture_pbr_20250901_normal.001.png-65b36db5cff783e9deb9675ede7dcc33.ctex"
+path.s3tc="res://.godot/imported/texture_pbr_20250901_normal.001.png-65b36db5cff783e9deb9675ede7dcc33.s3tc.ctex"
+path.etc2="res://.godot/imported/texture_pbr_20250901_normal.001.png-65b36db5cff783e9deb9675ede7dcc33.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={}
 
 [deps]
 
 source_file="res://assets/environments/focusTown/textures/texture_pbr_20250901_normal.001.png"
-dest_files=["res://.godot/imported/texture_pbr_20250901_normal.001.png-65b36db5cff783e9deb9675ede7dcc33.ctex"]
+dest_files=["res://.godot/imported/texture_pbr_20250901_normal.001.png-65b36db5cff783e9deb9675ede7dcc33.s3tc.ctex", "res://.godot/imported/texture_pbr_20250901_normal.001.png-65b36db5cff783e9deb9675ede7dcc33.etc2.ctex"]
 
 [params]
 
-compress/mode=1
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -24,7 +26,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=1
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=1
 roughness/src_normal="res://assets/environments/focusTown/textures/texture_pbr_20250901_normal.001.png"

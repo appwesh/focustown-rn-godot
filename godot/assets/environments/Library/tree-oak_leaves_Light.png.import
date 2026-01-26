@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b5hxl3pc3rlnf"
-path="res://.godot/imported/FloorUVLayout.png-cec21c99365577d7456d7bd13a323db9.ctex"
+uid="uid://uw3hhppqiy1n"
+path="res://.godot/imported/tree-oak_leaves_Light.png-70b824a7b77b043b6879330235721c65.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/focusTown/FloorUVLayout.png"
-dest_files=["res://.godot/imported/FloorUVLayout.png-cec21c99365577d7456d7bd13a323db9.ctex"]
+source_file="res://assets/environments/Library/tree-oak_leaves_Light.png"
+dest_files=["res://.godot/imported/tree-oak_leaves_Light.png-70b824a7b77b043b6879330235721c65.ctex"]
 
 [params]
 
@@ -37,4 +37,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

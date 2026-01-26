@@ -2,7 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dit5qniu1fviv"
+uid="uid://bouvbfx1ggmh8"
 path="res://.godot/imported/FocusTown_LeafCafe_normal.png-686608706c15ddd4e939c1272aef15b9.ctex"
 metadata={
 "vram_texture": false
@@ -18,18 +18,18 @@ dest_files=["res://.godot/imported/FocusTown_LeafCafe_normal.png-686608706c15ddd
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
-compress/normal_map=1
+compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=1
-roughness/src_normal="res://assets/environments/focusTown/FocusTown_LeafCafe_normal.png"
+roughness/mode=0
+roughness/src_normal=""
 process/channel_remap/red=0
 process/channel_remap/green=1
 process/channel_remap/blue=2
@@ -40,4 +40,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

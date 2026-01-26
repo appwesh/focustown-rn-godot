@@ -22,8 +22,8 @@ nodes/import_as_skeleton_bones=false
 nodes/use_name_suffixes=true
 nodes/use_node_type_suffixes=true
 meshes/ensure_tangents=true
-meshes/generate_lods=false
-meshes/create_shadow_meshes=false
+meshes/generate_lods=true
+meshes/create_shadow_meshes=true
 meshes/light_baking=1
 meshes/lightmap_texel_size=0.2
 meshes/force_disable_compression=false
@@ -166,7 +166,7 @@ _subresources={
 },
 "png-transparent-leaf-texture-mapping-vine-leaves-leaf-maple.005": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/focusTown/png-transparent-leaf-texture-mapping-vine-leaves-leaf-maple.005.tres",
+"use_external/fallback_path": "res://assets/environments/focusTown/textures/png-transparent-leaf-texture-mapping-vine-leaves-leaf-maple.005.tres",
 "use_external/path": "uid://dwbhnh0p63rsm"
 },
 "stylized bush": {
