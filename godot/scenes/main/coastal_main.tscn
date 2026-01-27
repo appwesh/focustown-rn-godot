@@ -1,0 +1,77 @@
+[gd_scene load_steps=5 format=3 uid="uid://bt1y5qdtd4kag"]
+
+[ext_resource type="Script" uid="uid://cywuuk8iq0vqx" path="res://scripts/cinematics/coastal_cinematic.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bgdkh0wuq4a16" path="res://scenes/environment/costal_scene/costal_scene_environment.tscn" id="2_environment"]
+[ext_resource type="Script" uid="uid://cm2exeyxs2rb8" path="res://scripts/world/cinematic_study_spot.gd" id="3_spots"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(100, 0.1, 100)
+
+[node name="CoastalCafeMain" type="Node3D"]
+script = ExtResource("1_script")
+character_spawn_position = Vector3(0, 0, 3)
+character_spawn_rotation = 180.0
+play_entrance_cinematic = true
+entrance_start_delay = 0.3
+entrance_end_delay = 0.5
+entrance_walk_speed = 1.0
+entrance_animation_duration = 1.2
+
+[node name="OverviewCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7770471, 0.62944245, 0, -0.62944245, 0.7770471, 1.6453781, 27.391865, 30.461563)
+current = true
+fov = 18.0
+
+[node name="CoastalEnvironment" parent="." instance=ExtResource("2_environment")]
+transform = Transform3D(-5.9604645e-08, 0, 1, 0, 1, 0, -1, 0, -5.9604645e-08, 0, 0, 0)
+
+[node name="GroundCollision" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GroundCollision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="StudySpots" type="Node3D" parent="."]
+
+[node name="CafeChair_01" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1733403, 0, -1.5690789)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_01"
+sit_rotation = 90.0
+spawn_npc = true
+
+[node name="CafeChair_02" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.94405127, 0, -1.5469025)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_02"
+spawn_npc = true
+
+[node name="CafeChair_03" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.224309, 0, -1.4393566)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_03"
+sit_rotation = -90.0
+
+[node name="CafeChair_04" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3655252, 0, -1.4621371)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_04"
+sit_rotation = -90.0
+spawn_npc = true
+
+[node name="CafeChair_05" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.197164, 0, -0.7312023)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_05"
+
+[node name="CafeChair_06" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9462614, 0, -0.69185257)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_06"
+sit_rotation = 180.0

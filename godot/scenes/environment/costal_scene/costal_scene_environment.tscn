@@ -1,0 +1,68 @@
+[gd_scene load_steps=5 format=3 uid="uid://bgdkh0wuq4a16"]
+
+[ext_resource type="PackedScene" uid="uid://du48yqr5ci47r" path="res://assets/environments/costalScene/glb/coastal_cafe.glb" id="1_icfs6"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jbviq"]
+sky_top_color = Color(0.15799999, 0.34759995, 0.79, 1)
+sky_horizon_color = Color(0.51, 0.97550005, 1, 1)
+ground_bottom_color = Color(0.23137255, 0.654902, 0.9254902, 1)
+ground_horizon_color = Color(0.4392157, 0.972549, 1, 1)
+
+[sub_resource type="Sky" id="Sky_cg2xd"]
+sky_material = SubResource("ProceduralSkyMaterial_jbviq")
+
+[sub_resource type="Environment" id="Environment_srx8i"]
+background_mode = 2
+sky = SubResource("Sky_cg2xd")
+sky_custom_fov = 115.5
+ambient_light_color = Color(0.66565865, 0.6342921, 0.3134923, 1)
+ambient_light_sky_contribution = 0.46
+tonemap_mode = 4
+tonemap_exposure = 0.9
+glow_enabled = true
+glow_intensity = 0.5
+glow_bloom = 0.09
+glow_hdr_threshold = 0.6
+glow_hdr_scale = 1.1
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.3355946, 0.57693464, 0.7563332, 1)
+fog_light_energy = 2.56
+fog_density = 0.5071
+fog_sky_affect = 0.0
+fog_height = -1.5
+fog_height_density = 0.4064
+fog_depth_begin = 5.0
+fog_depth_end = 79.8
+adjustment_enabled = true
+adjustment_brightness = 1.15
+adjustment_contrast = 1.3
+adjustment_saturation = 1.2
+
+[node name="CostalSceneMaster" type="Node3D"]
+
+[node name="coastal_cafe" parent="." instance=ExtResource("1_icfs6")]
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, 0, 0, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_srx8i")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.99975866, -0.017400859, -0.01341925, 0.008872967, -0.23900947, 0.9709769, -0.020103155, -0.97086126, -0.23879732, -1.3820357, 5.142702, 1.8256764)
+light_energy = 0.2
+light_angular_distance = 15.0
+shadow_enabled = true
+shadow_bias = 0.664
+shadow_normal_bias = 3.222
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.292221, 1.4383545, -1.9131317)
+size = Vector3(56.233, 17.123291, 37.860138)
+ambient_mode = 2
+ambient_color = Color(0.47007585, 0.47007585, 0.47007585, 1)
+ambient_color_energy = 0.66
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.4079976, 2.8265383, 2.0770912)
+light_color = Color(1, 0.98, 0.7, 1)
+light_energy = 0.262

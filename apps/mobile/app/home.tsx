@@ -54,7 +54,7 @@ const CAFES = [
     id: 'europe-cafe',
     name: 'stockholm cafe',
     flag: '🇸🇪',
-    buildingId: 'europe',
+    buildingId: 'coastal',
     buildingName: 'Stockholm Café',
     image: require('@/assets/ui/cafeEurope.png'),
     locked: false,
@@ -172,6 +172,7 @@ export default function HomeScreen() {
   const cancelInvite = useSocialStore((s) => s.cancelInvite);
   const canStartSession = useSocialStore((s) => s.canStartSession);
   const clearGroupSessionStarted = useSocialStore((s) => s.clearGroupSessionStarted);
+  const setSelectedBuilding = useSocialStore((s) => s.setSelectedBuilding);
   const initialize = useSocialStore((s) => s.initialize);
 
   // Initialize social store
@@ -297,6 +298,9 @@ export default function HomeScreen() {
   const handleGoToCafe = useCallback(async () => {
     if (CAFES[selectedCafe].locked) return;
 
+    // Set selected building for game screen
+    setSelectedBuilding(CAFES[selectedCafe].buildingId);
+
     // Group session logic - commented out for now
     // const hasReadyFriends = lobbySlots.slice(1).some(s => s.status === 'ready');
     // if (lobbyGroupId && lobbyHostId && hasReadyFriends) {
@@ -309,7 +313,7 @@ export default function HomeScreen() {
     // }
 
     router.push('/game');
-  }, [selectedCafe, router]);
+  }, [selectedCafe, router, setSelectedBuilding]);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const lastGodotCafeRef = useRef<number>(0);

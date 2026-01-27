@@ -3,10 +3,11 @@ import { Platform, StyleSheet, View, ActivityIndicator, Text } from 'react-nativ
 import { RTNGodot, RTNGodotView, runOnGodotThread } from '@borndotcom/react-native-godot';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Device from 'expo-device';
+import { USE_LOCAL_PCK } from '@/constants/game';
 
 interface GodotGameProps {
   style?: object;
-  /** URL to fetch the .pck file from */
+  /** URL to fetch the .pck file from (ignored if USE_LOCAL_PCK is true in DEV mode) */
   pckUrl: string;
   /** Callback when loading state changes - receives isLoading and optional download progress (0-1) */
   onLoadingChange?: (isLoading: boolean, downloadProgress?: number) => void;
@@ -15,6 +16,12 @@ interface GodotGameProps {
 const PCK_FILENAME = 'main.pck';
 const LOCAL_PCK_URI = FileSystem.documentDirectory + PCK_FILENAME;
 const LOCAL_PCK_COMPLETE_URI = FileSystem.documentDirectory + PCK_FILENAME + '.complete';
+
+// Local dev PCK paths
+// For simulator: direct path to the exported PCK in the project (simulator can access host filesystem)
+// For real device: copy main.pck to the app's document directory as 'local-dev.pck'
+const LOCAL_DEV_PCK_PROJECT_PATH = '/Users/edgarhnd/Dev/talktown/godot/export/main.pck';
+const LOCAL_DEV_PCK_URI = FileSystem.documentDirectory + 'local-dev.pck';
 
 // Keep a handle to any active download so we can pause it during Fast Refresh / teardown.
 let activeDownloadResumable: ReturnType<typeof FileSystem.createDownloadResumable> | null = null;
@@ -30,12 +37,58 @@ function uriToPath(uri: string): string {
 type ProgressCallback = (progress: number) => void;
 
 /**
+ * Check for and use local dev PCK if USE_LOCAL_PCK is enabled
+ * Returns the path if found, null otherwise
+ */
+async function tryGetLocalDevPck(): Promise<string | null> {
+  if (!__DEV__ || !USE_LOCAL_PCK) {
+    return null;
+  }
+
+  console.log('[GodotGame] USE_LOCAL_PCK enabled, checking for local PCK...');
+  
+  // For simulator: try the direct project path first (simulator can access host filesystem)
+  if (!Device.isDevice) {
+    const projectPathInfo = await FileSystem.getInfoAsync(LOCAL_DEV_PCK_PROJECT_PATH);
+    if (projectPathInfo.exists && projectPathInfo.size && projectPathInfo.size > 0) {
+      console.log('[GodotGame] Using project PCK (simulator):', LOCAL_DEV_PCK_PROJECT_PATH, `(${(projectPathInfo.size / 1024 / 1024).toFixed(1)} MB)`);
+      return LOCAL_DEV_PCK_PROJECT_PATH;
+    }
+    console.log('[GodotGame] Project PCK not found at:', LOCAL_DEV_PCK_PROJECT_PATH);
+  }
+
+  // For real device (or if project path not found): check document directory
+  const localDevInfo = await FileSystem.getInfoAsync(LOCAL_DEV_PCK_URI);
+  if (localDevInfo.exists && localDevInfo.size && localDevInfo.size > 0) {
+    const path = uriToPath(LOCAL_DEV_PCK_URI);
+    console.log('[GodotGame] Found local dev PCK:', path, `(${(localDevInfo.size / 1024 / 1024).toFixed(1)} MB)`);
+    return path;
+  }
+
+  console.warn('[GodotGame] USE_LOCAL_PCK is true but no local PCK found');
+  if (Device.isDevice) {
+    console.warn('[GodotGame] For real device: copy main.pck to the document directory as "local-dev.pck"');
+  } else {
+    console.warn('[GodotGame] Expected at:', LOCAL_DEV_PCK_PROJECT_PATH);
+  }
+  console.warn('[GodotGame] Falling back to remote download...');
+  
+  return null;
+}
+
+/**
  * Download PCK with resumable support and progress tracking
  */
 async function downloadPck(
   url: string,
   onProgress?: ProgressCallback
 ): Promise<string> {
+  // First, check if we should use a local dev PCK
+  const localDevPath = await tryGetLocalDevPck();
+  if (localDevPath) {
+    return localDevPath;
+  }
+
   console.log('[GodotGame] Checking for cached PCK...');
   
   // Check if already downloaded
@@ -53,6 +106,10 @@ async function downloadPck(
 
   console.log('[GodotGame] Downloading PCK from:', url);
   
+  // Throttle progress updates to avoid overwhelming React
+  let lastProgressUpdate = 0;
+  let lastLoggedPercent = -10;
+  
   // Create resumable download with progress callback
   const downloadResumable = FileSystem.createDownloadResumable(
     url,
@@ -63,15 +120,23 @@ async function downloadPck(
         ? downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite
         : 0;
       
-      // Log progress every 10%
       const percent = Math.round(progress * 100);
-      if (percent % 10 === 0) {
+      const now = Date.now();
+      
+      // Log progress every 10%
+      if (percent >= lastLoggedPercent + 10) {
+        lastLoggedPercent = percent - (percent % 10);
         const downloadedMB = (downloadProgress.totalBytesWritten / 1024 / 1024).toFixed(1);
         const totalMB = (downloadProgress.totalBytesExpectedToWrite / 1024 / 1024).toFixed(1);
         console.log(`[GodotGame] Download progress: ${percent}% (${downloadedMB}/${totalMB} MB)`);
       }
       
-      onProgress?.(progress);
+      // Throttle state updates to max once per 100ms to avoid React "Maximum update depth exceeded"
+      // Always send 100% progress immediately
+      if (now - lastProgressUpdate >= 100 || progress >= 1) {
+        lastProgressUpdate = now;
+        onProgress?.(progress);
+      }
     }
   );
   activeDownloadResumable = downloadResumable;
@@ -336,6 +401,37 @@ export async function clearPckCache(): Promise<void> {
     await FileSystem.deleteAsync(LOCAL_PCK_URI);
     await FileSystem.deleteAsync(LOCAL_PCK_COMPLETE_URI, { idempotent: true });
     console.log('[GodotGame] Cleared PCK cache');
+  }
+}
+
+/** Get the path where local dev PCK should be placed */
+export function getLocalDevPckPath(): string {
+  return LOCAL_DEV_PCK_URI;
+}
+
+/** Copy a PCK file to the local dev location for testing */
+export async function copyPckToLocalDev(sourcePath: string): Promise<void> {
+  console.log('[GodotGame] Copying PCK to local dev location...');
+  console.log('[GodotGame] Source:', sourcePath);
+  console.log('[GodotGame] Destination:', LOCAL_DEV_PCK_URI);
+  
+  await FileSystem.copyAsync({
+    from: sourcePath,
+    to: LOCAL_DEV_PCK_URI,
+  });
+  
+  const fileInfo = await FileSystem.getInfoAsync(LOCAL_DEV_PCK_URI);
+  if (fileInfo.exists && fileInfo.size) {
+    console.log('[GodotGame] Local dev PCK ready:', `${(fileInfo.size / 1024 / 1024).toFixed(1)} MB`);
+  }
+}
+
+/** Clear local dev PCK */
+export async function clearLocalDevPck(): Promise<void> {
+  const fileInfo = await FileSystem.getInfoAsync(LOCAL_DEV_PCK_URI);
+  if (fileInfo.exists) {
+    await FileSystem.deleteAsync(LOCAL_DEV_PCK_URI, { idempotent: true });
+    console.log('[GodotGame] Cleared local dev PCK');
   }
 }
 

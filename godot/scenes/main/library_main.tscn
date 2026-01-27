@@ -1,17 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://kpy1kt4pq16n"]
+[gd_scene load_steps=6 format=3 uid="uid://kpy1kt4pq16n"]
 
 [ext_resource type="Script" uid="uid://dtpe55lc2ftby" path="res://scripts/cinematics/library_cinematic.gd" id="1_5k4ab"]
 [ext_resource type="PackedScene" uid="uid://bd76o2yql4e7n" path="res://scenes/environment/library/LibraryCinematic.scn" id="2_5kb8e"]
 [ext_resource type="PackedScene" uid="uid://b8evnabog5855" path="res://scenes/environment/library/backwall.tscn" id="3_6vs20"]
+[ext_resource type="Script" path="res://scripts/world/cinematic_study_spot.gd" id="4_spots"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(50, 0.1, 50)
 
 [node name="LibraryCinematicWithCharacter" type="Node3D"]
 script = ExtResource("1_5k4ab")
+character_spawn_position = Vector3(0, 0, 11)
 character_spawn_rotation = 180.0
 play_entrance_cinematic = true
 entrance_position = Vector3(0, 0, 9.5)
+entrance_destination = Vector3(0, 0, 8)
 entrance_start_delay = 0.3
 entrance_end_delay = 0.5
 entrance_walk_speed = 1.0
@@ -85,5 +88,175 @@ layers = 2
 
 [node name="Cube (14)2" parent="backwall" index="4"]
 layers = 2
+
+[node name="StudySpots" type="Node3D" parent="."]
+
+[node name="Chair_01" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.59, 0, 1.73)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_01"
+sit_rotation = 0.0
+
+[node name="Chair_02" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.82, 0, 1.73)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_02"
+sit_rotation = 0.0
+
+[node name="Chair_03" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.76, 0, 1.73)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_03"
+sit_rotation = 0.0
+
+[node name="Chair_04" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54, 0, 1.73)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_04"
+sit_rotation = 0.0
+
+[node name="Chair_05" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.59, 0, 3.25)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_05"
+sit_rotation = 180.0
+
+[node name="Chair_06" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.82, 0, 3.25)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_06"
+sit_rotation = 180.0
+
+[node name="Chair_07" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.76, 0, 3.25)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_07"
+sit_rotation = 180.0
+
+[node name="Chair_08" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54, 0, 3.25)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_08"
+sit_rotation = 180.0
+
+[node name="Chair_09" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.59, 0, 5.49)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_09"
+sit_rotation = 0.0
+
+[node name="Chair_10" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.82, 0, 5.49)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_10"
+sit_rotation = 0.0
+
+[node name="Chair_11" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.76, 0, 5.49)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_11"
+sit_rotation = 0.0
+
+[node name="Chair_12" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54, 0, 5.49)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_12"
+sit_rotation = 0.0
+
+[node name="Chair_13" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.59, 0, 7.02)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_13"
+sit_rotation = 180.0
+
+[node name="Chair_14" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.82, 0, 7.02)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_14"
+sit_rotation = 180.0
+
+[node name="Chair_15" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.76, 0, 7.02)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_15"
+sit_rotation = 180.0
+
+[node name="Chair_16" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54, 0, 7.02)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_16"
+sit_rotation = 180.0
+
+[node name="Chair_17" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.59, 0, 9.27)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_17"
+sit_rotation = 0.0
+
+[node name="Chair_18" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.82, 0, 9.27)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_18"
+sit_rotation = 0.0
+
+[node name="Chair_19" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.76, 0, 9.27)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_19"
+sit_rotation = 0.0
+
+[node name="Chair_20" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54, 0, 9.27)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_20"
+sit_rotation = 0.0
+
+[node name="Chair_21" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.59, 0, 10.79)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_21"
+sit_rotation = 180.0
+
+[node name="Chair_22" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.82, 0, 10.79)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_22"
+sit_rotation = 180.0
+
+[node name="Chair_23" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.76, 0, 10.79)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_23"
+sit_rotation = 180.0
+
+[node name="Chair_24" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54, 0, 10.79)
+gizmo_extents = 0.3
+script = ExtResource("4_spots")
+spot_name = "Chair_24"
+sit_rotation = 180.0
 
 [editable path="backwall"]

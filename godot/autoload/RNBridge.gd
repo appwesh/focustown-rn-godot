@@ -526,12 +526,27 @@ func on_entrance_cinematic_finished() -> void:
 ## Play celebration animation on the player character (fist pump)
 ## Called from RN when session completes successfully
 func play_celebration_animation() -> void:
-	_ensure_library_cinematic()
-	if _library_cinematic:
-		_library_cinematic.play_celebration_animation()
+	# Try to find any active cinematic scene
+	var cinematic := _get_active_cinematic()
+	if cinematic:
+		cinematic.play_celebration_animation()
 		print("[RNBridge] Playing celebration animation")
 	else:
-		print("[RNBridge] LibraryCinematic not available for celebration animation")
+		print("[RNBridge] No cinematic scene available for celebration animation")
+
+
+## Get the currently active cinematic scene (Library, Coastal, or any BaseCinematic)
+func _get_active_cinematic() -> BaseCinematic:
+	if _library_cinematic:
+		return _library_cinematic
+	if _coastal_cinematic:
+		return _coastal_cinematic
+	
+	# Search scene tree for any BaseCinematic
+	var root := get_tree().current_scene
+	if root:
+		return _find_cinematic_recursive(root)
+	return null
 
 
 func _ensure_library_cinematic() -> void:
@@ -550,6 +565,16 @@ func _find_library_cinematic_recursive(node: Node) -> LibraryCinematic:
 		return node
 	for child in node.get_children():
 		var found := _find_library_cinematic_recursive(child)
+		if found:
+			return found
+	return null
+
+
+func _find_cinematic_recursive(node: Node) -> BaseCinematic:
+	if node is BaseCinematic:
+		return node
+	for child in node.get_children():
+		var found := _find_cinematic_recursive(child)
 		if found:
 			return found
 	return null
@@ -606,12 +631,16 @@ var _home_showcase: HomeCharacterShowcase = null
 ## Reference to the CharacterCustomizationShowcase scene (if active)
 var _character_showcase: CharacterCustomizationShowcase = null
 
+## Reference to the CoastalCinematic scene (if active)
+var _coastal_cinematic: CoastalCinematic = null
+
 ## Stored user character data (persisted until applied)
 var _user_character_data: Dictionary = {}
 
 ## Scene paths for switching
 const SCENE_PATHS := {
 	"library": "res://scenes/main/library_main.tscn",
+	"coastal": "res://scenes/main/coastal_main.tscn",
 	"home_showcase": "res://scenes/main/home_character_showcase.tscn",
 	"character_showcase": "res://scenes/main/character_customization.tscn",
 }
@@ -630,6 +659,7 @@ func change_scene(scene_name: String) -> void:
 	# Clear cached references
 	_home_showcase = null
 	_character_showcase = null
+	_coastal_cinematic = null
 	_camera_rig = null
 	_library_cinematic = null
 	
@@ -677,6 +707,17 @@ func register_library_cinematic(cinematic: LibraryCinematic) -> void:
 		_library_cinematic.set_user_character(_user_character_data)
 
 
+## Register the CoastalCinematic scene with RNBridge
+## Called automatically by CoastalCinematic._ready()
+func register_coastal_cinematic(cinematic: CoastalCinematic) -> void:
+	_coastal_cinematic = cinematic
+	print("[RNBridge] CoastalCinematic registered")
+	
+	# Apply any pending user character data
+	if not _user_character_data.is_empty():
+		_coastal_cinematic.set_user_character(_user_character_data)
+
+
 ## Set the user's character appearance from React Native
 ## skin_data should be a Dictionary with keys like: SkinTone, Face, EyeColor, Hair, etc.
 ## See CharacterPresets for the expected format
@@ -691,6 +732,8 @@ func set_user_character(skin_data: Dictionary) -> void:
 		_character_showcase.set_user_character(skin_data)
 	elif _library_cinematic:
 		_library_cinematic.set_user_character(skin_data)
+	elif _coastal_cinematic:
+		_coastal_cinematic.set_user_character(skin_data)
 	else:
 		print("[RNBridge] No scene active, data stored for later")
 

@@ -3,15 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cvpp35bax6m82"
-path="res://.godot/imported/T_LargeWaves_N.PNG-d7ac5cce01c43c9b7ac6c171fd5919f9.ctex"
-metadata={
-"vram_texture": false
-}
+valid=false
 
 [deps]
 
 source_file="res://assets/environments/costalScene/textures/T_LargeWaves_N.PNG"
-dest_files=["res://.godot/imported/T_LargeWaves_N.PNG-d7ac5cce01c43c9b7ac6c171fd5919f9.ctex"]
 
 [params]
 

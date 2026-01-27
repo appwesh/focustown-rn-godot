@@ -61,6 +61,9 @@ interface SocialState {
   friendsLoading: boolean;
   pendingRequestsCount: number;
   
+  // Selected building (cafe/environment for game screen)
+  selectedBuildingId: string;
+  
   // Lobby (group study)
   lobbyGroupId: string | null;
   lobbyHostId: string | null;
@@ -85,6 +88,9 @@ interface SocialState {
 interface SocialActions {
   // Initialization
   initialize: (userId: string) => () => void;
+  
+  // Building selection
+  setSelectedBuilding: (buildingId: string) => void;
   
   // Friends
   refreshFriends: (userId: string) => Promise<void>;
@@ -161,6 +167,7 @@ const initialState: SocialState = {
   friends: [],
   friendsLoading: true,
   pendingRequestsCount: 0,
+  selectedBuildingId: 'library',
   lobbyGroupId: null,
   lobbyHostId: null,
   lobbyHostName: null,
@@ -264,6 +271,15 @@ export const useSocialStore = create<SocialStore>((set, get) => ({
       isInitialized = false;
       initializedUserId = null;
     };
+  },
+  
+  // ==========================================================================
+  // Building Selection
+  // ==========================================================================
+  
+  setSelectedBuilding: (buildingId: string) => {
+    set({ selectedBuildingId: buildingId });
+    console.log('[SocialStore] Selected building:', buildingId);
   },
   
   // ==========================================================================

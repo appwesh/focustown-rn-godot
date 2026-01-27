@@ -99,10 +99,11 @@ export default function GameScreen() {
 
   const { recordSession, userDoc, user } = useAuth();
 
-  // Social store (for group session)
+  // Social store (for group session and building selection)
   const lobbyGroupId = useSocialStore((s) => s.lobbyGroupId);
   const lobbyHostId = useSocialStore((s) => s.lobbyHostId);
   const resetLobbyState = useSocialStore((s) => s.resetLobbyState);
+  const selectedBuildingId = useSocialStore((s) => s.selectedBuildingId);
 
   // Godot controls
   const {
@@ -131,7 +132,7 @@ export default function GameScreen() {
     return cleanup;
   }, [initialize]);
 
-  // Switch to library scene when game screen mounts
+  // Switch to selected scene when game screen mounts
   // Shows transition overlay while scene changes
   useEffect(() => {
     let cancelled = false;
@@ -149,8 +150,10 @@ export default function GameScreen() {
         return;
       }
       
-      console.log('[Game] Switching to library scene');
-      changeScene('library');
+      // Map buildingId to scene name (default to library for unknown)
+      const sceneName = selectedBuildingId === 'coastal' ? 'coastal' : 'library';
+      console.log('[Game] Switching to scene:', sceneName, '(building:', selectedBuildingId, ')');
+      changeScene(sceneName);
       
       // Apply saved character appearance after scene loads
       setTimeout(() => {
@@ -177,7 +180,7 @@ export default function GameScreen() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [userDoc?.characterSkin]);
+  }, [userDoc?.characterSkin, selectedBuildingId]);
 
   // Register entrance cinematic finished callback
   useEffect(() => {
