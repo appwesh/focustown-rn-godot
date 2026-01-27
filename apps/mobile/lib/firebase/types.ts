@@ -46,6 +46,12 @@ export interface UserDoc {
   birthday: number | null; // Unix timestamp (ms) for birthday date
   location: string | null; // e.g., "Villanova University"
 
+  // Preferences
+  preference?: {
+    soundEffectsEnabled?: boolean;
+    musicEnabled?: boolean;
+  };
+
   // Character customization
   characterSkin: CharacterSkin | null;
 

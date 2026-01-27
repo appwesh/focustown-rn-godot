@@ -67,17 +67,7 @@ function AppContent() {
         <Stack.Screen name="social" />
         <Stack.Screen name="game" options={{ gestureEnabled: false }} />
         <Stack.Screen name="profile" />
-        <Stack.Screen
-          name="settings"
-          options={{
-            presentation: 'modal',
-            headerShown: true,
-            title: 'Settings',
-            headerStyle: { backgroundColor: '#FFF8E7' },
-            headerTintColor: '#5D4037',
-            headerTitleStyle: { fontWeight: '600' },
-          }}
-        />
+        <Stack.Screen name="settings" />
       </Stack>
       <StatusBar style="dark" />
     </>

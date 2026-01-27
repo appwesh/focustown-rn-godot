@@ -7,6 +7,7 @@ import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
 import { DebugModal } from '@/components/debug-modal';
 import { BackButton, BeanCounter } from '@/components/ui';
+import { AmbienceMixer } from '@/components/audio/ambience-mixer';
 import {
   SessionSetupModal,
   SessionCompleteModal,
@@ -33,6 +34,7 @@ import {
   setEntranceCinematicFinishedHandler,
   registerEntranceCinematicFinishedCallback,
   type SpotLocation,
+  useCameraControls,
 } from '@/lib/godot';
 import {
   useSessionStore,
@@ -42,6 +44,9 @@ import {
 import { useAuth, groupsService } from '@/lib/firebase';
 import { useSocialStore } from '@/lib/social';
 import { PCK_URL } from '@/constants/game';
+import { useAmbienceEngine, useAmbienceStore } from '@/lib/sound';
+import { MUSIC_TRACKS_BY_BUILDING_ID } from '@/lib/sound/tracks';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 /**
@@ -53,6 +58,7 @@ export default function GameScreen() {
   const [debugVisible, setDebugVisible] = useState(false);
   const [sceneTransitioning, setSceneTransitioning] = useState(true); // Start with transition visible
   const [cinematicFinished, setCinematicFinished] = useState(false); // Wait for entrance cinematic
+  const { toggleCamera } = useCameraControls();
   
   // Pulsing animation for "pick your spot" text
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -97,13 +103,16 @@ export default function GameScreen() {
     }, [])
   );
 
-  const { recordSession, userDoc, user } = useAuth();
+  const { userDoc, user } = useAuth();
 
   // Social store (for group session and building selection)
   const lobbyGroupId = useSocialStore((s) => s.lobbyGroupId);
   const lobbyHostId = useSocialStore((s) => s.lobbyHostId);
   const resetLobbyState = useSocialStore((s) => s.resetLobbyState);
   const selectedBuildingId = useSocialStore((s) => s.selectedBuildingId);
+  const setMusicSource = useAmbienceStore((s) => s.setMusicSource);
+  const stopNonMusic = useAmbienceStore((s) => s.stopNonMusic);
+  const setGameOverrideEnabled = useAmbienceStore((s) => s.setGameOverrideEnabled);
 
   // Godot controls
   const {
@@ -181,6 +190,18 @@ export default function GameScreen() {
       clearTimeout(timer);
     };
   }, [userDoc?.characterSkin, selectedBuildingId]);
+
+  useAmbienceEngine();
+
+  useEffect(() => {
+    setGameOverrideEnabled(false);
+    return () => setGameOverrideEnabled(false);
+  }, [setGameOverrideEnabled]);
+
+  useEffect(() => {
+    const musicSource = MUSIC_TRACKS_BY_BUILDING_ID[selectedBuildingId ?? ''] ?? null;
+    setMusicSource(musicSource);
+  }, [selectedBuildingId, setMusicSource]);
 
   // Register entrance cinematic finished callback
   useEffect(() => {
@@ -450,10 +471,9 @@ export default function GameScreen() {
   const handleSessionComplete = useCallback(
     (focusTime: number, coinsEarned: number) => {
       console.log('[Game] Session complete:', focusTime, 's,', coinsEarned, 'coins');
-      recordSession(focusTime, coinsEarned);
       endSession(focusTime, coinsEarned);
     },
-    [recordSession, endSession]
+    [endSession]
   );
 
   // Handle player seated - receives location from Godot
@@ -491,6 +511,17 @@ export default function GameScreen() {
   usePlayerSeated(handlePlayerSeated);
   useSessionTapOutside(handleSessionTapOutside);
 
+  const handleLeaveCafe = useCallback(() => {
+    if (phase === 'active') {
+      requestAbandonSession();
+      return;
+    }
+
+    stopNonMusic();
+    setGameOverrideEnabled(false);
+    router.dismissTo('/home');
+  }, [phase, requestAbandonSession, stopNonMusic, setGameOverrideEnabled, router]);
+
   // Hide top bar during modals
   const showTopBar = (phase === 'idle' || phase === 'active') && !showingAbandonConfirm;
 
@@ -512,17 +543,29 @@ export default function GameScreen() {
         onTripleTap={handleTripleTap}
       />
 
-      {/* Idle UI - "pick your spot" header */}
-      {showTopBar && phase === 'idle' && (
+      {/* Top UI */}
+      {showTopBar && (
         <>
           {/* Back Button */}
           <BackButton
             style={{ position: 'absolute', left: 16, top: insets.top + 12, zIndex: 2 }}
-            onPress={() => router.dismissTo('/home')}
+            onPress={handleLeaveCafe}
           />
 
+          {/* Right controls */}
+          <View style={[styles.topRightControls, { top: insets.top + 12 }]}>
+            {phase === 'active' && (
+              <>
+              <Pressable style={styles.cameraToggle} onPress={toggleCamera}>
+                <MaterialCommunityIcons name="camera" size={24} color="#5D4037" />
+              </Pressable>
+              <AmbienceMixer />
+              </>
+            )}
+          </View>
+
           {/* Pick your spot text - only show after entrance cinematic */}
-          {cinematicFinished && (
+          {phase === 'idle' && cinematicFinished && (
             <Animated.View style={[styles.pickSpotContainer, { opacity: pulseAnim }]}>
               <Text style={styles.pickSpotText}>pick your</Text>
               <Text style={styles.pickSpotText}>spot</Text>
@@ -574,6 +617,27 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     alignItems: 'center',
     zIndex: 2,
+  },
+  topRightControls: {
+    position: 'absolute',
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    zIndex: 10,
+  },
+  cameraToggle: {
+    backgroundColor: '#FFF8E7',
+    borderRadius: 100,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#DDD5C7',
+  },
+  cameraIcon: {
+    fontSize: 24,
   },
   pickSpotText: {
     textAlign: 'center',

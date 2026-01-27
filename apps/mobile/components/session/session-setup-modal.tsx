@@ -5,7 +5,7 @@
  * User configures timer duration and deep focus mode.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Modal,
   View,
@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSessionStore, formatMinutesDisplay } from '@/lib/session';
+import { useButtonSound } from '@/lib/sound';
 import { Button, TimerSlider } from '@/components/ui';
 
 const clockIcon = require('@/assets/ui/clock.png');
@@ -34,11 +35,17 @@ const STEP = 1;
 
 export function SessionSetupModal({ visible, onTripleTap }: SessionSetupModalProps) {
   const insets = useSafeAreaInsets();
+  const { playButtonSound } = useButtonSound();
   const config = useSessionStore((s) => s.config);
   const updateConfig = useSessionStore((s) => s.updateConfig);
   const startSession = useSessionStore((s) => s.startSession);
   const showBreakSetup = useSessionStore((s) => s.showBreakSetup);
   const hasCompletedAnySession = useSessionStore((s) => s.hasCompletedAnySession);
+
+  const handleStartSession = useCallback(() => {
+    playButtonSound();
+    startSession();
+  }, [playButtonSound, startSession]);
 
   const handleDurationChange = (value: number) => {
     // Snap to nearest step
@@ -106,7 +113,7 @@ export function SessionSetupModal({ visible, onTripleTap }: SessionSetupModalPro
           {/* Start Button */}
           <Button
             title="Start Session"
-            onPress={startSession}
+            onPress={handleStartSession}
             variant="primary"
             size="medium"
             />
