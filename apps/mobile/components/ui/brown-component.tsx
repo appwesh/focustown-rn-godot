@@ -42,22 +42,29 @@ export const BrownComponent = forwardRef<TextInput, BrownComponentProps>((props,
   // Button type
   const { title, onPress, selected, disabled, style } = props;
   return (
-    <View style={[styles.shadow, style]}>
-      <Pressable
-        style={({ pressed }) => [
-          styles.button,
-          {
-            marginTop: pressed ? BUTTON_PRESSED_MARGIN_TOP : 0,
-          },
-          pressed && styles.pressed,
-          selected && styles.selected,
-        ]}
-        onPress={onPress}
-        disabled={disabled}
-      >
-        <Text style={styles.buttonText}>{title}</Text>
-      </Pressable>
-    </View>
+    <Pressable
+      style={({ pressed }) => [
+        styles.shadow,
+        style,
+        {
+          paddingBottom: pressed ? 5 : 8,
+        },
+      ]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      {({ pressed }) => (
+        <View
+          style={[
+            styles.button,
+            { marginTop: pressed ? BUTTON_PRESSED_MARGIN_TOP : 0 },
+            selected && styles.selected,
+          ]}
+        >
+          <Text style={styles.buttonText}>{title}</Text>
+        </View>
+      )}
+    </Pressable>
   );
 });
 
@@ -90,9 +97,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#5D4037',
     fontWeight: '700',
-  },
-  pressed: {
-    backgroundColor: '#F5E5C6',
   },
   selected: {
     backgroundColor: '#E8D9B8',

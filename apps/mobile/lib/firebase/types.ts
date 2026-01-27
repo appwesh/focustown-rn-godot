@@ -28,6 +28,17 @@ export interface CharacterSkin {
   NeckVariant?: number;
 }
 
+export interface OnboardingAnswers {
+  ageRange: string | null;
+  studyLocation: string | null;
+  socialBaseline: string | null;
+  studyFrequency: string | null;
+  sessionLength: string | null;
+  focusFriction: string | null;
+  focusFor: string | null;
+  goal: string | null;
+}
+
 /**
  * User document stored in Firestore
  * Flat structure to avoid nested writes and complex queries
@@ -45,6 +56,7 @@ export interface UserDoc {
   bio: string | null; // Short bio, max 50 characters
   birthday: number | null; // Unix timestamp (ms) for birthday date
   location: string | null; // e.g., "Villanova University"
+  onboarding: OnboardingAnswers | null;
 
   // Character customization
   characterSkin: CharacterSkin | null;

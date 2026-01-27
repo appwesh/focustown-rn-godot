@@ -35,9 +35,66 @@ import { userService } from '@/lib/firebase/user';
 import { toE164, cleanVerificationCode, isValidPhone } from '@/lib/phone';
 import { PrimaryButton, BrownComponent, BackButton } from '@/components/ui';
 
-type OnboardingStep = 'welcome' | 'name' | 'age' | 'username' | 'phone' | 'verify';
+type OnboardingStep =
+  | 'welcome'
+  | 'name'
+  | 'age'
+  | 'studyLocation'
+  | 'socialBaseline'
+  | 'studyFrequency'
+  | 'sessionLength'
+  | 'focusFriction'
+  | 'focusFor'
+  | 'goal'
+  | 'username'
+  | 'phone'
+  | 'verify';
 
-const STEPS: OnboardingStep[] = ['welcome', 'name', 'age', 'username', 'phone', 'verify'];
+type StudyLocation = 'home' | 'library' | 'cafe' | 'school';
+type SocialBaseline = 'always' | 'often' | 'sometimes' | 'rarely' | 'never';
+type StudyFrequency =
+  | 'most_days'
+  | 'weekdays'
+  | 'few_times_week'
+  | 'exam_only'
+  | 'not_yet';
+type SessionLength = '10_25' | '30_60' | '1_2' | '3_plus' | 'not_sure';
+type FocusFriction = 'focused' | 'drift' | 'distracted' | 'cant_yet';
+type FocusFor = 'university' | 'work' | 'job' | 'cert' | 'founder' | 'other';
+type Goal =
+  | 'habit'
+  | 'longer_each_day'
+  | 'more_days_week'
+  | 'improve_gpa'
+  | 'prepare_exam'
+  | 'stay_focused';
+
+type OnboardingAnswers = {
+  ageRange: string | null;
+  studyLocation: StudyLocation | null;
+  socialBaseline: SocialBaseline | null;
+  studyFrequency: StudyFrequency | null;
+  sessionLength: SessionLength | null;
+  focusFriction: FocusFriction | null;
+  focusFor: FocusFor | null;
+  goal: Goal | null;
+};
+
+const BASE_STEPS: OnboardingStep[] = [
+  'welcome',
+  'name',
+  'age',
+  'studyLocation',
+  'socialBaseline',
+  'studyFrequency',
+  'sessionLength',
+  'focusFriction',
+  'focusFor',
+  'goal',
+  'username',
+  'phone',
+  'verify',
+];
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -61,11 +118,20 @@ export default function OnboardingScreen() {
 
   // Step state
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
-  const stepIndex = STEPS.indexOf(currentStep);
 
   // Form state
   const [name, setName] = useState('');
   const [ageRange, setAgeRange] = useState<string | null>(null);
+  const [onboardingAnswers, setOnboardingAnswers] = useState<OnboardingAnswers>({
+    ageRange: null,
+    studyLocation: null,
+    socialBaseline: null,
+    studyFrequency: null,
+    sessionLength: null,
+    focusFriction: null,
+    focusFor: null,
+    goal: null,
+  });
   const [username, setUsername] = useState('');
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -79,6 +145,13 @@ export default function OnboardingScreen() {
   const [verificationCode, setVerificationCode] = useState('');
   const [isConfirmingCode, setIsConfirmingCode] = useState(false);
   const [isResending, setIsResending] = useState(false);
+
+  const isAge23Plus =
+    ageRange === '23 - 29' || ageRange === '30 - 40' || ageRange === '40+';
+  const steps = isAge23Plus
+    ? BASE_STEPS
+    : BASE_STEPS.filter((step) => step !== 'focusFor');
+  const stepIndex = steps.indexOf(currentStep);
 
   // Refs for auto-submit tracking
   const lastAutoSubmittedPhone = useRef<string | null>(null);
@@ -102,9 +175,9 @@ export default function OnboardingScreen() {
 
   // Update progress bar
   useEffect(() => {
-    const targetProgress = (stepIndex / (STEPS.length - 1)) * 100;
+    const targetProgress = (stepIndex / (steps.length - 1)) * 100;
     progress.value = withSpring(targetProgress, { damping: 15, stiffness: 100 });
-  }, [stepIndex, progress]);
+  }, [stepIndex, steps.length, progress]);
 
   // Trigger staggered animations when step changes (no flash)
   useLayoutEffect(() => {
@@ -186,17 +259,39 @@ export default function OnboardingScreen() {
       if (isAuthenticated && user && currentStep === 'verify') {
         console.log('[Onboarding] User authenticated, saving name and redirecting...');
 
-        // Save display name and username to Firestore
-        if (name.trim() || username.trim()) {
-          try {
-            await userService.updateProfile(user.uid, {
-              displayName: name.trim() || undefined,
-              username: username.trim() || undefined,
-            });
-            console.log('[Onboarding] Name saved to Firestore');
-          } catch (error) {
-            console.error('[Onboarding] Failed to save name:', error);
+        // Save onboarding answers + profile fields to Firestore
+        try {
+          const onboardingData: OnboardingAnswers = {
+            ageRange: ageRange ?? null,
+            studyLocation: onboardingAnswers.studyLocation,
+            socialBaseline: onboardingAnswers.socialBaseline,
+            studyFrequency: onboardingAnswers.studyFrequency,
+            sessionLength: onboardingAnswers.sessionLength,
+            focusFriction: onboardingAnswers.focusFriction,
+            focusFor: onboardingAnswers.focusFor,
+            goal: onboardingAnswers.goal,
+          };
+
+          const profileUpdates: {
+            displayName?: string;
+            username?: string;
+            onboarding: OnboardingAnswers;
+          } = {
+            onboarding: onboardingData,
+          };
+
+          if (name.trim()) {
+            profileUpdates.displayName = name.trim();
           }
+
+          if (username.trim()) {
+            profileUpdates.username = username.trim();
+          }
+
+          await userService.updateProfile(user.uid, profileUpdates);
+          console.log('[Onboarding] Profile saved to Firestore');
+        } catch (error) {
+          console.error('[Onboarding] Failed to save onboarding:', error);
         }
 
         // Identify user for analytics after successful signup
@@ -212,7 +307,7 @@ export default function OnboardingScreen() {
     };
 
     handleAuthSuccess();
-  }, [isAuthenticated, user, currentStep, name, router]);
+  }, [isAuthenticated, user, currentStep, name, username, ageRange, onboardingAnswers, router]);
 
   // Auto-advance to verify step when code is sent
   useEffect(() => {
@@ -247,10 +342,18 @@ export default function OnboardingScreen() {
   const isValidName = name.trim().length >= 2;
   const isValidCode = verificationCode.length === 6;
   const isSendingCode = phoneAuthState.step === 'sending';
+  const isAgeRange23Plus = (value: string | null) =>
+    value === '23 - 29' || value === '30 - 40' || value === '40+';
 
   // ============================================================================
   // Handlers
   // ============================================================================
+  const updateOnboardingAnswer = <K extends keyof OnboardingAnswers>(
+    key: K,
+    value: OnboardingAnswers[K]
+  ) => {
+    setOnboardingAnswers((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleStart = () => setCurrentStep('name');
 
@@ -262,7 +365,65 @@ export default function OnboardingScreen() {
 
   const handleAgeSelect = (option: string) => {
     setAgeRange(option);
+    setOnboardingAnswers((prev) => ({
+      ...prev,
+      ageRange: option,
+      focusFor: isAgeRange23Plus(option) ? prev.focusFor : null,
+    }));
     // Brief delay to let the button selection animate before transitioning
+    setTimeout(() => {
+      setCurrentStep('studyLocation');
+    }, 150);
+  };
+
+  const handleStudyLocationSelect = (value: StudyLocation) => {
+    updateOnboardingAnswer('studyLocation', value);
+    setTimeout(() => {
+      setCurrentStep('socialBaseline');
+    }, 150);
+  };
+
+  const handleSocialBaselineSelect = (value: SocialBaseline) => {
+    updateOnboardingAnswer('socialBaseline', value);
+    setTimeout(() => {
+      setCurrentStep('studyFrequency');
+    }, 150);
+  };
+
+  const handleStudyFrequencySelect = (value: StudyFrequency) => {
+    updateOnboardingAnswer('studyFrequency', value);
+    setTimeout(() => {
+      setCurrentStep('sessionLength');
+    }, 150);
+  };
+
+  const handleSessionLengthSelect = (value: SessionLength) => {
+    updateOnboardingAnswer('sessionLength', value);
+    setTimeout(() => {
+      setCurrentStep('focusFriction');
+    }, 150);
+  };
+
+  const handleFocusFrictionSelect = (value: FocusFriction) => {
+    updateOnboardingAnswer('focusFriction', value);
+    setTimeout(() => {
+      setCurrentStep(isAge23Plus ? 'focusFor' : 'goal');
+    }, 150);
+  };
+
+  const handleFocusForSelect = (value: FocusFor) => {
+    setOnboardingAnswers((prev) => ({
+      ...prev,
+      focusFor: value,
+      goal: value === 'university' || prev.goal !== 'improve_gpa' ? prev.goal : null,
+    }));
+    setTimeout(() => {
+      setCurrentStep('goal');
+    }, 150);
+  };
+
+  const handleGoalSelect = (value: Goal) => {
+    updateOnboardingAnswer('goal', value);
     setTimeout(() => {
       setCurrentStep('username');
     }, 150);
@@ -464,13 +625,67 @@ export default function OnboardingScreen() {
         lastAutoSubmittedCode.current = null;
         lastAutoSubmittedPhone.current = null;
       }
-      setCurrentStep(STEPS[prevIndex]);
+      setCurrentStep(steps[prevIndex]);
     }
   };
 
   // ============================================================================
   // Render Steps
   // ============================================================================
+
+  const renderOptionStep = <T extends string>({
+    title,
+    subtitle,
+    options,
+    selectedValue,
+    onSelect,
+  }: {
+    title: string;
+    subtitle?: string;
+    options: { value: T; label: string }[];
+    selectedValue: T | null;
+    onSelect: (value: T) => void;
+  }) => (
+    <View key={title} style={styles.onboardingStepContainer}>
+      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+        <Text style={styles.onboardingTitle}>{title}</Text>
+        {subtitle ? <Text style={styles.onboardingSubtitle}>{subtitle}</Text> : null}
+      </Animated.View>
+
+      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+        <View style={styles.ageOptions}>
+          {options.map((option) => (
+            <BrownComponent
+              key={option.value}
+              type="button"
+              title={option.label}
+              onPress={() => onSelect(option.value)}
+              selected={selectedValue === option.value}
+              style={styles.ageOption}
+            />
+          ))}
+        </View>
+      </Animated.View>
+    </View>
+  );
+
+  const getGoalOptions = (): { value: Goal; label: string }[] => {
+    const isEducationFocus = !isAge23Plus || onboardingAnswers.focusFor === 'university';
+    const options: { value: Goal; label: string }[] = [
+      { value: 'habit', label: 'Build a consistent habit' },
+      { value: 'longer_each_day', label: 'Study longer each day' },
+      { value: 'more_days_week', label: 'Study more days per week' },
+      {
+        value: 'prepare_exam',
+        label: isEducationFocus ? 'Prepare for an exam' : 'Prepare for an exam/cert',
+      },
+      { value: 'stay_focused', label: 'Stay focused / stop procrastinating' },
+    ];
+    if (isEducationFocus) {
+      options.splice(3, 0, { value: 'improve_gpa', label: 'Improve GPA' });
+    }
+    return options;
+  };
 
   const renderWelcome = () => (
     <View key="welcome" style={styles.stepContainer}>
@@ -576,6 +791,97 @@ export default function OnboardingScreen() {
       </View>
     );
   };
+
+  const renderStudyLocation = () =>
+    renderOptionStep<StudyLocation>({
+      title: 'Where do you usually study?',
+      options: [
+        { value: 'home', label: 'Home' },
+        { value: 'library', label: 'Library' },
+        { value: 'cafe', label: 'Cafe' },
+        { value: 'school', label: 'School' },
+      ],
+      selectedValue: onboardingAnswers.studyLocation,
+      onSelect: handleStudyLocationSelect,
+    });
+
+  const renderSocialBaseline = () =>
+    renderOptionStep<SocialBaseline>({
+      title: 'How often do you study with friends?',
+      options: [
+        { value: 'always', label: 'Always' },
+        { value: 'often', label: 'Often' },
+        { value: 'sometimes', label: 'Sometimes' },
+        { value: 'rarely', label: 'Rarely' },
+        { value: 'never', label: 'Never' },
+      ],
+      selectedValue: onboardingAnswers.socialBaseline,
+      onSelect: handleSocialBaselineSelect,
+    });
+
+  const renderStudyFrequency = () =>
+    renderOptionStep<StudyFrequency>({
+      title: 'How often do you study right now?',
+      options: [
+        { value: 'most_days', label: 'Most days' },
+        { value: 'weekdays', label: 'Weekdays' },
+        { value: 'few_times_week', label: 'A few times/week' },
+        { value: 'exam_only', label: 'Only before exams' },
+        { value: 'not_yet', label: "I don't really study yet" },
+      ],
+      selectedValue: onboardingAnswers.studyFrequency,
+      onSelect: handleStudyFrequencySelect,
+    });
+
+  const renderSessionLength = () =>
+    renderOptionStep<SessionLength>({
+      title: 'How long do you usually study in a sitting?',
+      options: [
+        { value: '10_25', label: '10-25 min' },
+        { value: '30_60', label: '30-60 min' },
+        { value: '1_2', label: '1-2 hours' },
+        { value: '3_plus', label: '3+ hours' },
+        { value: 'not_sure', label: 'Not sure yet' },
+      ],
+      selectedValue: onboardingAnswers.sessionLength,
+      onSelect: handleSessionLengthSelect,
+    });
+
+  const renderFocusFriction = () =>
+    renderOptionStep<FocusFriction>({
+      title: 'When you study, what usually happens?',
+      options: [
+        { value: 'focused', label: 'I stay focused' },
+        { value: 'drift', label: 'I drift sometimes' },
+        { value: 'distracted', label: 'I get distracted a lot' },
+        { value: 'cant_yet', label: "I can't stay focused yet" },
+      ],
+      selectedValue: onboardingAnswers.focusFriction,
+      onSelect: handleFocusFrictionSelect,
+    });
+
+  const renderFocusFor = () =>
+    renderOptionStep<FocusFor>({
+      title: 'What are you focusing for?',
+      options: [
+        { value: 'university', label: "I'm still in university" },
+        { value: 'work', label: 'Work/Company' },
+        { value: 'job', label: 'Landing a Job' },
+        { value: 'cert', label: 'Studying for certification' },
+        { value: 'founder', label: 'Founder' },
+        { value: 'other', label: 'Other' },
+      ],
+      selectedValue: onboardingAnswers.focusFor,
+      onSelect: handleFocusForSelect,
+    });
+
+  const renderGoal = () =>
+    renderOptionStep<Goal>({
+      title: 'What is your main goal?',
+      options: getGoalOptions(),
+      selectedValue: onboardingAnswers.goal,
+      onSelect: handleGoalSelect,
+    });
 
   const renderUsername = () => {
     return (
@@ -815,6 +1121,20 @@ export default function OnboardingScreen() {
         return renderName();
       case 'age':
         return renderAge();
+      case 'studyLocation':
+        return renderStudyLocation();
+      case 'socialBaseline':
+        return renderSocialBaseline();
+      case 'studyFrequency':
+        return renderStudyFrequency();
+      case 'sessionLength':
+        return renderSessionLength();
+      case 'focusFriction':
+        return renderFocusFriction();
+      case 'focusFor':
+        return renderFocusFor();
+      case 'goal':
+        return renderGoal();
       case 'username':
         return renderUsername();
       case 'phone':
@@ -827,8 +1147,18 @@ export default function OnboardingScreen() {
   };
 
   // Use cream background for name/age/username steps, sky blue for others
-  const isCreamStep =
-    currentStep === 'name' || currentStep === 'age' || currentStep === 'username';
+  const isCreamStep = [
+    'name',
+    'age',
+    'studyLocation',
+    'socialBaseline',
+    'studyFrequency',
+    'sessionLength',
+    'focusFriction',
+    'focusFor',
+    'goal',
+    'username',
+  ].includes(currentStep);
   const containerStyle = isCreamStep ? styles.containerCream : styles.container;
 
   const backButtonStyle = { ...styles.backButton, top: insets.top + 12 };
@@ -849,10 +1179,7 @@ export default function OnboardingScreen() {
       )}
 
       {/* Progress bar (hidden on welcome, name, age, username steps) */}
-      {currentStep !== 'welcome' &&
-        currentStep !== 'name' &&
-        currentStep !== 'age' &&
-        currentStep !== 'username' && (
+      {currentStep !== 'welcome' && !isCreamStep && (
         <Animated.View
           entering={FadeIn.duration(300)}
           style={[styles.progressContainer, { top: insets.top + 16 }]}
@@ -861,7 +1188,7 @@ export default function OnboardingScreen() {
             <Animated.View style={[styles.progressBar, progressStyle]} />
           </View>
           <Text style={styles.progressText}>
-            Step {stepIndex} of {STEPS.length - 1}
+            Step {stepIndex} of {steps.length - 1}
           </Text>
         </Animated.View>
       )}
@@ -971,6 +1298,13 @@ const styles = StyleSheet.create({
     color: '#5D4037',
     textAlign: 'center',
   },
+  onboardingSubtitle: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#8D6E63',
+    textAlign: 'center',
+    fontWeight: '600',
+  },
   onboardingContent: {
     flex: 1,
     justifyContent: 'center',
@@ -1025,7 +1359,8 @@ const styles = StyleSheet.create({
   usernameSpinner: {
     position: 'absolute',
     right: 18,
-    top: 18,
+    top: '50%',
+    transform: [{ translateY: -12 }],
   },
   usernameSuggestionsWrapper: {
     marginTop: 16,
