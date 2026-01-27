@@ -341,42 +341,39 @@ export default function OnboardingScreen() {
       key="name"
       entering={SlideInRight.duration(300)}
       exiting={SlideOutLeft.duration(200)}
-      style={styles.stepContainer}
+      style={styles.nameStepContainer}
     >
-      <View style={styles.header}>
-        <Text style={styles.stepEmoji}>👋</Text>
-        <Text style={styles.stepTitle}>What's your name?</Text>
-        <Text style={styles.stepSubtitle}>We'll use this to personalize your town</Text>
+      <View style={styles.nameHeader}>
+        <Text style={styles.nameTitle}>What should we call you?</Text>
       </View>
 
-      <View style={styles.formContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Your name"
-          placeholderTextColor="#A89F91"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
-          autoComplete="name"
-          autoFocus
-          maxLength={20}
-        />
-        <Text style={styles.charCount}>{name.length}/20</Text>
+      <View style={styles.nameInputWrapper}>
+        <View style={styles.nameInputShadow}>
+          <TextInput
+            style={styles.nameInput}
+            placeholder="Your name"
+            placeholderTextColor="#A89F91"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+            autoComplete="name"
+            autoFocus
+            maxLength={20}
+          />
+        </View>
+      </View>
 
+      <View style={styles.nameButtonContainer}>
         <Pressable
           style={({ pressed }) => [
-            styles.primaryButton,
+            styles.blueButton,
             pressed && styles.buttonPressed,
             !isValidName && styles.buttonDisabled,
           ]}
           onPress={handleNameContinue}
           disabled={!isValidName}
         >
-          <Text style={styles.primaryButtonText}>Continue →</Text>
-        </Pressable>
-
-        <Pressable style={styles.backLink} onPress={handleBack}>
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.blueButtonText}>Continue</Text>
         </Pressable>
       </View>
     </Animated.View>
@@ -543,18 +540,26 @@ export default function OnboardingScreen() {
     }
   };
 
+  // Use cream background for name step, sky blue for others
+  const isNameStep = currentStep === 'name';
+  const containerStyle = isNameStep ? styles.containerCream : styles.container;
+
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={containerStyle}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      {/* Background clouds */}
-      <View style={[styles.cloud, styles.cloud1]} />
-      <View style={[styles.cloud, styles.cloud2]} />
-      <View style={[styles.cloud, styles.cloud3]} />
+      {/* Background clouds (hidden on name step) */}
+      {!isNameStep && (
+        <>
+          <View style={[styles.cloud, styles.cloud1]} />
+          <View style={[styles.cloud, styles.cloud2]} />
+          <View style={[styles.cloud, styles.cloud3]} />
+        </>
+      )}
 
-      {/* Progress bar (hidden on welcome) */}
-      {currentStep !== 'welcome' && (
+      {/* Progress bar (hidden on welcome and name steps) */}
+      {currentStep !== 'welcome' && currentStep !== 'name' && (
         <Animated.View
           entering={FadeIn.duration(300)}
           style={[styles.progressContainer, { top: insets.top + 16 }]}
@@ -572,7 +577,7 @@ export default function OnboardingScreen() {
         style={[
           styles.content,
           {
-            paddingTop: currentStep === 'welcome' ? insets.top + 40 : insets.top + 80,
+            paddingTop: currentStep === 'welcome' ? insets.top + 40 : (isNameStep ? insets.top + 60 : insets.top + 80),
             paddingBottom: insets.bottom + 24,
           },
         ]}
@@ -587,6 +592,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#87CEEB',
+  },
+  containerCream: {
+    flex: 1,
+    backgroundColor: '#FAF7F2',
   },
   cloud: {
     position: 'absolute',
@@ -642,6 +651,68 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     flex: 1,
+  },
+  // Name step styles (matching Figma design)
+  nameStepContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  nameHeader: {
+    marginTop: 40,
+    alignItems: 'center',
+  },
+  nameTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#5D4037',
+    textAlign: 'center',
+  },
+  nameInputWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    marginTop: -60,
+    marginHorizontal: 24,
+  },
+  nameInputShadow: {
+    backgroundColor: '#C4B5A0',
+    borderRadius: 24,
+    paddingBottom: 8,
+    borderWidth: 3,
+    borderColor: '#83715B',
+  },
+  nameInput: {
+    backgroundColor: '#FFEFD6',
+    borderRadius: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    fontSize: 28,
+    color: '#5D4037',
+    textAlign: 'center',
+    fontWeight: '800',
+  },
+  nameButtonContainer: {
+    paddingBottom: 40,
+    marginHorizontal: 48,
+  },
+  blueButton: {
+    backgroundColor: '#78ADFD',
+    borderRadius: 27,
+    paddingVertical: 18,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(0, 0, 0, 0.20)',
+    borderBottomWidth: 8,
+    borderBottomColor: '#608ACA',
+    shadowColor: 'rgba(13, 198, 186, 1)',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  blueButtonText: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   // Welcome step
   heroContainer: {
