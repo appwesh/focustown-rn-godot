@@ -42,6 +42,9 @@ export interface UserDoc {
   displayName: string | null;
   username: string | null; // Unique, lowercase, for friend search
   avatarUrl: string | null;
+  bio: string | null; // Short bio, max 50 characters
+  birthday: number | null; // Unix timestamp (ms) for birthday date
+  location: string | null; // e.g., "Villanova University"
 
   // Character customization
   characterSkin: CharacterSkin | null;

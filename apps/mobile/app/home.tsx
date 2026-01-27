@@ -126,7 +126,7 @@ const AnimatedCafeCard = ({
   );
 };
 
-type NavTab = 'social' | 'main' | 'shop';
+type NavTab = 'profile' | 'main' | 'shop';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -352,8 +352,8 @@ export default function HomeScreen() {
 
   const handleTabPress = (tab: NavTab) => {
     setActiveTab(tab);
-    if (tab === 'social') {
-      router.push('/social');
+    if (tab === 'profile') {
+      router.push('/profile');
     } else if (tab === 'shop') {
       router.push('/store');
     }
@@ -404,19 +404,14 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View style={styles.headerLeft} />
         <View style={styles.headerRight}>
-          {/* Profile Button */}
-          <Pressable
-            style={({ pressed }) => [styles.profileButton, pressed && styles.profileButtonPressed]}
-            onPress={() => router.push('/profile')}
-          >
-            <Text style={styles.profileButtonIcon}>👤</Text>
-          </Pressable>
+          <BeanCounter size="small" />
           
+          {/* Settings Button */}
           <Pressable
-            style={({ pressed }) => [styles.profilePill, pressed && styles.profilePillPressed]}
+            style={({ pressed }) => [styles.settingsButton, pressed && styles.settingsButtonPressed]}
             onPress={() => router.push('/settings')}
           >
-            <BeanCounter size="small" />
+            <Image source={require('@/assets/ui/settings.png')} style={styles.settingsIcon} />
           </Pressable>
         </View>
       </View>
@@ -548,20 +543,15 @@ export default function HomeScreen() {
           colors={['#F6F4E7', '#F1ECCC']}
           style={styles.navbar}
         >
-          {/* Social Tab */}
+          {/* Profile Tab */}
           <Pressable
             style={({ pressed }) => [
               styles.navButton,
               pressed && styles.navButtonPressed,
             ]}
-            onPress={() => handleTabPress('social')}
+            onPress={() => handleTabPress('profile')}
           >
             <Image source={require('@/assets/ui/social.png')} style={styles.navIcon} />
-            {pendingRequestsCount > 0 && (
-              <View style={styles.navBadge}>
-                <Text style={styles.navBadgeText}>{pendingRequestsCount}</Text>
-              </View>
-            )}
           </Pressable>
 
           {/* Home Tab */}
@@ -647,7 +637,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  profileButton: {
+  settingsButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
@@ -657,32 +647,14 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#F5D98C',
   },
-  profileButtonPressed: {
+  settingsButtonPressed: {
     opacity: 0.8,
     transform: [{ scale: 0.95 }],
   },
-  profileButtonIcon: {
-    fontSize: 22,
-  },
-  profilePill: {
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // backgroundColor: '#F6F4E7',
-    // borderRadius: 30,
-    // paddingLeft: 6,
-    // paddingRight: 6,
-    // paddingVertical: 4,
-    // gap: 4,
-  },
-  profilePillPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  profileAvatar: {
-    width: 36,
-    height: 36,
-    padding: 2,
-    borderRadius: 20,
+  settingsIcon: {
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
   },
   content: {
     flex: 1,

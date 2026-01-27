@@ -49,6 +49,9 @@ export const userService = {
       displayName: null,
       username: null,
       avatarUrl: null,
+      bio: null,
+      birthday: null,
+      location: null,
       characterSkin: null,
       ownedItems: [],
       wishlistItem: null,
@@ -83,7 +86,7 @@ export const userService = {
    */
   async updateProfile(
     uid: string,
-    updates: Pick<Partial<UserDoc>, "displayName" | "username" | "avatarUrl">
+    updates: Pick<Partial<UserDoc>, "displayName" | "username" | "avatarUrl" | "bio" | "birthday" | "location">
   ): Promise<void> {
     const docRef = doc(usersCollection, uid);
     await updateDoc(docRef, {
