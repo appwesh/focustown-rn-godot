@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://uw3hhppqiy1n"
-path="res://.godot/imported/tree-oak_leaves_Light.png-f65afa917f4960df8b2eed65d5c05c4d.ctex"
+uid="uid://5di2avrybd57"
+path="res://.godot/imported/tree-oak_leaves_Light.png-70b824a7b77b043b6879330235721c65.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library/tree-oak_leaves_Light.png"
-dest_files=["res://.godot/imported/tree-oak_leaves_Light.png-f65afa917f4960df8b2eed65d5c05c4d.ctex"]
+source_file="res://assets/environments/Library/tree-oak_leaves_Light.png"
+dest_files=["res://.godot/imported/tree-oak_leaves_Light.png-70b824a7b77b043b6879330235721c65.ctex"]
 
 [params]
 

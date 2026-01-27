@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://do17ctvdh68kc"
-path="res://.godot/imported/headphone_Untextured_Checker_Roughness.png-0ae03e15a2c9155fbad4375d7ac93062.ctex"
+path="res://.godot/imported/headphone_Untextured_Checker_Roughness.png-587dba3bcdc36ca2dbb4e5e30311f2d0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/cozylife/custom/Lofi/textures/headphone/headphone_Untextured_Checker_Roughness.png"
-dest_files=["res://.godot/imported/headphone_Untextured_Checker_Roughness.png-0ae03e15a2c9155fbad4375d7ac93062.ctex"]
+source_file="res://assets/characters/cozylife/custom/Lofi/Textures/headphone/headphone_Untextured_Checker_Roughness.png"
+dest_files=["res://.godot/imported/headphone_Untextured_Checker_Roughness.png-587dba3bcdc36ca2dbb4e5e30311f2d0.ctex"]
 
 [params]
 

@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c0x8nbfe4wsne"
-path="res://.godot/imported/FocusTown_Advertisement_6.png-90ebe5eb479d6031fc1c00674f2dc61a.ctex"
+path.s3tc="res://.godot/imported/FocusTown_Advertisement_6.png-90ebe5eb479d6031fc1c00674f2dc61a.s3tc.ctex"
+path.etc2="res://.godot/imported/FocusTown_Advertisement_6.png-90ebe5eb479d6031fc1c00674f2dc61a.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "8f09313d27f56637e89b0a1a9de76cd0"
@@ -14,11 +16,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/environments/focusTown/FocusTown_Advertisement_6.png"
-dest_files=["res://.godot/imported/FocusTown_Advertisement_6.png-90ebe5eb479d6031fc1c00674f2dc61a.ctex"]
+dest_files=["res://.godot/imported/FocusTown_Advertisement_6.png-90ebe5eb479d6031fc1c00674f2dc61a.s3tc.ctex", "res://.godot/imported/FocusTown_Advertisement_6.png-90ebe5eb479d6031fc1c00674f2dc61a.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -40,4 +42,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0
