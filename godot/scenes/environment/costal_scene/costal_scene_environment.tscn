@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dgydw8x166f2a"]
 
-[ext_resource type="PackedScene" uid="uid://pegwhovuq424" path="res://assets/environments/costalScene/coastal-cafe-v1-Clean.glb" id="1_icfs6"]
+[ext_resource type="PackedScene" uid="uid://pegwhovuq424" path="res://assets/environments/costalScene/costal-cafe.glb" id="1_icfs6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jbviq"]
 sky_top_color = Color(0.15799999, 0.34759995, 0.79, 1)

@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://pegwhovuq424"
-path="res://.godot/imported/coastal-cafe-v1-Clean.glb-6e762ee98127420fed36f1a616db56f4.scn"
+path="res://.godot/imported/costal-cafe.glb-741c7db7d366ed5068483c48520ecaf0.scn"
 
 [deps]
 
-source_file="res://assets/environments/costalScene/coastal-cafe-v1-Clean.glb"
-dest_files=["res://.godot/imported/coastal-cafe-v1-Clean.glb-6e762ee98127420fed36f1a616db56f4.scn"]
+source_file="res://assets/environments/costalScene/costal-cafe.glb"
+dest_files=["res://.godot/imported/costal-cafe.glb-741c7db7d366ed5068483c48520ecaf0.scn"]
 
 [params]
 
