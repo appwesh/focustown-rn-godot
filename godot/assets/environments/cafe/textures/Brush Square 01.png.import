@@ -2,7 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cb6k6iv6h2py1"
+uid="uid://d0382uep7qud2"
 path="res://.godot/imported/Brush Square 01.png-f51a7eff002e2d39dc84636b44c2cf7b.ctex"
 metadata={
 "vram_texture": false
@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Brush Square 01.png-f51a7eff002e2d39dc84636b4
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

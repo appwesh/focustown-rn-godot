@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://pegwhovuq424"
+uid="uid://d0wq1gwx46fat"
 path="res://.godot/imported/costal-cafe.glb-741c7db7d366ed5068483c48520ecaf0.scn"
 
 [deps]
@@ -38,141 +38,15 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={
-"materials": {
-"Chair_Cafe": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Chair_Cafe.tres",
-"use_external/path": "uid://bf6lgjml1s57n"
-},
-"Chair_Cafe.001": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Chair_Cafe.001.tres",
-"use_external/path": "uid://db5d8jmuvi2uc"
-},
-"Cup": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Cup.tres",
-"use_external/path": "uid://b47gxtdva8xhy"
-},
-"Fence-1": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Fence-1.tres",
-"use_external/path": "uid://dbokje3afvl73"
-},
-"Floor": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Floor.tres",
-"use_external/path": "uid://dmkxxcy52dwcg"
-},
-"Flower": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Flower.tres",
-"use_external/path": "uid://bbg06x7scg1o7"
-},
-"Leaf-1": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Leaf-1.tres",
-"use_external/path": "uid://d3gmh4ur43mbs"
-},
-"Material.001": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Material.001.tres",
-"use_external/path": "uid://d38ajgo6g5qvy"
-},
-"Material.002": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Material.002.tres",
-"use_external/path": "uid://bqm42eahhum1h"
-},
-"Ocean.001": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Ocean.001.tres",
-"use_external/path": "uid://byn3erdg1gsgt"
-},
-"Orange": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Orange.tres",
-"use_external/path": "uid://cvawmaoplfqbh"
-},
-"Procedural Wood": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Procedural Wood.tres",
-"use_external/path": "uid://dmwq0dh5mqb8h"
-},
-"Sign": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Sign.tres",
-"use_external/path": "uid://yeywfesjtxqk"
-},
-"Sky_Clouds_Photo_Texture_A_P1119218": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Sky_Clouds_Photo_Texture_A_P1119218.tres",
-"use_external/path": "uid://cvt5wuxb7mb6d"
-},
-"Stand-1": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Stand-1.tres",
-"use_external/path": "uid://csvotqxdkxlyx"
-},
-"Table2": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Table2.tres",
-"use_external/path": "uid://dwqsaqlbsxmja"
-},
-"Table_Cafe": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Table_Cafe.tres",
-"use_external/path": "uid://dclu5wlth0d8q"
-},
-"difuse white": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/difuse white.tres",
-"use_external/path": "uid://bvnpvxp4fby1m"
-},
-"image": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/image.tres",
-"use_external/path": "uid://cn1o2cnc4y7mx"
-},
-"light diod": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/light diod.tres",
-"use_external/path": "uid://bkt2gqx1rdec7"
-},
-"mBody.008": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/mBody.008.tres",
-"use_external/path": "uid://fpq5n650t2y8"
-},
-"mReBody.004": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/mReBody.004.tres",
-"use_external/path": "uid://dl1j0s52fdjfu"
-},
-"mReBody.029": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/mReBody.029.tres",
-"use_external/path": "uid://4w7m5sd1rpw4"
-},
-"metal brushed": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/metal brushed.tres",
-"use_external/path": "uid://dkhh34x8lcnof"
-},
-"plastic ": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/plastic.tres",
-"use_external/path": "uid://duihybgedcefq"
-},
-"plastic black": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/plastic black.tres",
-"use_external/path": "uid://bd46urhd6ffam"
-},
-"stylized bush.001": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/stylized bush.001.tres",
-"use_external/path": "uid://dw8v27hbw644y"
+"meshes": {
+"costal-cafe_Sphere_001": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/environments/costalScene/models/Bush.res",
+"save_to_file/path": "uid://bno25a36mqxek"
 }
 }
 }
