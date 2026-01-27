@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { PHProvider } from "./providers";
 import { PostHogPageView } from "./posthog-pageview";
@@ -51,6 +52,7 @@ export default function RootLayout({
           <PostHogPageView />
           {children}
         </PHProvider>
+        <Analytics />
       </body>
     </html>
   );
