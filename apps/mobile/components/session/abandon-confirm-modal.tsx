@@ -15,7 +15,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useSessionStore } from '@/lib/session';
-import { Button } from '@/components/ui/button';
+import { PrimaryButton } from '@/components/ui/button';
 
 interface AbandonConfirmModalProps {
   visible: boolean;
@@ -48,13 +48,13 @@ export function AbandonConfirmModal({ visible, onTripleTap }: AbandonConfirmModa
 
           {/* Buttons */}
           <View style={styles.buttonRow}>
-            <Button
+            <PrimaryButton
               title="Keep Going"
               onPress={cancelAbandonSession}
               size="small"
               style={styles.button}
             />
-            <Button
+            <PrimaryButton
               title={isGroupSession ? 'End for All' : 'End Session'}
               onPress={confirmAbandonSession}
               variant="danger"

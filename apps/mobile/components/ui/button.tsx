@@ -80,7 +80,7 @@ const SIZES = {
   },
 };
 
-export function Button({ 
+export function PrimaryButton({ 
   title, 
   onPress, 
   disabled = false, 

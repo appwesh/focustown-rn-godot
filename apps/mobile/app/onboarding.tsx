@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,7 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ScrollView,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -18,10 +20,9 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSpring,
+  withDelay,
   FadeIn,
-  FadeOut,
-  SlideInRight,
-  SlideOutLeft,
+  SharedValue,
 } from 'react-native-reanimated';
 import PhoneInput, {
   ICountry,
@@ -32,10 +33,11 @@ import { useAuth } from '@/lib/firebase';
 import * as analytics from '@/lib/analytics';
 import { userService } from '@/lib/firebase/user';
 import { toE164, cleanVerificationCode, isValidPhone } from '@/lib/phone';
+import { PrimaryButton, BrownComponent, BackButton } from '@/components/ui';
 
-type OnboardingStep = 'welcome' | 'name' | 'phone' | 'verify';
+type OnboardingStep = 'welcome' | 'name' | 'age' | 'username' | 'phone' | 'verify';
 
-const STEPS: OnboardingStep[] = ['welcome', 'name', 'phone', 'verify'];
+const STEPS: OnboardingStep[] = ['welcome', 'name', 'age', 'username', 'phone', 'verify'];
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -63,6 +65,13 @@ export default function OnboardingScreen() {
 
   // Form state
   const [name, setName] = useState('');
+  const [ageRange, setAgeRange] = useState<string | null>(null);
+  const [username, setUsername] = useState('');
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
+  const [isUsernameConfirmedAvailable, setIsUsernameConfirmedAvailable] = useState(false);
+  const [usernameSuggestions, setUsernameSuggestions] = useState<string[]>([]);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<ICountry>(
     getCountryByCca2('US')!
@@ -75,9 +84,21 @@ export default function OnboardingScreen() {
   const lastAutoSubmittedPhone = useRef<string | null>(null);
   const lastAutoSubmittedCode = useRef<string | null>(null);
   const verificationInputRef = useRef<TextInput>(null);
+  const usernameInputRef = useRef<TextInput>(null);
+  const lastAnimatedStep = useRef<OnboardingStep | null>(null);
+  const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const usernameCheckTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animation values
   const progress = useSharedValue(0);
+
+  // Step animation values - staggered fade+rise effect
+  const titleOpacity = useSharedValue(0);
+  const titleTranslateY = useSharedValue(20);
+  const contentOpacity = useSharedValue(0);
+  const contentTranslateY = useSharedValue(20);
+  const buttonOpacity = useSharedValue(0);
+  const buttonTranslateY = useSharedValue(20);
 
   // Update progress bar
   useEffect(() => {
@@ -85,9 +106,78 @@ export default function OnboardingScreen() {
     progress.value = withSpring(targetProgress, { damping: 15, stiffness: 100 });
   }, [stepIndex, progress]);
 
+  // Trigger staggered animations when step changes (no flash)
+  useLayoutEffect(() => {
+    if (lastAnimatedStep.current === currentStep) {
+      return;
+    }
+    lastAnimatedStep.current = currentStep;
+
+    if (focusTimerRef.current) {
+      clearTimeout(focusTimerRef.current);
+      focusTimerRef.current = null;
+    }
+
+    // Reset values
+    titleOpacity.value = 0;
+    titleTranslateY.value = 20;
+    contentOpacity.value = 0;
+    contentTranslateY.value = 20;
+    buttonOpacity.value = 0;
+    buttonTranslateY.value = 20;
+
+    // Staggered animation helper
+    const animateElement = (
+      opacity: SharedValue<number>,
+      translateY: SharedValue<number>,
+      delay: number
+    ) => {
+      opacity.value = withDelay(delay, withTiming(1, { duration: 300 }));
+      translateY.value = withDelay(
+        delay,
+        withSpring(0, { damping: 16, stiffness: 100, mass: 0.8 })
+      );
+    };
+
+    // Animate with staggered delays immediately
+    animateElement(titleOpacity, titleTranslateY, 50);
+    animateElement(contentOpacity, contentTranslateY, 150);
+    animateElement(buttonOpacity, buttonTranslateY, 250);
+
+    // Focus inputs after animation completes to avoid keyboard flash
+    if (currentStep === 'username') {
+      focusTimerRef.current = setTimeout(() => {
+        usernameInputRef.current?.focus();
+      }, 400);
+    }
+
+    return () => {
+      if (focusTimerRef.current) {
+        clearTimeout(focusTimerRef.current);
+        focusTimerRef.current = null;
+      }
+    };
+  }, [currentStep]);
+
   // Progress bar style
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progress.value}%`,
+  }));
+
+  // Step animation styles
+  const titleAnimStyle = useAnimatedStyle(() => ({
+    opacity: titleOpacity.value,
+    transform: [{ translateY: titleTranslateY.value }],
+  }));
+
+  const contentAnimStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+    transform: [{ translateY: contentTranslateY.value }],
+  }));
+
+  const buttonAnimStyle = useAnimatedStyle(() => ({
+    opacity: buttonOpacity.value,
+    transform: [{ translateY: buttonTranslateY.value }],
   }));
 
   // Handle authentication success - save name and redirect to game
@@ -96,10 +186,13 @@ export default function OnboardingScreen() {
       if (isAuthenticated && user && currentStep === 'verify') {
         console.log('[Onboarding] User authenticated, saving name and redirecting...');
 
-        // Save display name to Firestore
-        if (name.trim()) {
+        // Save display name and username to Firestore
+        if (name.trim() || username.trim()) {
           try {
-            await userService.updateProfile(user.uid, { displayName: name.trim() });
+            await userService.updateProfile(user.uid, {
+              displayName: name.trim() || undefined,
+              username: username.trim() || undefined,
+            });
             console.log('[Onboarding] Name saved to Firestore');
           } catch (error) {
             console.error('[Onboarding] Failed to save name:', error);
@@ -163,8 +256,94 @@ export default function OnboardingScreen() {
 
   const handleNameContinue = () => {
     if (isValidName) {
-      setCurrentStep('phone');
+      setCurrentStep('age');
     }
+  };
+
+  const handleAgeSelect = (option: string) => {
+    setAgeRange(option);
+    // Brief delay to let the button selection animate before transitioning
+    setTimeout(() => {
+      setCurrentStep('username');
+    }, 150);
+  };
+
+  const sanitizeUsername = (value: string) =>
+    value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+
+  const validateUsername = (value: string) => {
+    if (!value) return 'Username is required';
+    if (value.length < 3) return 'Min 3 characters';
+    if (value.length > 16) return 'Max 16 characters';
+    return null;
+  };
+
+  const generateUsernameSuggestions = (baseName: string) => {
+    const base = sanitizeUsername(baseName).slice(0, 12);
+    const fallback = base.length >= 3 ? base : 'focustown';
+    const options = [
+      fallback,
+      `${fallback}${Math.floor(Math.random() * 90 + 10)}`,
+      `${fallback}_${Math.floor(Math.random() * 90 + 10)}`,
+    ];
+    return Array.from(new Set(options))
+      .map((option) => option.slice(0, 16))
+      .filter((option) => option.length >= 3);
+  };
+
+  const checkUsernameAvailabilityDebounced = (value: string) => {
+    if (usernameCheckTimeout.current) {
+      clearTimeout(usernameCheckTimeout.current);
+    }
+
+    usernameCheckTimeout.current = setTimeout(async () => {
+      if (!value || validateUsername(value)) {
+        setIsUsernameAvailable(false);
+        return;
+      }
+
+      setIsCheckingUsername(true);
+      try {
+        const existing = await userService.findByUsername(value);
+        setIsUsernameAvailable(!existing);
+        setIsUsernameConfirmedAvailable(!existing);
+        setUsernameError(existing ? 'Username already taken' : null);
+        if (existing) {
+          setUsernameSuggestions(generateUsernameSuggestions(name));
+        } else {
+          setUsernameSuggestions([]);
+        }
+      } catch (error) {
+        console.error('[Onboarding] Username availability check failed:', error);
+        setIsUsernameAvailable(false);
+      } finally {
+        setIsCheckingUsername(false);
+      }
+    }, 400);
+  };
+
+  const handleUsernameChange = (value: string) => {
+    const sanitized = sanitizeUsername(value);
+    setUsername(sanitized);
+    const error = validateUsername(sanitized);
+    setUsernameError(error);
+    if (error) {
+      setIsUsernameAvailable(false);
+      setIsUsernameConfirmedAvailable(false);
+      setUsernameSuggestions(generateUsernameSuggestions(name));
+      return;
+    }
+
+    checkUsernameAvailabilityDebounced(sanitized);
+  };
+
+  const handleUsernameContinue = async () => {
+    const error = validateUsername(username);
+    if (error || isCheckingUsername || !isUsernameAvailable) {
+      setUsernameError(error || 'Username already taken');
+      return;
+    }
+    setCurrentStep('phone');
   };
 
   const handlePhoneChange = (value: string) => {
@@ -294,13 +473,8 @@ export default function OnboardingScreen() {
   // ============================================================================
 
   const renderWelcome = () => (
-    <Animated.View
-      key="welcome"
-      entering={FadeIn.duration(400)}
-      exiting={FadeOut.duration(200)}
-      style={styles.stepContainer}
-    >
-      <View style={styles.heroContainer}>
+    <View key="welcome" style={styles.stepContainer}>
+      <Animated.View style={[styles.heroContainer, titleAnimStyle]}>
         <View style={styles.heroGround} />
         <View style={styles.heroCircle}>
           <Text style={styles.heroEmoji}>🏡</Text>
@@ -317,82 +491,195 @@ export default function OnboardingScreen() {
         <View style={[styles.flowerDeco, styles.flower2]}>
           <Text style={styles.flowerEmoji}>🌻</Text>
         </View>
-      </View>
+      </Animated.View>
 
-      <View style={styles.welcomeTextContainer}>
+      <Animated.View style={[styles.welcomeTextContainer, contentAnimStyle]}>
         <Text style={styles.welcomeTitle}>Focus Town</Text>
         <Text style={styles.welcomeSubtitle}>Build your peaceful productivity</Text>
-      </View>
+      </Animated.View>
 
-      <Pressable
-        style={({ pressed }) => [
-          styles.primaryButton,
-          pressed && styles.buttonPressed,
-        ]}
-        onPress={handleStart}
-      >
-        <Text style={styles.primaryButtonText}>Let's Start! 🚀</Text>
-      </Pressable>
-    </Animated.View>
+      <Animated.View style={buttonAnimStyle}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.primaryButton,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={handleStart}
+        >
+          <Text style={styles.primaryButtonText}>Let{"'"}s Start! 🚀</Text>
+        </Pressable>
+      </Animated.View>
+    </View>
   );
 
   const renderName = () => (
-    <Animated.View
-      key="name"
-      entering={SlideInRight.duration(300)}
-      exiting={SlideOutLeft.duration(200)}
-      style={styles.nameStepContainer}
-    >
-      <View style={styles.nameHeader}>
-        <Text style={styles.nameTitle}>What should we call you?</Text>
-      </View>
+    <View key="name" style={styles.onboardingStepContainer}>
+      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+        <Text style={styles.onboardingTitle}>What should we call you?</Text>
+      </Animated.View>
 
-      <View style={styles.nameInputWrapper}>
-        <View style={styles.nameInputShadow}>
-          <TextInput
-            style={styles.nameInput}
-            placeholder="Your name"
-            placeholderTextColor="#A89F91"
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
-            autoComplete="name"
-            autoFocus
-            maxLength={20}
-          />
-        </View>
-      </View>
+      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+        <BrownComponent
+          type="input"
+          placeholder="Your name"
+          value={name}
+          onChangeText={setName}
+          autoCapitalize="words"
+          autoComplete="name"
+          autoFocus
+          maxLength={20}
+        />
+      </Animated.View>
 
-      <View style={styles.nameButtonContainer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.blueButton,
-            pressed && styles.buttonPressed,
-            !isValidName && styles.buttonDisabled,
-          ]}
+      <Animated.View
+        style={[styles.onboardingButtonContainer, buttonAnimStyle, { marginBottom: -56 }]}
+      >
+        <PrimaryButton
+          title="Continue"
           onPress={handleNameContinue}
           disabled={!isValidName}
-        >
-          <Text style={styles.blueButtonText}>Continue</Text>
-        </Pressable>
-      </View>
-    </Animated.View>
+        />
+      </Animated.View>
+    </View>
   );
 
+  const renderAge = () => {
+    const ageOptions = [
+      '12 or under',
+      '13 - 17',
+      '18 - 22',
+      '23 - 29',
+      '30 - 40',
+      '40+',
+    ];
+
+    return (
+      <View key="age" style={styles.onboardingStepContainer}>
+        <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+          <Text style={styles.onboardingTitle}>Age Range?</Text>
+        </Animated.View>
+
+        <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+          <View style={styles.ageOptions}>
+            {ageOptions.map((option) => (
+              <BrownComponent
+                key={option}
+                type="button"
+                title={option}
+                onPress={() => handleAgeSelect(option)}
+                selected={ageRange === option}
+                style={styles.ageOption}
+              />
+            ))}
+          </View>
+        </Animated.View>
+      </View>
+    );
+  };
+
+  const renderUsername = () => {
+    return (
+      <View key="username" style={styles.onboardingStepContainer}>
+        <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+          <Text style={styles.onboardingTitle}>Choose a username</Text>
+        </Animated.View>
+
+        <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+          <View style={styles.usernameInputContainer}>
+            <BrownComponent
+              ref={usernameInputRef}
+              type="input"
+              placeholder="username"
+              value={username}
+              onChangeText={handleUsernameChange}
+              autoCorrect={false}
+              autoCapitalize="none"
+              spellCheck={false}
+              maxLength={16}
+              returnKeyType="next"
+              returnKeyLabel="next"
+              onSubmitEditing={handleUsernameContinue}
+              inputStyle={styles.usernameInput}
+            />
+            <View style={styles.usernameAtWrapper}>
+              <Text style={styles.usernameAtSymbol}>@</Text>
+            </View>
+            <View style={styles.usernameLabel}>
+              <Text
+                style={[
+                  styles.usernameLabelText,
+                  {
+                    color: usernameError
+                      ? '#C62828'
+                      : isUsernameConfirmedAvailable
+                      ? '#2E7D32'
+                      : '#B89B4C',
+                  },
+                ]}
+              >
+                {usernameError ||
+                  (isUsernameConfirmedAvailable ? 'username available' : 'username')}
+              </Text>
+            </View>
+            {isCheckingUsername && (
+              <View style={styles.usernameSpinner}>
+                <ActivityIndicator size="small" color="#D1D1D1" />
+              </View>
+            )}
+            {isUsernameConfirmedAvailable && (
+              <View style={styles.usernameSpinner}>
+                <Feather name="check" size={24} color="#2E7D32" />
+              </View>
+            )}
+          </View>
+
+          {usernameSuggestions.length > 0 && (
+            <Animated.View style={styles.usernameSuggestionsWrapper}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.usernameSuggestions}
+                style={styles.usernameSuggestionsScroll}
+              >
+                {usernameSuggestions.map((suggestion) => (
+                  <Pressable
+                    key={suggestion}
+                    style={({ pressed }) => [
+                      styles.usernameSuggestion,
+                      pressed && styles.usernameSuggestionPressed,
+                    ]}
+                    onPress={() => handleUsernameChange(suggestion)}
+                  >
+                    <Text style={styles.usernameSuggestionText}>{suggestion}</Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </Animated.View>
+          )}
+        </Animated.View>
+
+        <Animated.View
+        style={[styles.onboardingButtonContainer, buttonAnimStyle, { marginBottom: -56 }]}
+        >
+          <PrimaryButton
+            title="Continue"
+            onPress={handleUsernameContinue}
+            disabled={!isUsernameAvailable || !!usernameError || isCheckingUsername}
+          />
+        </Animated.View>
+      </View>
+    );
+  };
+
   const renderPhone = () => (
-    <Animated.View
-      key="phone"
-      entering={SlideInRight.duration(300)}
-      exiting={SlideOutLeft.duration(200)}
-      style={styles.stepContainer}
-    >
-      <View style={styles.header}>
+    <View key="phone" style={styles.stepContainer}>
+      <Animated.View style={[styles.header, titleAnimStyle]}>
         <Text style={styles.stepEmoji}>📱</Text>
         <Text style={styles.stepTitle}>Your phone number</Text>
-        <Text style={styles.stepSubtitle}>We'll send you a verification code</Text>
-      </View>
+        <Text style={styles.stepSubtitle}>We{"'"}ll send you a verification code</Text>
+      </Animated.View>
 
-      <View style={styles.formContainer}>
+      <Animated.View style={[styles.formContainer, contentAnimStyle]}>
         <PhoneInput
           value={phoneNumber}
           onChangePhoneNumber={handlePhoneChange}
@@ -445,26 +732,21 @@ export default function OnboardingScreen() {
             <Text style={styles.errorText}>{phoneAuthState.error}</Text>
           </View>
         )}
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 
   const renderVerify = () => (
-    <Animated.View
-      key="verify"
-      entering={SlideInRight.duration(300)}
-      exiting={SlideOutLeft.duration(200)}
-      style={styles.stepContainer}
-    >
-      <View style={styles.header}>
+    <View key="verify" style={styles.stepContainer}>
+      <Animated.View style={[styles.header, titleAnimStyle]}>
         <Text style={styles.stepEmoji}>✉️</Text>
         <Text style={styles.stepTitle}>Enter verification code</Text>
         <Text style={styles.stepSubtitle}>
           Sent to {selectedCountry?.idd?.root}{selectedCountry?.idd?.suffixes?.[0]} {phoneNumber}
         </Text>
-      </View>
+      </Animated.View>
 
-      <View style={styles.formContainer}>
+      <Animated.View style={[styles.formContainer, contentAnimStyle]}>
         <TextInput
           ref={verificationInputRef}
           style={[styles.input, styles.codeInput]}
@@ -521,8 +803,8 @@ export default function OnboardingScreen() {
             <Text style={styles.errorText}>{phoneAuthState.error}</Text>
           </View>
         )}
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 
   const renderCurrentStep = () => {
@@ -531,6 +813,10 @@ export default function OnboardingScreen() {
         return renderWelcome();
       case 'name':
         return renderName();
+      case 'age':
+        return renderAge();
+      case 'username':
+        return renderUsername();
       case 'phone':
         return renderPhone();
       case 'verify':
@@ -540,17 +826,21 @@ export default function OnboardingScreen() {
     }
   };
 
-  // Use cream background for name step, sky blue for others
-  const isNameStep = currentStep === 'name';
-  const containerStyle = isNameStep ? styles.containerCream : styles.container;
+  // Use cream background for name/age/username steps, sky blue for others
+  const isCreamStep =
+    currentStep === 'name' || currentStep === 'age' || currentStep === 'username';
+  const containerStyle = isCreamStep ? styles.containerCream : styles.container;
+
+  const backButtonStyle = { ...styles.backButton, top: insets.top + 12 };
 
   return (
     <KeyboardAvoidingView
       style={containerStyle}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      {/* Background clouds (hidden on name step) */}
-      {!isNameStep && (
+      <BackButton onPress={handleBack} style={backButtonStyle} />
+      {/* Background clouds (hidden on name/age steps) */}
+      {!isCreamStep && (
         <>
           <View style={[styles.cloud, styles.cloud1]} />
           <View style={[styles.cloud, styles.cloud2]} />
@@ -558,8 +848,11 @@ export default function OnboardingScreen() {
         </>
       )}
 
-      {/* Progress bar (hidden on welcome and name steps) */}
-      {currentStep !== 'welcome' && currentStep !== 'name' && (
+      {/* Progress bar (hidden on welcome, name, age, username steps) */}
+      {currentStep !== 'welcome' &&
+        currentStep !== 'name' &&
+        currentStep !== 'age' &&
+        currentStep !== 'username' && (
         <Animated.View
           entering={FadeIn.duration(300)}
           style={[styles.progressContainer, { top: insets.top + 16 }]}
@@ -577,7 +870,12 @@ export default function OnboardingScreen() {
         style={[
           styles.content,
           {
-            paddingTop: currentStep === 'welcome' ? insets.top + 40 : (isNameStep ? insets.top + 60 : insets.top + 80),
+            paddingTop:
+              currentStep === 'welcome'
+                ? insets.top + 40
+                : isCreamStep
+                ? insets.top + 60
+                : insets.top + 80,
             paddingBottom: insets.bottom + 24,
           },
         ]}
@@ -627,6 +925,11 @@ const styles = StyleSheet.create({
     zIndex: 100,
     alignItems: 'center',
   },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    zIndex: 200,
+  },
   progressTrack: {
     height: 8,
     width: '100%',
@@ -652,67 +955,109 @@ const styles = StyleSheet.create({
   stepContainer: {
     flex: 1,
   },
-  // Name step styles (matching Figma design)
-  nameStepContainer: {
+  // Reusable onboarding step styles
+  onboardingStepContainer: {
     flex: 1,
     justifyContent: 'space-between',
   },
-  nameHeader: {
+  onboardingHeader: {
     marginTop: 40,
     alignItems: 'center',
+    paddingHorizontal: 24,
   },
-  nameTitle: {
+  onboardingTitle: {
     fontSize: 32,
     fontWeight: '800',
     color: '#5D4037',
     textAlign: 'center',
   },
-  nameInputWrapper: {
+  onboardingContent: {
     flex: 1,
     justifyContent: 'center',
-    marginTop: -60,
-    marginHorizontal: 24,
+    marginHorizontal: 0,
   },
-  nameInputShadow: {
-    backgroundColor: '#C4B5A0',
-    borderRadius: 24,
+  ageOptions: {
+    gap: 14,
+    marginTop: 12,
     paddingBottom: 8,
-    borderWidth: 3,
-    borderColor: '#83715B',
   },
-  nameInput: {
-    backgroundColor: '#FFEFD6',
+  ageOption: {
     borderRadius: 20,
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-    fontSize: 28,
-    color: '#5D4037',
-    textAlign: 'center',
+  },
+  onboardingButtonContainer: {
+    paddingBottom: 40,
+  },
+  usernameMetaRow: {
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  usernameMetaText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  usernameInputContainer: {
+    position: 'relative',
+  },
+  usernameAtWrapper: {
+    position: 'absolute',
+    left: 22,
+    top: 22,
+    zIndex: 2,
+  },
+  usernameAtSymbol: {
+    fontSize: 26,
+    color: '#B89B4C',
     fontWeight: '800',
   },
-  nameButtonContainer: {
-    paddingBottom: 40,
-    marginHorizontal: 48,
+  usernameInput: {
+    textAlign: 'left',
+    paddingLeft: 54,
   },
-  blueButton: {
-    backgroundColor: '#78ADFD',
-    borderRadius: 27,
-    paddingVertical: 18,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(0, 0, 0, 0.20)',
-    borderBottomWidth: 8,
-    borderBottomColor: '#608ACA',
-    shadowColor: 'rgba(13, 198, 186, 1)',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8,
+  usernameLabel: {
+    position: 'absolute',
+    left: 22,
+    top: 6,
   },
-  blueButtonText: {
-    fontSize: 22,
+  usernameLabelText: {
+    fontSize: 12,
     fontWeight: '700',
-    color: '#FFFFFF',
+  },
+  usernameSpinner: {
+    position: 'absolute',
+    right: 18,
+    top: 18,
+  },
+  usernameSuggestionsWrapper: {
+    marginTop: 16,
+    width: '100%',
+    alignSelf: 'stretch',
+    overflow: 'visible',
+  },
+  usernameSuggestions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingLeft: 24,
+    paddingRight: 40,
+  },
+  usernameSuggestionsScroll: {
+    overflow: 'visible',
+  },
+  usernameSuggestion: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 2,
+    borderColor: '#DDD5C7',
+  },
+  usernameSuggestionPressed: {
+    opacity: 0.8,
+  },
+  usernameSuggestionText: {
+    fontSize: 15,
+    color: '#5D4037',
+    fontWeight: '700',
   },
   // Welcome step
   heroContainer: {

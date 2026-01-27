@@ -17,7 +17,7 @@ import { isGodotReady, changeScene, setUserCharacter, setShowcaseCameraZoom, typ
 import { useAuth, userService } from '@/lib/firebase';
 import { PCK_URL } from '@/constants/game';
 import { getItemThumbnail } from '@/assets/thumbnails';
-import { BackButton, BeanCounter, Button } from '@/components/ui';
+import { BackButton, BeanCounter, PrimaryButton } from '@/components/ui';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLUMNS = 2;
@@ -835,7 +835,7 @@ export default function StoreScreen() {
         
         <View style={styles.headerRight}>
           {/* Customize Character Button */}
-          <Button 
+          <PrimaryButton 
             title="edit character"
             onPress={() => router.push('/character')}
             size="tiny"
@@ -904,7 +904,7 @@ export default function StoreScreen() {
                   Items refresh in {formatTimeRemaining(timeRemaining)}
                 </Text>
               </View>
-              <Button 
+              <PrimaryButton 
                 title={`Refresh ${REFRESH_COST}`}
                 onPress={handleRefresh}
                 disabled={!canAffordRefresh}
@@ -991,14 +991,14 @@ export default function StoreScreen() {
                       </View>
                     ) : activeTab === 'Owned' ? (
                       isItemEquipped(item) ? (
-                        <Button 
+                        <PrimaryButton 
                           title="Remove"
                           onPress={() => handleRemove(item)}
                           size="tiny"
                           variant="danger"
                         />
                       ) : (
-                        <Button 
+                        <PrimaryButton 
                           title="Equip"
                           onPress={() => handleEquip(item)}
                           size="tiny"
@@ -1023,14 +1023,14 @@ export default function StoreScreen() {
         <View style={[styles.buyBar, { marginBottom: insets.bottom + 12 }]}>
           <Text style={styles.buyBarItemName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{selectedItem.name}</Text>
           {canAfford ? (
-            <Button 
+            <PrimaryButton 
               title={`Buy ${selectedItem.price}`}
               onPress={handlePurchase}
               size="small"
               variant="primary"
             />
           ) : (
-            <Button 
+            <PrimaryButton 
               title={isSelectedWishlisted ? 'Wishlisted' : 'Wishlist'}
               onPress={handleWishlist}
               size="small"

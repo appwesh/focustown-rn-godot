@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useAuth, groupsService } from '@/lib/firebase';
 import { useSocialStore, type LobbySlot } from '@/lib/social';
-import { BeanCounter, Button } from '@/components/ui';
+import { BeanCounter, PrimaryButton } from '@/components/ui';
 import { FriendPickerModal, InviteReceivedModal, LobbyDurationModal } from '@/components/social';
 import { DebugModal } from '@/components/debug-modal';
 import { GodotGame } from '@/components/godot-view';
@@ -529,7 +529,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Go to Cafe Button */}
-        <Button
+        <PrimaryButton
           title={buttonText}
           onPress={handleGoToCafe}
           disabled={buttonDisabled}

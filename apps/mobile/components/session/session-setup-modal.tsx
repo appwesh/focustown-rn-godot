@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSessionStore, formatMinutesDisplay } from '@/lib/session';
-import { Button, TimerSlider } from '@/components/ui';
+import { PrimaryButton, TimerSlider } from '@/components/ui';
 
 const clockIcon = require('@/assets/ui/clock.png');
 
@@ -95,7 +95,7 @@ export function SessionSetupModal({ visible, onTripleTap }: SessionSetupModalPro
           <View style={styles.buttonsContainer}> 
           {/* Take a break link - only shown after completing at least one session */}
           {hasCompletedAnySession && (
-            <Button 
+            <PrimaryButton 
               title="Take a break instead"
               onPress={showBreakSetup}
               variant="muted"
@@ -104,7 +104,7 @@ export function SessionSetupModal({ visible, onTripleTap }: SessionSetupModalPro
           )}
 
           {/* Start Button */}
-          <Button
+          <PrimaryButton
             title="Start Session"
             onPress={startSession}
             variant="primary"
