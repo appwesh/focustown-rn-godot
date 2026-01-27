@@ -29,6 +29,7 @@ import PhoneInput, {
 } from 'react-native-international-phone-number';
 import { CountryCode } from 'libphonenumber-js';
 import { useAuth } from '@/lib/firebase';
+import * as analytics from '@/lib/analytics';
 import { userService } from '@/lib/firebase/user';
 import { toE164, cleanVerificationCode, isValidPhone } from '@/lib/phone';
 
@@ -104,6 +105,13 @@ export default function OnboardingScreen() {
             console.error('[Onboarding] Failed to save name:', error);
           }
         }
+
+        // Identify user for analytics after successful signup
+        analytics.identifyUser(user.uid, {
+          name: name.trim() || undefined,
+          display_name: name.trim() || undefined,
+          phone_number: user.phoneNumber ?? undefined,
+        });
 
         // Go to home
         router.replace('/home');

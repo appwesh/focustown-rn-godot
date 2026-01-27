@@ -13,6 +13,7 @@ import { clearPckCache } from './godot-view';
 import { useSocialStore } from '@/lib/social';
 import { useSessionStore } from '@/lib/session';
 import { useAuth, db, friendsService } from '@/lib/firebase';
+import { useRouter } from 'expo-router';
 import {
   collection,
   doc,
@@ -36,7 +37,7 @@ interface DebugModalProps {
 }
 
 // Tab type
-type DebugTab = 'state' | 'session' | 'users' | 'friends' | 'lobby' | 'cache';
+type DebugTab = 'state' | 'session' | 'users' | 'friends' | 'lobby' | 'cache' | 'nav';
 
 // Test user for debug
 interface TestUser {
@@ -55,6 +56,7 @@ interface FriendshipInfo {
 }
 
 export function DebugModal({ visible, onClose }: DebugModalProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<DebugTab>('state');
   const [loading, setLoading] = useState<string | null>(null);
   
@@ -406,6 +408,8 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
         return renderLobbyTab();
       case 'cache':
         return renderCacheTab();
+      case 'nav':
+        return renderNavTab();
     }
   };
 
@@ -696,6 +700,38 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
     </View>
   );
 
+  // NAV TAB
+  const renderNavTab = () => {
+    const routes = [
+      { label: 'Index', path: '/' },
+      { label: 'Onboarding', path: '/onboarding' },
+      { label: 'Home', path: '/home' },
+      { label: 'Social', path: '/social' },
+      { label: 'Game', path: '/game' },
+      { label: 'Profile', path: '/profile' },
+      { label: 'Settings', path: '/settings' },
+    ];
+
+    return (
+      <View style={styles.tabContent}>
+        <Text style={styles.sectionTitle}>🧭 Navigate</Text>
+        <Text style={styles.hintText}>Jump to any screen</Text>
+        {routes.map((route) => (
+          <Pressable
+            key={route.path}
+            style={[styles.actionBtn, styles.infoBtn]}
+            onPress={() => {
+              onClose();
+              router.push(route.path);
+            }}
+          >
+            <Text style={styles.btnText}>{route.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+    );
+  };
+
   // LOBBY TAB
   const renderLobbyTab = () => {
     // Filter out current user and users already in lobby
@@ -983,7 +1019,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
 
               {/* Tabs */}
               <View style={styles.tabs}>
-                {(['state', 'session', 'users', 'friends', 'lobby', 'cache'] as DebugTab[]).map((tab) => (
+                {(['state', 'session', 'users', 'friends', 'lobby', 'cache', 'nav'] as DebugTab[]).map((tab) => (
               <Pressable
                     key={tab}
                     style={[styles.tab, activeTab === tab && styles.tabActive]}
@@ -996,6 +1032,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
                       {tab === 'friends' && '🤝'}
                       {tab === 'lobby' && '🏠'}
                       {tab === 'cache' && '💾'}
+                      {tab === 'nav' && '🧭'}
                 </Text>
               </Pressable>
                 ))}
@@ -1025,13 +1062,13 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'stretch',
   },
   container: {
-    width: '92%',
-    maxWidth: 400,
-    maxHeight: '85%',
+    width: '100%',
+    maxWidth: 500,
+    maxHeight: '90%',
   },
   modal: {
     backgroundColor: '#FFF8E7',

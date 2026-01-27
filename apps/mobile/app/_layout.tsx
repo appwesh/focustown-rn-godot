@@ -14,8 +14,13 @@ import {
 } from '@expo-google-fonts/poppins';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { AuthProvider } from '@/lib/firebase';
+import { AuthProvider, useAuth } from '@/lib/firebase';
 import { useNotifications } from '@/lib/notifications';
+import * as analytics from '@/lib/analytics';
+
+// Initialize Mixpanel - replace with your token
+const MIXPANEL_TOKEN = '71451a15d195dbe3f517632e97341726';
+analytics.init(MIXPANEL_TOKEN);
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -57,6 +62,15 @@ const FocusTownTheme = {
 function AppContent() {
   // Initialize push notifications
   useNotifications();
+  
+  // Track user identity for analytics
+  const { user } = useAuth();
+  
+  useEffect(() => {
+    if (!user) {
+      analytics.reset();
+    }
+  }, [user]);
 
   return (
     <>
