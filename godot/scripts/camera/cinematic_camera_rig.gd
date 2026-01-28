@@ -148,11 +148,13 @@ func _physics_process(delta: float) -> void:
 	if not _target:
 		return
 	
-	# Update camera positions based on target
-	_update_third_person_camera(delta)
-	_update_first_person_camera()
-	_update_setup_camera(delta)
-	_update_seated_camera(delta)
+	# Only update the active camera (and target during transitions) - not all 4 every frame
+	if _is_transitioning:
+		# During transition, update both current mode camera and use interp
+		_update_camera_for_mode(_transition_target_mode, delta)
+	else:
+		# Only update the active camera
+		_update_camera_for_mode(_current_mode, delta)
 	
 	# Update fade transition
 	if _fade_state != FadeState.NONE:
@@ -163,6 +165,20 @@ func _physics_process(delta: float) -> void:
 	# - If this transition uses fade: only interpolate during HOLDING phase (black screen)
 	if _is_transitioning and (not _current_transition_uses_fade or _fade_state == FadeState.HOLDING):
 		_update_transition(delta)
+
+
+func _update_camera_for_mode(mode: CameraMode, delta: float) -> void:
+	## Update only the specified camera mode
+	match mode:
+		CameraMode.THIRD_PERSON:
+			_update_third_person_camera(delta)
+		CameraMode.FIRST_PERSON:
+			_update_first_person_camera()
+		CameraMode.SETUP:
+			_update_setup_camera(delta)
+		CameraMode.SEATED:
+			_update_seated_camera(delta)
+		# OVERVIEW doesn't need updates (static camera)
 
 
 func _setup_cameras() -> void:

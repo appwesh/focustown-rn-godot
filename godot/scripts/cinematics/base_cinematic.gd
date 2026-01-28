@@ -254,6 +254,10 @@ func _ready() -> void:
 	# Start entrance cinematic if enabled (deferred to allow scene to fully load)
 	if play_entrance_cinematic and _character:
 		call_deferred("_start_entrance_cinematic")
+	
+	# Disable _process if keyboard movement is disabled (mobile optimization)
+	# This prevents the empty _process call from running 60x/sec on mobile
+	set_process(keyboard_movement_enabled)
 
 
 func _resolve_marker_positions() -> void:
@@ -310,7 +314,8 @@ func _ensure_overview_camera() -> void:
 
 
 func _process(delta: float) -> void:
-	if keyboard_movement_enabled and _character:
+	# Only runs when keyboard_movement_enabled (set in _ready based on platform)
+	if _character:
 		_handle_keyboard_movement(delta)
 
 

@@ -26,10 +26,13 @@ const COINS_PER_MINUTE := 10
 
 
 func _ready() -> void:
+	# Disable processing by default - only enable when session is active
+	set_process(false)
 	print("[FocusSession] Manager ready")
 
 
 func _process(_delta: float) -> void:
+	# Only called when state != IDLE (processing enabled in start_session/start_break)
 	if state == SessionState.FOCUSING:
 		var now := Time.get_ticks_msec()
 		var new_elapsed := int((now - session_start_time) / 1000)
@@ -53,6 +56,9 @@ func start_session(spot: Node3D) -> void:
 	session_start_time = Time.get_ticks_msec()
 	elapsed_seconds = 0
 	
+	# Enable processing for timer updates
+	set_process(true)
+	
 	print("[FocusSession] Started at ", spot.name)
 	session_started.emit(spot)
 
@@ -64,6 +70,9 @@ func end_session() -> int:
 	state = SessionState.IDLE
 	var duration := elapsed_seconds
 	var coins := calculate_rewards(duration)
+	
+	# Disable processing when idle (no timer to update)
+	set_process(false)
 	
 	print("[FocusSession] Ended. Duration: ", duration, "s, Coins: ", coins)
 	session_ended.emit(duration, coins)
@@ -112,6 +121,9 @@ func start_break() -> void:
 	break_start_time = Time.get_ticks_msec()
 	break_elapsed_seconds = 0
 	
+	# Enable processing for break timer
+	set_process(true)
+	
 	print("[FocusSession] Break started")
 	break_started.emit()
 
@@ -123,6 +135,9 @@ func end_break() -> int:
 	
 	state = SessionState.IDLE
 	var duration := break_elapsed_seconds
+	
+	# Disable processing when idle
+	set_process(false)
 	
 	print("[FocusSession] Break ended. Duration: ", duration, "s")
 	break_ended.emit(duration)
