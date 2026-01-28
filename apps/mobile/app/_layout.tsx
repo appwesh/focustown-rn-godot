@@ -17,10 +17,14 @@ import 'react-native-reanimated';
 import { AuthProvider, useAuth } from '@/lib/firebase';
 import { useNotifications } from '@/lib/notifications';
 import * as analytics from '@/lib/analytics';
+import * as appsflyer from '@/lib/appsflyer';
 
 // Initialize Mixpanel - replace with your token
 const MIXPANEL_TOKEN = '71451a15d195dbe3f517632e97341726';
 analytics.init(MIXPANEL_TOKEN);
+
+// Initialize AppsFlyer for attribution and deep linking
+appsflyer.init();
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -67,7 +71,10 @@ function AppContent() {
   const { user } = useAuth();
   
   useEffect(() => {
-    if (!user) {
+    if (user) {
+      // Link AppsFlyer with user ID for cross-platform attribution
+      appsflyer.setCustomerUserId(user.uid);
+    } else {
       analytics.reset();
     }
   }, [user]);
