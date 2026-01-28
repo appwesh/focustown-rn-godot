@@ -30,13 +30,13 @@ export interface CharacterSkin {
 
 export interface OnboardingAnswers {
   ageRange: string | null;
-  studyLocation: string | null;
+  studyLocation: string[];
   socialBaseline: string | null;
   studyFrequency: string | null;
   sessionLength: string | null;
   focusFriction: string | null;
   focusFor: string | null;
-  goal: string | null;
+  goal: string[];
 }
 
 /**

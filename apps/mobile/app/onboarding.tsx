@@ -46,6 +46,7 @@ type OnboardingStep =
   | 'welcome'
   | 'gender'
   | 'avatar'
+  | 'name'
   | 'age'
   | 'studyLocation'
   | 'socialBaseline'
@@ -81,19 +82,20 @@ type Gender = 'male' | 'female';
 
 type OnboardingAnswers = {
   ageRange: string | null;
-  studyLocation: StudyLocation | null;
+  studyLocation: StudyLocation[];
   socialBaseline: SocialBaseline | null;
   studyFrequency: StudyFrequency | null;
   sessionLength: SessionLength | null;
   focusFriction: FocusFriction | null;
   focusFor: FocusFor | null;
-  goal: Goal | null;
+  goal: Goal[];
 };
 
 const BASE_STEPS: OnboardingStep[] = [
   'welcome',
   'gender',
   'avatar',
+  'name',
   'age',
   'studyLocation',
   'socialBaseline',
@@ -139,13 +141,13 @@ export default function OnboardingScreen() {
   const [ageRange, setAgeRange] = useState<string | null>(null);
   const [onboardingAnswers, setOnboardingAnswers] = useState<OnboardingAnswers>({
     ageRange: null,
-    studyLocation: null,
+    studyLocation: [],
     socialBaseline: null,
     studyFrequency: null,
     sessionLength: null,
     focusFriction: null,
     focusFor: null,
-    goal: null,
+    goal: [],
   });
   const [username, setUsername] = useState('');
   const [usernameError, setUsernameError] = useState<string | null>(null);
@@ -208,6 +210,7 @@ export default function OnboardingScreen() {
       welcome: 'WelcomeScreen',
       gender: 'GenderScreen',
       avatar: 'AvatarScreen',
+      name: 'NameScreen',
       age: 'AgeScreen',
       studyLocation: 'StudyLocationScreen',
       socialBaseline: 'SocialBaselineScreen',
@@ -340,11 +343,21 @@ export default function OnboardingScreen() {
           console.error('[Onboarding] Failed to save onboarding:', error);
         }
 
-        // Identify user for analytics after successful signup
+        // Identify user for analytics after successful signup with all onboarding data
         analytics.identifyUser(user.uid, {
           name: name.trim() || undefined,
           display_name: name.trim() || undefined,
           phone_number: user.phoneNumber ?? undefined,
+          gender: gender ?? undefined,
+          avatar: avatar ?? undefined,
+          age_range: ageRange ?? undefined,
+          study_location: onboardingAnswers.studyLocation ?? undefined,
+          social_baseline: onboardingAnswers.socialBaseline ?? undefined,
+          study_frequency: onboardingAnswers.studyFrequency ?? undefined,
+          session_length: onboardingAnswers.sessionLength ?? undefined,
+          focus_friction: onboardingAnswers.focusFriction ?? undefined,
+          focus_for: onboardingAnswers.focusFor ?? undefined,
+          goal: onboardingAnswers.goal ?? undefined,
         });
 
         // Continue to username step
@@ -353,7 +366,7 @@ export default function OnboardingScreen() {
     };
 
     handleVerificationSuccess();
-  }, [hasVerifiedThisSession, user, currentStep, showVerifyInput, name, username, ageRange, onboardingAnswers]);
+  }, [hasVerifiedThisSession, user, currentStep, showVerifyInput, name, username, gender, avatar, ageRange, onboardingAnswers]);
 
   // Show verify input when code is sent (same screen, just swap input)
   useEffect(() => {
@@ -425,6 +438,13 @@ export default function OnboardingScreen() {
   const handleAvatarContinue = () => {
     if (avatar) {
       analytics.track('Onboarding_AvatarScreen_Continue_Tapped', { avatar });
+      setCurrentStep('name');
+    }
+  };
+
+  const handleNameContinue = () => {
+    if (name.trim()) {
+      analytics.track('Onboarding_NameScreen_Continue_Tapped', { name: name.trim() });
       setCurrentStep('age');
     }
   };
@@ -443,12 +463,27 @@ export default function OnboardingScreen() {
     }, 150);
   };
 
-  const handleStudyLocationSelect = (value: StudyLocation) => {
-    analytics.track('Onboarding_StudyLocationScreen_Option_Selected', { studyLocation: value });
-    updateOnboardingAnswer('studyLocation', value);
-    setTimeout(() => {
+  const handleStudyLocationToggle = (value: StudyLocation) => {
+    analytics.track('Onboarding_StudyLocationScreen_Option_Toggled', { studyLocation: value });
+    setOnboardingAnswers((prev) => {
+      const current = prev.studyLocation;
+      const isSelected = current.includes(value);
+      return {
+        ...prev,
+        studyLocation: isSelected
+          ? current.filter((v) => v !== value)
+          : [...current, value],
+      };
+    });
+  };
+
+  const handleStudyLocationContinue = () => {
+    if (onboardingAnswers.studyLocation.length > 0) {
+      analytics.track('Onboarding_StudyLocationScreen_Continue_Tapped', {
+        studyLocation: onboardingAnswers.studyLocation,
+      });
       setCurrentStep('socialBaseline');
-    }, 150);
+    }
   };
 
   const handleSocialBaselineSelect = (value: SocialBaseline) => {
@@ -495,12 +530,27 @@ export default function OnboardingScreen() {
     }, 150);
   };
 
-  const handleGoalSelect = (value: Goal) => {
-    analytics.track('Onboarding_GoalScreen_Option_Selected', { goal: value });
-    updateOnboardingAnswer('goal', value);
-    setTimeout(() => {
+  const handleGoalToggle = (value: Goal) => {
+    analytics.track('Onboarding_GoalScreen_Option_Toggled', { goal: value });
+    setOnboardingAnswers((prev) => {
+      const current = prev.goal;
+      const isSelected = current.includes(value);
+      return {
+        ...prev,
+        goal: isSelected
+          ? current.filter((v) => v !== value)
+          : [...current, value],
+      };
+    });
+  };
+
+  const handleGoalContinue = () => {
+    if (onboardingAnswers.goal.length > 0) {
+      analytics.track('Onboarding_GoalScreen_Continue_Tapped', {
+        goal: onboardingAnswers.goal,
+      });
       setCurrentStep('notifications');
-    }, 150);
+    }
   };
 
   const handleJoinDiscord = () => {
@@ -969,6 +1019,39 @@ export default function OnboardingScreen() {
     </View>
   );
 
+  const renderName = () => (
+    <View key="name" style={styles.onboardingStepContainer}>
+      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+        <Text style={styles.onboardingTitle}>What{"'"}s your name?</Text>
+        <Text style={styles.onboardingSubtitle}>This is how friends will see you</Text>
+      </Animated.View>
+
+      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+        <BrownComponent
+          type="input"
+          placeholder="Your name"
+          value={name}
+          onChangeText={setName}
+          autoCorrect={false}
+          autoCapitalize="words"
+          maxLength={30}
+          returnKeyType="next"
+          onSubmitEditing={handleNameContinue}
+        />
+      </Animated.View>
+
+      <Animated.View
+        style={[styles.onboardingButtonContainer, buttonAnimStyle, { marginBottom: -56 }]}
+      >
+        <PrimaryButton
+          title="Continue"
+          onPress={handleNameContinue}
+          disabled={!name.trim()}
+        />
+      </Animated.View>
+    </View>
+  );
+
   const renderAge = () => {
     const ageOptions = [
       '12 or under',
@@ -1003,18 +1086,47 @@ export default function OnboardingScreen() {
     );
   };
 
-  const renderStudyLocation = () =>
-    renderOptionStep<StudyLocation>({
-      title: 'Where do you usually study?',
-      options: [
-        { value: 'home', label: 'Home' },
-        { value: 'library', label: 'Library' },
-        { value: 'cafe', label: 'Cafe' },
-        { value: 'school', label: 'School' },
-      ],
-      selectedValue: onboardingAnswers.studyLocation,
-      onSelect: handleStudyLocationSelect,
-    });
+  const renderStudyLocation = () => (
+    <View key="studyLocation" style={styles.onboardingStepContainer}>
+      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+        <Text style={styles.onboardingTitle}>Where do you usually study?</Text>
+        <Text style={styles.onboardingSubtitle}>Select all that apply</Text>
+      </Animated.View>
+
+      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.checkboxOptions}
+        >
+          {([
+            { value: 'home', label: 'Home' },
+            { value: 'library', label: 'Library' },
+            { value: 'cafe', label: 'Cafe' },
+            { value: 'school', label: 'School' },
+          ] as { value: StudyLocation; label: string }[]).map((option) => (
+            <BrownComponent
+              key={option.value}
+              type="checkbox"
+              title={option.label}
+              checked={onboardingAnswers.studyLocation.includes(option.value)}
+              onPress={() => handleStudyLocationToggle(option.value)}
+              style={{ marginBottom: 6 }}
+            />
+          ))}
+        </ScrollView>
+      </Animated.View>
+
+      <Animated.View
+        style={[styles.onboardingButtonContainer, buttonAnimStyle, { marginBottom: -56 }]}
+      >
+        <PrimaryButton
+          title="Continue"
+          onPress={handleStudyLocationContinue}
+          disabled={onboardingAnswers.studyLocation.length === 0}
+        />
+      </Animated.View>
+    </View>
+  );
 
   const renderSocialBaseline = () =>
     renderOptionStep<SocialBaseline>({
@@ -1086,13 +1198,42 @@ export default function OnboardingScreen() {
       onSelect: handleFocusForSelect,
     });
 
-  const renderGoal = () =>
-    renderOptionStep<Goal>({
-      title: 'What is your main goal?',
-      options: getGoalOptions(),
-      selectedValue: onboardingAnswers.goal,
-      onSelect: handleGoalSelect,
-    });
+  const renderGoal = () => (
+    <View key="goal" style={styles.onboardingStepContainer}>
+      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+        <Text style={styles.onboardingTitle}>What are your goals?</Text>
+        <Text style={styles.onboardingSubtitle}>Select all that apply</Text>
+      </Animated.View>
+
+      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.checkboxOptions}
+        >
+          {getGoalOptions().map((option) => (
+            <BrownComponent
+              key={option.value}
+              type="checkbox"
+              title={option.label}
+              checked={onboardingAnswers.goal.includes(option.value)}
+              onPress={() => handleGoalToggle(option.value)}
+              style={{ marginBottom: 6 }}
+            />
+          ))}
+        </ScrollView>
+      </Animated.View>
+
+      <Animated.View
+        style={[styles.onboardingButtonContainer, buttonAnimStyle, { marginBottom: -56 }]}
+      >
+        <PrimaryButton
+          title="Continue"
+          onPress={handleGoalContinue}
+          disabled={onboardingAnswers.goal.length === 0}
+        />
+      </Animated.View>
+    </View>
+  );
 
   const renderUsername = () => {
     return (
@@ -1371,6 +1512,8 @@ export default function OnboardingScreen() {
         return renderGender();
       case 'avatar':
         return renderAvatar();
+      case 'name':
+        return renderName();
       case 'age':
         return renderAge();
       case 'studyLocation':
@@ -1403,6 +1546,7 @@ export default function OnboardingScreen() {
   const isCreamStep = [
     'gender',
     'avatar',
+    'name',
     'age',
     'studyLocation',
     'socialBaseline',
@@ -1686,6 +1830,11 @@ const styles = StyleSheet.create({
   },
   ageOptions: {
     gap: 14,
+    marginTop: 12,
+    paddingBottom: 8,
+  },
+  checkboxOptions: {
+    gap: 6,
     marginTop: 12,
     paddingBottom: 8,
   },

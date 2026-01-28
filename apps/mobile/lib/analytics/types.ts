@@ -48,5 +48,16 @@ export interface UserProperties {
   phone_number?: string;
   display_name?: string;
   created_at?: string;
+  // Onboarding properties
+  gender?: string;
+  avatar?: string;
+  age_range?: string;
+  study_location?: string[];
+  social_baseline?: string;
+  study_frequency?: string;
+  session_length?: string;
+  focus_friction?: string;
+  focus_for?: string;
+  goal?: string[];
 }
 

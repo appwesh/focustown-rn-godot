@@ -82,7 +82,7 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
   }
   const [groupInvites, setGroupInvites] = useState<GroupInviteInfo[]>([]);
   
-  const { user, userDoc, recordSession } = useAuth();
+  const { user, userDoc, recordSession, signOut } = useAuth();
   
   // Social store state
   const friends = useSocialStore((s) => s.friends);
@@ -502,7 +502,7 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
       
       <View style={styles.divider} />
       
-      <Text style={styles.sectionTitle}>👤 Current User</Text>
+      <Text style={styles.sectionTitle}>👤 Current User ({user ? 'signed in' : 'not signed in'})</Text>
       <Text style={styles.infoText}>UID: {user?.uid?.slice(0, 12)}...</Text>
       <Text style={styles.infoText}>Name: {userDoc?.displayName || 'none'}</Text>
       <Text style={styles.infoText}>Username: @{userDoc?.username || 'none'}</Text>
@@ -1031,6 +1031,29 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
     );
   };
 
+  // Handle sign out
+  const handleSignOut = async () => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          setLoading('signOut');
+          try {
+            await signOut();
+            onClose();
+            router.replace('/');
+          } catch (error) {
+            Alert.alert('Error', 'Failed to sign out');
+          } finally {
+            setLoading(null);
+          }
+        },
+      },
+    ]);
+  };
+
   // CACHE TAB
   const renderCacheTab = () => (
     <View style={styles.tabContent}>
@@ -1045,6 +1068,22 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
       >
         <Text style={styles.btnText}>
           {loading === 'cache' ? 'Clearing...' : '🗑 Clear PCK Cache'}
+        </Text>
+      </Pressable>
+
+      <View style={styles.divider} />
+
+      <Text style={styles.sectionTitle}>🚪 Account</Text>
+      <Text style={styles.infoText}>
+        Sign out of your account and return to the login screen.
+      </Text>
+      <Pressable
+        style={[styles.actionBtn, styles.dangerBtn]}
+        onPress={handleSignOut}
+        disabled={loading === 'signOut'}
+      >
+        <Text style={styles.btnText}>
+          {loading === 'signOut' ? 'Signing out...' : '🚪 Sign Out'}
         </Text>
       </Pressable>
     </View>

@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { StyleSheet, View, TextInput, Text, Pressable, TextInputProps, ViewStyle, TextStyle } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 interface BrownInputProps extends Omit<TextInputProps, 'style'> {
   type: 'input';
@@ -16,7 +17,16 @@ interface BrownButtonProps {
   style?: ViewStyle;
 }
 
-type BrownComponentProps = BrownInputProps | BrownButtonProps;
+interface BrownCheckboxProps {
+  type: 'checkbox';
+  title: string;
+  onPress: () => void;
+  checked?: boolean;
+  disabled?: boolean;
+  style?: ViewStyle;
+}
+
+type BrownComponentProps = BrownInputProps | BrownButtonProps | BrownCheckboxProps;
 
 const BUTTON_PRESSED_MARGIN_TOP = 3;
 
@@ -36,6 +46,39 @@ export const BrownComponent = forwardRef<TextInput, BrownComponentProps>((props,
           {...inputProps}
         />
       </View>
+    );
+  }
+
+  // Checkbox type
+  if (props.type === 'checkbox') {
+    const { title, onPress, checked, disabled, style } = props;
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          styles.shadow,
+          style,
+          {
+            paddingBottom: pressed ? 5 : 8,
+          },
+        ]}
+        onPress={onPress}
+        disabled={disabled}
+      >
+        {({ pressed }) => (
+          <View
+            style={[
+              styles.checkboxButton,
+              { marginTop: pressed ? BUTTON_PRESSED_MARGIN_TOP : 0 },
+              checked && styles.selected,
+            ]}
+          >
+            <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
+              {checked && <Feather name="check" size={16} color="#fff" />}
+            </View>
+            <Text style={styles.checkboxText}>{title}</Text>
+          </View>
+        )}
+      </Pressable>
     );
   }
 
@@ -100,5 +143,34 @@ const styles = StyleSheet.create({
   },
   selected: {
     backgroundColor: '#E8D9B8',
+  },
+  checkboxButton: {
+    backgroundColor: '#FFEFD6',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#C4B5A0',
+    backgroundColor: '#fff',
+    marginRight: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#81C784',
+    borderColor: '#66BB6A',
+  },
+  checkboxText: {
+    fontSize: 18,
+    color: '#5D4037',
+    fontWeight: '600',
+    flex: 1,
   },
 });
