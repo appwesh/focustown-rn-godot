@@ -11,6 +11,7 @@ import type {
   SignInProperties,
   UserProperties,
 } from "./types";
+import { identifySessionReplay } from "./session-replay";
 
 // Mixpanel instance
 let mixpanel: Mixpanel | null = null;
@@ -62,6 +63,9 @@ export function identify(userId: string, properties?: UserProperties): void {
   if (properties) {
     mixpanel.getPeople().set(properties);
   }
+
+  // Sync user identity with Session Replay
+  identifySessionReplay(userId);
 
   console.log("[Analytics] User identified:", userId);
 }

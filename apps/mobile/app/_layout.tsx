@@ -19,8 +19,10 @@ import { useNotifications } from '@/lib/notifications';
 import * as analytics from '@/lib/analytics';
 import * as appsflyer from '@/lib/appsflyer';
 
-// Initialize Mixpanel - replace with your token
+// Mixpanel token
 const MIXPANEL_TOKEN = '71451a15d195dbe3f517632e97341726';
+
+// Initialize Mixpanel
 analytics.init(MIXPANEL_TOKEN);
 
 // Initialize AppsFlyer for attribution and deep linking
@@ -66,14 +68,20 @@ const FocusTownTheme = {
 function AppContent() {
   // Initialize push notifications
   useNotifications();
-  
+
   // Track user identity for analytics
   const { user } = useAuth();
-  
+
+  // Initialize Session Replay (identity synced via analytics.identify when user logs in)
+  useEffect(() => {
+    analytics.initSessionReplay(MIXPANEL_TOKEN, 'anonymous');
+  }, []);
+
   useEffect(() => {
     if (user) {
       // Link AppsFlyer with user ID for cross-platform attribution
       appsflyer.setCustomerUserId(user.uid);
+      // Session Replay identity is synced automatically via analytics.identify
     } else {
       analytics.reset();
     }

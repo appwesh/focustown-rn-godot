@@ -15,6 +15,16 @@ export {
   track,
 } from "./service";
 
+export {
+  initSessionReplay,
+  startRecording,
+  stopRecording,
+  isRecording,
+  identifySessionReplay,
+  MPSessionReplayMask,
+} from "./session-replay";
+export type { SessionReplayOptions } from "./session-replay";
+
 export { useAnalytics } from "./useAnalytics";
 
 export type {
