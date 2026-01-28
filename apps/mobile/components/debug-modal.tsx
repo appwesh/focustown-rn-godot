@@ -716,6 +716,8 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
     const onboardingSteps = [
       { label: 'Welcome', value: 'welcome' },
       { label: 'Name', value: 'name' },
+      { label: 'Gender', value: 'gender' },
+      { label: 'Avatar', value: 'avatar' },
       { label: 'Age', value: 'age' },
       { label: 'Study Location', value: 'studyLocation' },
       { label: 'Social Baseline', value: 'socialBaseline' },
@@ -727,6 +729,7 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
       { label: 'Username', value: 'username' },
       { label: 'Phone', value: 'phone' },
       { label: 'Verify', value: 'verify' },
+      { label: 'Notifications', value: 'notifications' },
       { label: 'Discord', value: 'discord' },
     ];
 
@@ -747,30 +750,30 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
           </Pressable>
         ))}
         
-        {onSetOnboardingStep && (
-          <>
-            <View style={styles.divider} />
-            <Text style={styles.sectionTitle}>📋 Onboarding Steps</Text>
-            <Text style={styles.hintText}>
-              Current: {onboardingStep || 'N/A'}
-            </Text>
-            {onboardingSteps.map((step) => (
-              <Pressable
-                key={step.value}
-                style={[
-                  styles.actionBtn,
-                  onboardingStep === step.value ? styles.successBtn : styles.infoBtn,
-                ]}
-                onPress={() => {
-                  onSetOnboardingStep(step.value);
-                  onClose();
-                }}
-              >
-                <Text style={styles.btnText}>{step.label}</Text>
-              </Pressable>
-            ))}
-          </>
-        )}
+        <View style={styles.divider} />
+        <Text style={styles.sectionTitle}>📋 Onboarding Steps</Text>
+        <Text style={styles.hintText}>
+          {onSetOnboardingStep ? `Current: ${onboardingStep || 'N/A'}` : 'Navigate to onboarding screen'}
+        </Text>
+        {onboardingSteps.map((step) => (
+          <Pressable
+            key={step.value}
+            style={[
+              styles.actionBtn,
+              onboardingStep === step.value ? styles.successBtn : styles.infoBtn,
+            ]}
+            onPress={() => {
+              if (onSetOnboardingStep) {
+                onSetOnboardingStep(step.value);
+              } else {
+                router.push('/onboarding');
+              }
+              onClose();
+            }}
+          >
+            <Text style={styles.btnText}>{step.label}</Text>
+          </Pressable>
+        ))}
       </View>
     );
   };

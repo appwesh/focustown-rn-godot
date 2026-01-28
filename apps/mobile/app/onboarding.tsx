@@ -12,6 +12,7 @@ import {
   ScrollView,
   ImageBackground,
   Linking,
+  Image,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -37,10 +38,15 @@ import { userService } from '@/lib/firebase/user';
 import { toE164, cleanVerificationCode, isValidPhone } from '@/lib/phone';
 import { PrimaryButton, BrownComponent, BackButton } from '@/components/ui';
 import { DebugModal } from '@/components/debug-modal';
+import { registerForPushNotifications } from '@/lib/notifications';
+
+type Avatar = 'male' | 'female';
 
 type OnboardingStep =
   | 'welcome'
   | 'name'
+  | 'gender'
+  | 'avatar'
   | 'age'
   | 'studyLocation'
   | 'socialBaseline'
@@ -52,6 +58,7 @@ type OnboardingStep =
   | 'username'
   | 'phone'
   | 'verify'
+  | 'notifications'
   | 'discord';
 
 type StudyLocation = 'home' | 'library' | 'cafe' | 'school';
@@ -72,6 +79,7 @@ type Goal =
   | 'improve_gpa'
   | 'prepare_exam'
   | 'stay_focused';
+type Gender = 'male' | 'female';
 
 type OnboardingAnswers = {
   ageRange: string | null;
@@ -87,6 +95,8 @@ type OnboardingAnswers = {
 const BASE_STEPS: OnboardingStep[] = [
   'welcome',
   'name',
+  'gender',
+  'avatar',
   'age',
   'studyLocation',
   'socialBaseline',
@@ -98,6 +108,7 @@ const BASE_STEPS: OnboardingStep[] = [
   'username',
   'phone',
   'verify',
+  'notifications',
   'discord',
 ];
 
@@ -128,6 +139,8 @@ export default function OnboardingScreen() {
 
   // Form state
   const [name, setName] = useState('');
+  const [gender, setGender] = useState<Gender | null>(null);
+  const [avatar, setAvatar] = useState<Avatar | null>(null);
   const [ageRange, setAgeRange] = useState<string | null>(null);
   const [onboardingAnswers, setOnboardingAnswers] = useState<OnboardingAnswers>({
     ageRange: null,
@@ -310,8 +323,8 @@ export default function OnboardingScreen() {
           phone_number: user.phoneNumber ?? undefined,
         });
 
-        // Continue to Discord prompt before entering home
-        setCurrentStep('discord');
+        // Continue to notifications permission prompt
+        setCurrentStep('notifications');
       }
     };
 
@@ -380,6 +393,16 @@ export default function OnboardingScreen() {
 
   const handleNameContinue = () => {
     if (isValidName) {
+      setCurrentStep('gender');
+    }
+  };
+
+  const handleAvatarSelect = (selected: Avatar) => {
+    setAvatar(selected);
+  };
+
+  const handleAvatarContinue = () => {
+    if (avatar) {
       setCurrentStep('age');
     }
   };
@@ -459,6 +482,19 @@ export default function OnboardingScreen() {
 
   const handleSkipDiscord = () => {
     router.replace('/home');
+  };
+
+  const handleNotificationAllow = async () => {
+    const token = await registerForPushNotifications();
+    if (token) {
+      setCurrentStep('discord');
+      return;
+    }
+    Alert.alert('Notifications Disabled', 'You can enable notifications later in Settings.');
+  };
+
+  const handleNotificationDeny = () => {
+    setCurrentStep('discord');
   };
 
   const sanitizeUsername = (value: string) =>
@@ -785,6 +821,119 @@ export default function OnboardingScreen() {
           title="Continue"
           onPress={handleNameContinue}
           disabled={!isValidName}
+        />
+      </Animated.View>
+    </View>
+  );
+
+  const handleGenderSelect = (value: Gender) => {
+    setGender(value);
+    setTimeout(() => {
+      setCurrentStep('avatar');
+    }, 150);
+  };
+
+  const renderGender = () => (
+    <View key="gender" style={styles.onboardingStepContainer}>
+      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+        <Text style={styles.onboardingTitle}>How do you identify?</Text>
+      </Animated.View>
+
+      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+        <View style={styles.genderOptions}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.genderCardShadow,
+              { paddingBottom: pressed || gender === 'male' ? 5 : 8 },
+            ]}
+            onPress={() => handleGenderSelect('male')}
+          >
+            {({ pressed }) => (
+              <View
+                style={[
+                  styles.genderCardInner,
+                  { marginTop: pressed || gender === 'male' ? 3 : 0 },
+                  gender === 'male' && styles.genderCardSelected,
+                ]}
+              >
+                <Image
+                  source={require('@/assets/ui/onboarding/boy.png')}
+                  style={styles.genderImage}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.genderCardShadow,
+              { paddingBottom: pressed || gender === 'female' ? 5 : 8 },
+            ]}
+            onPress={() => handleGenderSelect('female')}
+          >
+            {({ pressed }) => (
+              <View
+                style={[
+                  styles.genderCardInner,
+                  { marginTop: pressed || gender === 'female' ? 3 : 0 },
+                  gender === 'female' && styles.genderCardSelected,
+                ]}
+              >
+                <Image
+                  source={require('@/assets/ui/onboarding/girl.png')}
+                  style={styles.genderImage}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
+          </Pressable>
+        </View>
+      </Animated.View>
+    </View>
+  );
+
+  const renderAvatar = () => (
+    <View key="avatar" style={styles.onboardingStepContainer}>
+      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+        <Text style={styles.onboardingTitle}>Select an Avatar</Text>
+      </Animated.View>
+
+      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+        <View style={styles.avatarOptions}>
+          <Pressable
+            style={[
+              styles.avatarCard,
+              avatar === 'male' && styles.avatarCardSelected,
+            ]}
+            onPress={() => handleAvatarSelect('male')}
+          >
+            <View style={styles.avatarImagePlaceholder}>
+              <Text style={styles.avatarPlaceholderText}>Male</Text>
+            </View>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.avatarCard,
+              avatar === 'female' && styles.avatarCardSelected,
+            ]}
+            onPress={() => handleAvatarSelect('female')}
+          >
+            <View style={styles.avatarImagePlaceholder}>
+              <Text style={styles.avatarPlaceholderText}>Female</Text>
+            </View>
+          </Pressable>
+        </View>
+      </Animated.View>
+
+      <Animated.View
+        style={[styles.onboardingButtonContainer, buttonAnimStyle, { marginBottom: -56 }]}
+      >
+        <PrimaryButton
+          title="Continue"
+          onPress={handleAvatarContinue}
+          disabled={!avatar}
         />
       </Animated.View>
     </View>
@@ -1147,12 +1296,73 @@ export default function OnboardingScreen() {
     </View>
   );
 
+  const renderNotifications = () => (
+    <View key="notifications" style={styles.notificationStepContainer}>
+      {/* Progress indicator bar */}
+
+      <Animated.View style={[styles.notificationHeader, titleAnimStyle]}>
+        <Text style={styles.notificationTitle}>Get support from{"\n"}Focustown</Text>
+      </Animated.View>
+
+      <Animated.View style={[styles.notificationPreviewContainer, contentAnimStyle]}>
+        {/* Notification Preview Card */}
+        <View style={styles.notificationPreviewCard}>
+          <Image
+            source={require('@/assets/images/icon.png')}
+            style={styles.notificationPreviewIcon}
+          />
+          <View style={styles.notificationPreviewContent}>
+            <View style={styles.notificationPreviewHeader}>
+              <Text style={styles.notificationPreviewFrom}>From Focustown</Text>
+              <Text style={styles.notificationPreviewTime}>now</Text>
+            </View>
+            <Text style={styles.notificationPreviewMessage}>
+              Your streak is gonna be broken!
+            </Text>
+          </View>
+        </View>
+      </Animated.View>
+
+      {/* Permission Dialog - Always visible */}
+      <Animated.View style={[styles.permissionDialogContainer, contentAnimStyle]}>
+        <View style={styles.permissionDialog}>
+          <Text style={styles.permissionDialogTitle}>
+            {"'Focustown' Would Like to Send You Notifications"}
+          </Text>
+          <Text style={styles.permissionDialogBody}>
+            Notifications may include alerts, sounds, and icon badges. These can be configured in Settings.
+          </Text>
+          <View style={styles.permissionDialogDivider} />
+          <View style={styles.permissionDialogButtons}>
+            <Pressable
+              style={styles.permissionDialogButton}
+              onPress={handleNotificationDeny}
+            >
+              <Text style={styles.permissionDialogButtonTextDeny}>{"Don't Allow"}</Text>
+            </Pressable>
+            <View style={styles.permissionDialogButtonDivider} />
+            <Pressable
+              style={styles.permissionDialogButton}
+              onPress={handleNotificationAllow}
+            >
+              <Text style={styles.permissionDialogButtonTextAllow}>Allow</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Animated.View>
+    </View>
+  );
+
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 'welcome':
         return renderWelcome();
       case 'name':
         return renderName();
+      case 'gender':
+        return renderGender();
+      case 'avatar':
+        return renderAvatar();
       case 'age':
         return renderAge();
       case 'studyLocation':
@@ -1175,6 +1385,8 @@ export default function OnboardingScreen() {
         return renderPhone();
       case 'verify':
         return renderVerify();
+      case 'notifications':
+        return renderNotifications();
       default:
         return null;
     }
@@ -1184,6 +1396,8 @@ export default function OnboardingScreen() {
   const isDiscordStep = currentStep === 'discord';
   const isCreamStep = [
     'name',
+    'gender',
+    'avatar',
     'age',
     'studyLocation',
     'socialBaseline',
@@ -1194,6 +1408,7 @@ export default function OnboardingScreen() {
     'goal',
     'username',
     'phone',
+    'notifications',
   ].includes(currentStep);
   const containerStyle = isDiscordStep
     ? styles.discordScreenContainer
@@ -1256,7 +1471,9 @@ export default function OnboardingScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       onTouchEnd={handleTripleTap}
     >
-      <BackButton onPress={handleBack} style={backButtonStyle} />
+      {currentStep !== 'notifications' && (
+        <BackButton onPress={handleBack} style={backButtonStyle} />
+      )}
       {/* Background clouds (hidden on name/age steps) */}
       {!isCreamStep && (
         <>
@@ -1465,6 +1682,70 @@ const styles = StyleSheet.create({
   },
   ageOption: {
     borderRadius: 20,
+  },
+  avatarOptions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+  },
+  avatarCard: {
+    width: 140,
+    height: 180,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: '#DDD5C7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#5D4037',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  avatarCardSelected: {
+    borderColor: '#FFB347',
+    borderWidth: 4,
+    backgroundColor: '#FFF8E7',
+  },
+  avatarImagePlaceholder: {
+    width: 100,
+    height: 140,
+    backgroundColor: '#F5EFE6',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarPlaceholderText: {
+    fontSize: 16,
+    color: '#8D6E63',
+    fontWeight: '600',
+  },
+  genderOptions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+  },
+  genderCardShadow: {
+    backgroundColor: '#C4B5A0',
+    borderRadius: 24,
+    paddingBottom: 8,
+    borderWidth: 3,
+    borderColor: '#83715B',
+  },
+  genderCardInner: {
+    backgroundColor: '#FFEFD6',
+    borderRadius: 20,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  genderCardSelected: {
+    backgroundColor: '#E8D9B8',
+  },
+  genderImage: {
+    width: 120,
+    height: 160,
   },
   onboardingButtonContainer: {
     paddingBottom: 40,
@@ -1808,5 +2089,136 @@ const styles = StyleSheet.create({
     color: '#5D4037',
     fontWeight: '600',
     textDecorationLine: 'underline',
+  },
+  // Notification step styles
+  notificationStepContainer: {
+    flex: 1,
+  },
+  notificationProgressBar: {
+    height: 8,
+    backgroundColor: '#E8D9C0',
+    borderRadius: 4,
+    marginBottom: 32,
+    overflow: 'hidden',
+  },
+  notificationProgressFill: {
+    width: '70%',
+    height: '100%',
+    backgroundColor: '#FFB347',
+    borderRadius: 4,
+  },
+  notificationHeader: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  notificationTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#5D4037',
+    textAlign: 'center',
+  },
+  notificationPreviewContainer: {
+    marginBottom: -200 ,
+  },
+  notificationPreviewCard: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  notificationPreviewIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    marginRight: 12,
+  },
+  notificationPreviewContent: {
+    flex: 1,
+  },
+  notificationPreviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  notificationPreviewFrom: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1C1C1E',
+  },
+  notificationPreviewTime: {
+    fontSize: 13,
+    color: '#8E8E93',
+  },
+  notificationPreviewMessage: {
+    fontSize: 14,
+    color: '#3C3C43',
+    lineHeight: 18,
+  },
+  // Permission dialog styles
+  permissionDialogContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  permissionDialog: {
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: 14,
+    width: 270,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  permissionDialogTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#000000',
+    textAlign: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 8,
+  },
+  permissionDialogBody: {
+    fontSize: 13,
+    color: '#000000',
+    textAlign: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+    lineHeight: 18,
+  },
+  permissionDialogDivider: {
+    height: 0.5,
+    backgroundColor: 'rgba(60, 60, 67, 0.36)',
+  },
+  permissionDialogButtons: {
+    flexDirection: 'row',
+  },
+  permissionDialogButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  permissionDialogButtonDivider: {
+    width: 0.5,
+    backgroundColor: 'rgba(60, 60, 67, 0.36)',
+  },
+  permissionDialogButtonTextDeny: {
+    fontSize: 17,
+    color: '#007AFF',
+    fontWeight: '400',
+  },
+  permissionDialogButtonTextAllow: {
+    fontSize: 17,
+    color: '#FFB347',
+    fontWeight: '600',
   },
 });
