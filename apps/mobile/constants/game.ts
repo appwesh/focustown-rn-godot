@@ -8,7 +8,7 @@ export const R2_BASE_URL = 'https://pub-00e39c5ed81d4d70bfdb1f3408768872.r2.dev'
 // DEV MODE: Set to true to use locally exported PCK instead of remote Cloudflare dev build
 // When true, expects PCK at: godot/builds/ios/main.pck (for iOS) or godot/builds/android/main.pck (for Android)
 // When false, downloads from Cloudflare dev URL as usual
-export const USE_LOCAL_PCK = false;
+export const USE_LOCAL_PCK = true;
 
 // Dev: uses /dev/main.pck (quick uploads for testing) or local file if USE_LOCAL_PCK is true
 // Prod: uses versioned /v{VERSION}/main.pck

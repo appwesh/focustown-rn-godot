@@ -65,16 +65,16 @@ const CAFES: CafeDefinition[] = [
     image: require('@/assets/ui/cafeLibrary.png'),
     studyingNow: 2507, // most people here
   },
-  // {
-  //   id: 'korea-cafe',
-  //   name: 'lofi seoul cafe',
-  //   flag: '🇰🇷',
-  //   buildingId: 'cafe',
-  //   buildingName: 'Brooklyn Cafe',
-  //   image: require('@/assets/ui/cafeCabin.png'),
-  //   locked: false,
-  //   studyingNow: 1500,
-  // },
+  {
+    id: 'indoor-cafe',
+    name: 'cozy cabin café',
+    flag: '☕',
+    buildingId: 'indoor_cafe',
+    buildingName: 'Cozy Cabin Café',
+    image: require('@/assets/ui/cafeCabin.png'),
+    studyingNow: 1243,
+    unlockRequirement: { type: 'sessionsCompleted', required: 5 },
+  },
   {
     id: 'europe-cafe',
     name: 'stockholm cafe',

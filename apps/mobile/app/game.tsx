@@ -160,7 +160,12 @@ export default function GameScreen() {
       }
       
       // Map buildingId to scene name (default to library for unknown)
-      const sceneName = selectedBuildingId === 'coastal' ? 'coastal' : 'library';
+      const buildingToScene: Record<string, 'library' | 'coastal' | 'indoor_cafe'> = {
+        library: 'library',
+        coastal: 'coastal',
+        indoor_cafe: 'indoor_cafe',
+      };
+      const sceneName = buildingToScene[selectedBuildingId] || 'library';
       console.log('[Game] Switching to scene:', sceneName, '(building:', selectedBuildingId, ')');
       changeScene(sceneName);
       
