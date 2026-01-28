@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_TOP_Tshirt_Lavender_D.tga-491732a1a310894cc
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

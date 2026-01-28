@@ -38,6 +38,9 @@ var _camera_rig: CinematicCameraRig = null
 ## Reference to the library cinematic scene (if active)
 var _library_cinematic: LibraryCinematic = null
 
+## Reference to the indoor cafe cinematic scene (if active)
+var _indoor_cafe_cinematic: IndoorCafeCinematic = null
+
 ## Position sync timer
 var _position_sync_timer: Timer = null
 var _position_sync_enabled: bool = false
@@ -634,6 +637,8 @@ var _character_showcase: CharacterCustomizationShowcase = null
 ## Reference to the CoastalCinematic scene (if active)
 var _coastal_cinematic: CoastalCinematic = null
 
+## (indoor_cafe_cinematic already declared above)
+
 ## Stored user character data (persisted until applied)
 var _user_character_data: Dictionary = {}
 
@@ -641,6 +646,7 @@ var _user_character_data: Dictionary = {}
 const SCENE_PATHS := {
 	"library": "res://scenes/main/library_main.tscn",
 	"coastal": "res://scenes/main/coastal_main.tscn",
+	"indoor_cafe": "res://scenes/main/indoor_cafe_main.tscn",
 	"home_showcase": "res://scenes/main/home_character_showcase.tscn",
 	"character_showcase": "res://scenes/main/character_customization.tscn",
 }
@@ -660,6 +666,7 @@ func change_scene(scene_name: String) -> void:
 	_home_showcase = null
 	_character_showcase = null
 	_coastal_cinematic = null
+	_indoor_cafe_cinematic = null
 	_camera_rig = null
 	_library_cinematic = null
 	
@@ -718,6 +725,17 @@ func register_coastal_cinematic(cinematic: CoastalCinematic) -> void:
 		_coastal_cinematic.set_user_character(_user_character_data)
 
 
+## Register the IndoorCafeCinematic scene with RNBridge
+## Called automatically by IndoorCafeCinematic._ready()
+func register_indoor_cafe_cinematic(cinematic: IndoorCafeCinematic) -> void:
+	_indoor_cafe_cinematic = cinematic
+	print("[RNBridge] IndoorCafeCinematic registered")
+	
+	# Apply any pending user character data
+	if not _user_character_data.is_empty():
+		_indoor_cafe_cinematic.set_user_character(_user_character_data)
+
+
 ## Set the user's character appearance from React Native
 ## skin_data should be a Dictionary with keys like: SkinTone, Face, EyeColor, Hair, etc.
 ## See CharacterPresets for the expected format
@@ -734,6 +752,8 @@ func set_user_character(skin_data: Dictionary) -> void:
 		_library_cinematic.set_user_character(skin_data)
 	elif _coastal_cinematic:
 		_coastal_cinematic.set_user_character(skin_data)
+	elif _indoor_cafe_cinematic:
+		_indoor_cafe_cinematic.set_user_character(skin_data)
 	else:
 		print("[RNBridge] No scene active, data stored for later")
 

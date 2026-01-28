@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Brush  Angled 01.png-3239f25e90d8b94f43505aa7
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

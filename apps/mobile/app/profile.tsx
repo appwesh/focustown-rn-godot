@@ -287,6 +287,8 @@ const calculateChartData = (
 const BUILDING_IMAGES: Record<string, any> = {
   'cafe': require('@/assets/ui/cafeCabin.png'),
   'library': require('@/assets/ui/cafeLibrary.png'),
+  'coastal': require('@/assets/ui/cafeEurope.png'),
+  'indoor_cafe': require('@/assets/ui/cafeCabin.png'),
   'europe': require('@/assets/ui/cafeEurope.png'),
   'ghibli': require('@/assets/ui/cafeGhibli.png'),
   'japan': require('@/assets/ui/cafeJapan.png'),
