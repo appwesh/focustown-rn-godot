@@ -3,19 +3,11 @@
  * 
  * Minimal timer display during an active focus session.
  * Shows at the bottom of the screen without blocking the game view.
- * Camera toggle button at top center.
+ * Camera controls are handled by the game screen.
  */
 
-import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React from 'react';
 import { useSessionStore, formatTime } from '@/lib/session';
-import { useCameraControls } from '@/lib/godot';
 import { TimerOverlay } from '@/components/ui';
 
 interface ActiveSessionOverlayProps {
@@ -25,13 +17,7 @@ interface ActiveSessionOverlayProps {
 }
 
 export function ActiveSessionOverlay({ visible, onEndEarly, onTripleTap }: ActiveSessionOverlayProps) {
-  const insets = useSafeAreaInsets();
   const activeSession = useSessionStore((s) => s.activeSession);
-  const { toggleCamera } = useCameraControls();
-
-  const handleToggleCamera = useCallback(() => {
-    toggleCamera();
-  }, [toggleCamera]);
 
   if (!visible || !activeSession) return null;
 
@@ -39,14 +25,6 @@ export function ActiveSessionOverlay({ visible, onEndEarly, onTripleTap }: Activ
 
   return (
     <>
-      {/* Camera Toggle Button - Top Center */}
-      <Pressable
-        style={[styles.cameraToggle, { top: insets.top + 16 }]}
-        onPress={handleToggleCamera}
-      >
-        <Text style={styles.cameraIcon}>📹</Text>
-      </Pressable>
-
       {/* Bottom Timer Card */}
       <TimerOverlay
         visible={true}
@@ -61,21 +39,3 @@ export function ActiveSessionOverlay({ visible, onEndEarly, onTripleTap }: Activ
   );
 }
 
-const styles = StyleSheet.create({
-  cameraToggle: {
-    position: 'absolute',
-    alignSelf: 'center',
-    backgroundColor: '#FFF8E7',
-    borderRadius: 100,
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#DDD5C7',
-    zIndex: 10,
-  },
-  cameraIcon: {
-    fontSize: 24,
-  },
-});

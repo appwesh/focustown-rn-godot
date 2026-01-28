@@ -4,6 +4,7 @@ import {
   View,
   Text,
   Image,
+  type ImageSourcePropType,
   Pressable,
   Dimensions,
   ScrollView,
@@ -14,8 +15,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { useAuth, groupsService } from '@/lib/firebase';
+import { useAuth, groupsService, userService } from '@/lib/firebase';
 import { useSocialStore, type LobbySlot } from '@/lib/social';
+import { useButtonSound, useAmbienceEngine, useAmbienceStore, useSoundStore } from '@/lib/sound';
+import { MUSIC_TRACKS_BY_BUILDING_ID } from '@/lib/sound/tracks';
 import { BeanCounter, Button } from '@/components/ui';
 import { FriendPickerModal, InviteReceivedModal, LobbyDurationModal } from '@/components/social';
 import { DebugModal } from '@/components/debug-modal';
@@ -28,8 +31,31 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAROUSEL_ITEM_WIDTH = SCREEN_WIDTH * 0.65;
 const CAROUSEL_ITEM_SPACING = 16;
 
+type CafeUnlockRequirement =
+  | { type: 'sessionsCompleted'; required: number }
+  | { type: 'focusTimeMinutes'; required: number }
+  | { type: 'currentStreak'; required: number };
+
+type CafeDefinition = {
+  id: string;
+  name: string;
+  flag: string;
+  buildingId: string;
+  buildingName: string;
+  image: ImageSourcePropType;
+  studyingNow: number;
+  unlockRequirement?: CafeUnlockRequirement;
+};
+
+type CafeLockState = {
+  locked: boolean;
+  message?: string;
+  progressText?: string;
+  progressRatio?: number;
+};
+
 // Cafe data
-const CAFES = [
+const CAFES: CafeDefinition[] = [
   {
     id: 'boston-library',
     name: 'boston library',
@@ -37,7 +63,6 @@ const CAFES = [
     buildingId: 'library',
     buildingName: 'Boston Library',
     image: require('@/assets/ui/cafeLibrary.png'),
-    locked: false,
     studyingNow: 2507, // most people here
   },
   // {
@@ -57,8 +82,8 @@ const CAFES = [
     buildingId: 'coastal',
     buildingName: 'Stockholm Café',
     image: require('@/assets/ui/cafeEurope.png'),
-    locked: false,
     studyingNow: 802,
+    unlockRequirement: { type: 'sessionsCompleted', required: 10 },
   },
   {
     id: 'ghibli-cafe',
@@ -67,8 +92,8 @@ const CAFES = [
     buildingId: 'ghibli',
     buildingName: 'Forest Hideaway',
     image: require('@/assets/ui/cafeGhibli.png'),
-    locked: false,
     studyingNow: 423,
+    unlockRequirement: { type: 'focusTimeMinutes', required: 180 },
   },
   {
     id: 'japan-cafe',
@@ -77,18 +102,83 @@ const CAFES = [
     buildingId: 'japan',
     buildingName: 'Japanese Cafe',
     image: require('@/assets/ui/cafeJapan.png'),
-    locked: false,
     studyingNow: 137,
+    unlockRequirement: { type: 'currentStreak', required: 7 },
   },
 ];
+
+const getRequirementUnit = (requirement: CafeUnlockRequirement): string => {
+  switch (requirement.type) {
+    case 'sessionsCompleted':
+      return 'sessions completed';
+    case 'focusTimeMinutes':
+      return 'focus minutes';
+    case 'currentStreak':
+      return 'day streak';
+    default:
+      return 'progress';
+  }
+};
+
+const getRequirementProgress = (
+  requirement: CafeUnlockRequirement,
+  userDoc: ReturnType<typeof useAuth>['userDoc'] | null
+) => {
+  const target = requirement.required;
+  const currentRaw = (() => {
+    switch (requirement.type) {
+      case 'sessionsCompleted':
+        return userDoc?.sessionsCompleted ?? 0;
+      case 'focusTimeMinutes':
+        return Math.floor((userDoc?.totalFocusTime ?? 0) / 60);
+      case 'currentStreak':
+        return userDoc?.currentStreak ?? 0;
+      default:
+        return 0;
+    }
+  })();
+  const current = Math.min(currentRaw, target);
+  const progressRatio = target > 0 ? current / target : 0;
+  const unit = getRequirementUnit(requirement);
+  return {
+    current,
+    target,
+    progressRatio,
+    progressText: `${current}/${target} ${unit}`,
+    message: `Unlock at ${target} ${unit}`,
+  };
+};
+
+const getCafeLockState = (
+  cafe: CafeDefinition,
+  userDoc: ReturnType<typeof useAuth>['userDoc'] | null
+): CafeLockState => {
+  if (!cafe.unlockRequirement) {
+    return { locked: false };
+  }
+  if (!userDoc) {
+    return { locked: true, message: 'Sign in to unlock' };
+  }
+
+  const progress = getRequirementProgress(cafe.unlockRequirement, userDoc);
+  const locked = progress.current < progress.target;
+  return {
+    locked,
+    message: locked ? progress.message : undefined,
+    progressText: locked ? progress.progressText : undefined,
+    progressRatio: locked ? progress.progressRatio : undefined,
+  };
+};
 
 // Animated Cafe Card component
 const AnimatedCafeCard = ({ 
   cafe, 
+  lockState,
   isSelected, 
   onPress 
 }: { 
-  cafe: typeof CAFES[0]; 
+  cafe: CafeDefinition; 
+  lockState: CafeLockState;
   isSelected: boolean; 
   onPress: () => void;
 }) => {
@@ -112,10 +202,10 @@ const AnimatedCafeCard = ({
         <View style={styles.cafeImageContainer}>
           <Image
             source={cafe.image}
-            style={[styles.cafeImage, cafe.locked && styles.cafeImageLocked]}
+            style={[styles.cafeImage, lockState.locked && styles.cafeImageLocked]}
             resizeMode="contain"
           />
-          {cafe.locked && (
+          {lockState.locked && (
             <View style={styles.lockOverlay}>
               <Image source={require('@/assets/ui/lock.png')} style={styles.lockIcon} />
             </View>
@@ -131,6 +221,12 @@ type NavTab = 'profile' | 'main' | 'shop';
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { playButtonSound } = useButtonSound();
+  const setMusicSource = useAmbienceStore((s) => s.setMusicSource);
+  const setGameOverrideEnabled = useAmbienceStore((s) => s.setGameOverrideEnabled);
+  const musicEnabled = useSoundStore((s) => s.musicEnabled);
+  const setMusicEnabled = useSoundStore((s) => s.setMusicEnabled);
+  const [isFocused, setIsFocused] = useState(false);
   const [selectedCafe, setSelectedCafe] = useState(0);
   const [activeTab, setActiveTab] = useState<NavTab>('main');
   const [showDebugModal, setShowDebugModal] = useState(false);
@@ -189,6 +285,22 @@ export default function HomeScreen() {
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
     }, [])
   );
+
+  // Track focus for music playback
+  useFocusEffect(
+    useCallback(() => {
+      setIsFocused(true);
+      return () => setIsFocused(false);
+    }, [])
+  );
+
+  useAmbienceEngine({ musicVolumeOverride: 0.8 });
+
+  useEffect(() => {
+    if (isFocused) {
+      setGameOverrideEnabled(false);
+    }
+  }, [isFocused, setGameOverrideEnabled]);
 
   // Switch to home showcase scene when screen is focused
   // Shows transition overlay while scene changes
@@ -296,7 +408,10 @@ export default function HomeScreen() {
   }, [user, userDoc, selectedCafe, createLobby, setShowingFriendPicker]);
 
   const handleGoToCafe = useCallback(async () => {
-    if (CAFES[selectedCafe].locked) return;
+    if (getCafeLockState(CAFES[selectedCafe], userDoc).locked) return;
+
+    // Play button sound
+    playButtonSound();
 
     // Set selected building for game screen
     setSelectedBuilding(CAFES[selectedCafe].buildingId);
@@ -313,7 +428,7 @@ export default function HomeScreen() {
     // }
 
     router.push('/game');
-  }, [selectedCafe, router, setSelectedBuilding]);
+  }, [selectedCafe, router, setSelectedBuilding, playButtonSound, userDoc]);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const lastGodotCafeRef = useRef<number>(0);
@@ -367,12 +482,13 @@ export default function HomeScreen() {
 
   // Button state - simplified (group logic commented out)
   const currentCafe = CAFES[selectedCafe];
-  const isLocked = currentCafe.locked;
+  const currentCafeLock = getCafeLockState(currentCafe, userDoc);
+  const isLocked = currentCafeLock.locked;
   const isDownloading = pckDownloadProgress !== undefined;
   const downloadPercent = isDownloading ? Math.round(pckDownloadProgress * 100) : 0;
   
   // Button text and disabled state
-  let buttonText = 'Go to cafe';
+  let buttonText = 'Go to spot';
   let buttonDisabled = false;
   
   if (isLocked) {
@@ -386,6 +502,14 @@ export default function HomeScreen() {
   // Group study logic - commented out for now
   // const hasReadyFriends = lobbySlots.slice(1).some(s => s.status === 'ready');
   // const hasAnyInvites = lobbySlots.slice(1).some(s => s.status !== 'empty');
+
+  const currentMusicSource = MUSIC_TRACKS_BY_BUILDING_ID[currentCafe.buildingId] ?? null;
+
+  useEffect(() => {
+    if (isFocused) {
+      setMusicSource(currentMusicSource);
+    }
+  }, [currentMusicSource, isFocused, setMusicSource]);
 
   return (
     <LinearGradient
@@ -403,16 +527,22 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft} />
-        <View style={styles.headerRight}>
-          <BeanCounter size="small" />
-          
-          {/* Settings Button */}
+        <View style={styles.headerRight}> 
+          {/* Music Toggle Button */}
           <Pressable
-            style={({ pressed }) => [styles.settingsButton, pressed && styles.settingsButtonPressed]}
-            onPress={() => router.push('/settings')}
-          >
-            <Image source={require('@/assets/ui/settings.png')} style={styles.settingsIcon} />
+            style={({ pressed }) => [styles.musicToggleButton, pressed && styles.musicToggleButtonPressed]}
+            onPress={() => {
+              const newValue = !musicEnabled;
+              setMusicEnabled(newValue);
+              if (user?.uid) {
+                userService.updateSettings(user.uid, { musicEnabled: newValue });
+              }
+            }}
+            >
+            <Text style={styles.musicToggleEmoji}>{musicEnabled ? '🎵' : '🔇'}</Text>
           </Pressable>
+         
+          <BeanCounter size="small" />
         </View>
       </View>
 
@@ -458,6 +588,7 @@ export default function HomeScreen() {
               <AnimatedCafeCard
                 key={cafe.id}
                 cafe={cafe}
+                lockState={getCafeLockState(cafe, userDoc)}
                 isSelected={selectedCafe === index}
                 onPress={() => {
                   setSelectedCafe(index);
@@ -484,6 +615,23 @@ export default function HomeScreen() {
             </Pressable>
           )}
         </View>
+
+        {/* Lock Status */}
+        {currentCafeLock.locked && (
+          <View style={styles.lockStatus}>
+            {currentCafeLock.progressRatio !== undefined && currentCafeLock.progressText ? (
+              <View style={styles.lockProgressTrack}>
+                <View style={[
+                  styles.lockProgressFill, 
+                  { width: `${Math.round(currentCafeLock.progressRatio * 100)}%` },
+                ]} />
+                <Text style={styles.lockProgressText}>{currentCafeLock.progressText}</Text>
+              </View>
+            ) : (
+              currentCafeLock.message && <Text style={styles.lockStatusText}>{currentCafeLock.message}</Text>
+            )}
+          </View>
+        )}
 
         {/* Character Showcase Card */}
         <View style={styles.studyGroupCard}>
@@ -637,9 +785,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  settingsButton: {
-    width: 44,
-    height: 44,
+  musicToggleButton: {
+    width: 36,
+    height: 36,
     borderRadius: 22,
     backgroundColor: '#FFF8E7',
     justifyContent: 'center',
@@ -647,14 +795,12 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#F5D98C',
   },
-  settingsButtonPressed: {
+  musicToggleButtonPressed: {
     opacity: 0.8,
     transform: [{ scale: 0.95 }],
   },
-  settingsIcon: {
-    width: 26,
-    height: 26,
-    resizeMode: 'contain',
+  musicToggleEmoji: {
+    fontSize: 14,
   },
   content: {
     flex: 1,
@@ -842,6 +988,42 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#8B7355',
     borderRadius: 2,
+  },
+  lockStatus: {
+    alignItems: 'center',
+    marginTop: -8,
+    marginBottom: 10,
+    paddingHorizontal: 24,
+  },
+  lockStatusText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4A4A4A',
+    marginBottom: 4,
+  },
+  lockProgressTrack: {
+    width: '100%',
+    maxWidth: 280,
+    height: 28,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    borderWidth: 3,
+    borderColor: '#000000',
+    overflow: 'hidden',
+    justifyContent: 'center',
+  },
+  lockProgressFill: {
+    height: '100%',
+    backgroundColor: '#7FB06A',
+    borderRadius: 16,
+  },
+  lockProgressText: {
+    position: 'absolute',
+    width: '100%',
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#000000',
   },
   goToCafeButton: {
     marginHorizontal: 20,
