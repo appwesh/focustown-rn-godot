@@ -84,11 +84,6 @@ _subresources={
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/Material.002.tres",
 "use_external/path": "uid://bqm42eahhum1h"
 },
-"Ocean.001": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Ocean.001.tres",
-"use_external/path": "uid://byn3erdg1gsgt"
-},
 "Orange": {
 "use_external/enabled": true,
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/Orange.tres",
@@ -103,11 +98,6 @@ _subresources={
 "use_external/enabled": true,
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/Sign.tres",
 "use_external/path": "uid://yeywfesjtxqk"
-},
-"Sky_Clouds_Photo_Texture_A_P1119218": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/Sky_Clouds_Photo_Texture_A_P1119218.tres",
-"use_external/path": "uid://cvt5wuxb7mb6d"
 },
 "Stand-1": {
 "use_external/enabled": true,
@@ -128,11 +118,6 @@ _subresources={
 "use_external/enabled": true,
 "use_external/fallback_path": "res://assets/environments/costalScene/materials/difuse white.tres",
 "use_external/path": "uid://bvnpvxp4fby1m"
-},
-"image": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/environments/costalScene/materials/image.tres",
-"use_external/path": "uid://cn1o2cnc4y7mx"
 },
 "light diod": {
 "use_external/enabled": true,
