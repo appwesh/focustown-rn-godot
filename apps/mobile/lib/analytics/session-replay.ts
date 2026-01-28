@@ -68,11 +68,9 @@ export async function initSessionReplay(
       autoStartRecording: mergedOptions.autoStartRecording,
       flushInterval: mergedOptions.flushInterval,
       enableLogging: mergedOptions.enableLogging,
-      // Mask sensitive content by default
-      autoMaskedViews: [
-        MPSessionReplayMask.Text,
-        MPSessionReplayMask.Image,
-      ],
+      // No auto-masking - show all UI elements
+      // Add masks back for sensitive screens (e.g., MPSessionReplayMask.Text for inputs)
+      autoMaskedViews: [],
     });
 
     await MPSessionReplay.initialize(token, distinctId, config);
