@@ -44,7 +44,6 @@ type Avatar = 'male' | 'female';
 
 type OnboardingStep =
   | 'welcome'
-  | 'name'
   | 'gender'
   | 'avatar'
   | 'age'
@@ -55,10 +54,9 @@ type OnboardingStep =
   | 'focusFriction'
   | 'focusFor'
   | 'goal'
-  | 'username'
-  | 'phone'
-  | 'verify'
   | 'notifications'
+  | 'phone'
+  | 'username'
   | 'discord';
 
 type StudyLocation = 'home' | 'library' | 'cafe' | 'school';
@@ -94,7 +92,6 @@ type OnboardingAnswers = {
 
 const BASE_STEPS: OnboardingStep[] = [
   'welcome',
-  'name',
   'gender',
   'avatar',
   'age',
@@ -105,10 +102,9 @@ const BASE_STEPS: OnboardingStep[] = [
   'focusFriction',
   'focusFor',
   'goal',
-  'username',
-  'phone',
-  'verify',
   'notifications',
+  'phone',
+  'username',
   'discord',
 ];
 
@@ -123,7 +119,6 @@ export default function OnboardingScreen() {
     phoneAuthState,
     resetPhoneAuth,
     clearPhoneAuthError,
-    isAuthenticated,
     user,
   } = useAuth();
 
@@ -164,7 +159,9 @@ export default function OnboardingScreen() {
   );
   const [verificationCode, setVerificationCode] = useState('');
   const [isConfirmingCode, setIsConfirmingCode] = useState(false);
+  const [hasVerifiedThisSession, setHasVerifiedThisSession] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [showVerifyInput, setShowVerifyInput] = useState(false);
   const [showDebugModal, setShowDebugModal] = useState(false);
 
   const isAge23Plus =
@@ -195,11 +192,37 @@ export default function OnboardingScreen() {
   const buttonOpacity = useSharedValue(0);
   const buttonTranslateY = useSharedValue(20);
 
-  // Update progress bar
+  // Update progress bar (excludes welcome and discord from calculation)
   useEffect(() => {
-    const targetProgress = (stepIndex / (steps.length - 1)) * 100;
+    // stepIndex 0 = welcome, stepIndex 1 = gender (first progress step)
+    // Last progress step is username (steps.length - 2), discord is steps.length - 1
+    const progressStepIndex = stepIndex - 1; // Subtract 1 to skip welcome
+    const totalProgressSteps = steps.length - 2; // Subtract 2 for welcome and discord
+    const targetProgress = Math.max(0, (progressStepIndex / totalProgressSteps) * 100);
     progress.value = withSpring(targetProgress, { damping: 15, stiffness: 100 });
   }, [stepIndex, steps.length, progress]);
+
+  // Track screen loaded analytics
+  useEffect(() => {
+    const screenNames: Record<OnboardingStep, string> = {
+      welcome: 'WelcomeScreen',
+      gender: 'GenderScreen',
+      avatar: 'AvatarScreen',
+      age: 'AgeScreen',
+      studyLocation: 'StudyLocationScreen',
+      socialBaseline: 'SocialBaselineScreen',
+      studyFrequency: 'StudyFrequencyScreen',
+      sessionLength: 'SessionLengthScreen',
+      focusFriction: 'FocusFrictionScreen',
+      focusFor: 'FocusForScreen',
+      goal: 'GoalScreen',
+      notifications: 'NotificationsScreen',
+      phone: 'PhoneNumberScreen',
+      username: 'UsernameScreen',
+      discord: 'DiscordScreen',
+    };
+    analytics.track(`Onboarding_${screenNames[currentStep]}_Loaded`);
+  }, [currentStep]);
 
   // Trigger staggered animations when step changes (no flash)
   useLayoutEffect(() => {
@@ -275,11 +298,12 @@ export default function OnboardingScreen() {
     transform: [{ translateY: buttonTranslateY.value }],
   }));
 
-  // Handle authentication success - save name and redirect to game
+  // Handle verification success - save onboarding data and continue to username
   useEffect(() => {
-    const handleAuthSuccess = async () => {
-      if (isAuthenticated && user && currentStep === 'verify') {
-        console.log('[Onboarding] User authenticated, saving name and redirecting...');
+    const handleVerificationSuccess = async () => {
+      // Only proceed if user manually verified the code in this session (on phone screen with verify input showing)
+      if (hasVerifiedThisSession && user && currentStep === 'phone' && showVerifyInput) {
+        console.log('[Onboarding] Code verified, saving onboarding data...');
 
         // Save onboarding answers + profile fields to Firestore
         try {
@@ -323,29 +347,29 @@ export default function OnboardingScreen() {
           phone_number: user.phoneNumber ?? undefined,
         });
 
-        // Continue to notifications permission prompt
-        setCurrentStep('notifications');
+        // Continue to username step
+        setCurrentStep('username');
       }
     };
 
-    handleAuthSuccess();
-  }, [isAuthenticated, user, currentStep, name, username, ageRange, onboardingAnswers, router]);
+    handleVerificationSuccess();
+  }, [hasVerifiedThisSession, user, currentStep, showVerifyInput, name, username, ageRange, onboardingAnswers]);
 
-  // Auto-advance to verify step when code is sent
+  // Show verify input when code is sent (same screen, just swap input)
   useEffect(() => {
-    // Advance when we have a verificationId and we're on the phone step
     if (
       phoneAuthState.verificationId &&
       phoneAuthState.step === 'verifying' &&
-      currentStep === 'phone'
+      currentStep === 'phone' &&
+      !showVerifyInput
     ) {
-      setCurrentStep('verify');
+      setShowVerifyInput(true);
       // Focus verification input
       setTimeout(() => {
         verificationInputRef.current?.focus();
       }, 400);
     }
-  }, [phoneAuthState.step, phoneAuthState.verificationId, currentStep]);
+  }, [phoneAuthState.step, phoneAuthState.verificationId, currentStep, showVerifyInput]);
 
   // ============================================================================
   // Validation
@@ -361,7 +385,6 @@ export default function OnboardingScreen() {
     return isValidPhone(phoneNumber, countryCode);
   }, [phoneNumber, selectedCountry]);
 
-  const isValidName = name.trim().length >= 2;
   const isValidCode = verificationCode.length === 6;
   const isSendingCode = phoneAuthState.step === 'sending';
   const isAgeRange23Plus = (value: string | null) =>
@@ -389,25 +412,25 @@ export default function OnboardingScreen() {
     setOnboardingAnswers((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleStart = () => setCurrentStep('name');
-
-  const handleNameContinue = () => {
-    if (isValidName) {
-      setCurrentStep('gender');
-    }
+  const handleStart = () => {
+    analytics.track('Onboarding_WelcomeScreen_Continue_Tapped');
+    setCurrentStep('gender');
   };
 
   const handleAvatarSelect = (selected: Avatar) => {
+    analytics.track('Onboarding_AvatarScreen_Option_Selected', { avatar: selected });
     setAvatar(selected);
   };
 
   const handleAvatarContinue = () => {
     if (avatar) {
+      analytics.track('Onboarding_AvatarScreen_Continue_Tapped', { avatar });
       setCurrentStep('age');
     }
   };
 
   const handleAgeSelect = (option: string) => {
+    analytics.track('Onboarding_AgeScreen_Option_Selected', { ageRange: option });
     setAgeRange(option);
     setOnboardingAnswers((prev) => ({
       ...prev,
@@ -421,6 +444,7 @@ export default function OnboardingScreen() {
   };
 
   const handleStudyLocationSelect = (value: StudyLocation) => {
+    analytics.track('Onboarding_StudyLocationScreen_Option_Selected', { studyLocation: value });
     updateOnboardingAnswer('studyLocation', value);
     setTimeout(() => {
       setCurrentStep('socialBaseline');
@@ -428,6 +452,7 @@ export default function OnboardingScreen() {
   };
 
   const handleSocialBaselineSelect = (value: SocialBaseline) => {
+    analytics.track('Onboarding_SocialBaselineScreen_Option_Selected', { socialBaseline: value });
     updateOnboardingAnswer('socialBaseline', value);
     setTimeout(() => {
       setCurrentStep('studyFrequency');
@@ -435,6 +460,7 @@ export default function OnboardingScreen() {
   };
 
   const handleStudyFrequencySelect = (value: StudyFrequency) => {
+    analytics.track('Onboarding_StudyFrequencyScreen_Option_Selected', { studyFrequency: value });
     updateOnboardingAnswer('studyFrequency', value);
     setTimeout(() => {
       setCurrentStep('sessionLength');
@@ -442,6 +468,7 @@ export default function OnboardingScreen() {
   };
 
   const handleSessionLengthSelect = (value: SessionLength) => {
+    analytics.track('Onboarding_SessionLengthScreen_Option_Selected', { sessionLength: value });
     updateOnboardingAnswer('sessionLength', value);
     setTimeout(() => {
       setCurrentStep('focusFriction');
@@ -449,6 +476,7 @@ export default function OnboardingScreen() {
   };
 
   const handleFocusFrictionSelect = (value: FocusFriction) => {
+    analytics.track('Onboarding_FocusFrictionScreen_Option_Selected', { focusFriction: value });
     updateOnboardingAnswer('focusFriction', value);
     setTimeout(() => {
       setCurrentStep(isAge23Plus ? 'focusFor' : 'goal');
@@ -456,6 +484,7 @@ export default function OnboardingScreen() {
   };
 
   const handleFocusForSelect = (value: FocusFor) => {
+    analytics.track('Onboarding_FocusForScreen_Option_Selected', { focusFor: value });
     setOnboardingAnswers((prev) => ({
       ...prev,
       focusFor: value,
@@ -467,13 +496,15 @@ export default function OnboardingScreen() {
   };
 
   const handleGoalSelect = (value: Goal) => {
+    analytics.track('Onboarding_GoalScreen_Option_Selected', { goal: value });
     updateOnboardingAnswer('goal', value);
     setTimeout(() => {
-      setCurrentStep('username');
+      setCurrentStep('notifications');
     }, 150);
   };
 
   const handleJoinDiscord = () => {
+    analytics.track('Onboarding_DiscordScreen_Join_Tapped');
     Linking.openURL(DISCORD_INVITE_URL).catch((error) => {
       console.error('[Onboarding] Failed to open Discord invite:', error);
     });
@@ -481,20 +512,23 @@ export default function OnboardingScreen() {
   };
 
   const handleSkipDiscord = () => {
+    analytics.track('Onboarding_DiscordScreen_Skip_Tapped');
     router.replace('/home');
   };
 
   const handleNotificationAllow = async () => {
+    analytics.track('Onboarding_NotificationsScreen_Allow_Tapped');
     const token = await registerForPushNotifications();
     if (token) {
-      setCurrentStep('discord');
+      setCurrentStep('phone');
       return;
     }
     Alert.alert('Notifications Disabled', 'You can enable notifications later in Settings.');
   };
 
   const handleNotificationDeny = () => {
-    setCurrentStep('discord');
+    analytics.track('Onboarding_NotificationsScreen_Deny_Tapped');
+    setCurrentStep('phone');
   };
 
   const sanitizeUsername = (value: string) =>
@@ -572,7 +606,23 @@ export default function OnboardingScreen() {
       setUsernameError(error || 'Username already taken');
       return;
     }
-    setCurrentStep('phone');
+    analytics.track('Onboarding_UsernameScreen_Continue_Tapped', { username });
+
+    // Save username to Firestore
+    if (user && username.trim()) {
+      try {
+        await userService.updateProfile(user.uid, {
+          username: username.trim().toLowerCase(),
+        });
+        console.log('[Onboarding] Username saved to Firestore');
+      } catch (err) {
+        console.error('[Onboarding] Failed to save username:', err);
+        setUsernameError('Failed to save username. Please try again.');
+        return;
+      }
+    }
+
+    setCurrentStep('discord');
   };
 
   const handlePhoneChange = (value: string) => {
@@ -606,6 +656,7 @@ export default function OnboardingScreen() {
     }
     lastAutoSubmittedPhone.current = e164;
 
+    analytics.track('Onboarding_PhoneNumberScreen_Continue_Tapped');
     console.log('[Onboarding] Sending code to:', e164);
     await sendVerificationCode(e164);
   };
@@ -657,9 +708,12 @@ export default function OnboardingScreen() {
     const code = codeOverride ?? verificationCode;
     if (code.length !== 6) return;
 
+    analytics.track('Onboarding_VerifyScreen_Continue_Tapped');
     setIsConfirmingCode(true);
     try {
       await confirmCode(code);
+      // Mark that verification was completed in this session
+      setHasVerifiedThisSession(true);
     } finally {
       setIsConfirmingCode(false);
     }
@@ -669,6 +723,7 @@ export default function OnboardingScreen() {
     const e164 = getE164Number();
     if (!e164) return;
 
+    analytics.track('Onboarding_VerifyScreen_Resend_Tapped');
     setIsResending(true);
     setVerificationCode('');
     lastAutoSubmittedCode.current = null;
@@ -685,14 +740,19 @@ export default function OnboardingScreen() {
   };
 
   const handleBack = () => {
+    // If showing verify input, go back to phone input (same screen)
+    if (showVerifyInput) {
+      resetPhoneAuth();
+      setVerificationCode('');
+      setShowVerifyInput(false);
+      lastAutoSubmittedCode.current = null;
+      lastAutoSubmittedPhone.current = null;
+      return;
+    }
+
+    // Otherwise go to previous step
     const prevIndex = stepIndex - 1;
     if (prevIndex >= 0) {
-      if (currentStep === 'verify') {
-        resetPhoneAuth();
-        setVerificationCode('');
-        lastAutoSubmittedCode.current = null;
-        lastAutoSubmittedPhone.current = null;
-      }
       setCurrentStep(steps[prevIndex]);
     }
   };
@@ -795,38 +855,8 @@ export default function OnboardingScreen() {
     </View>
   );
 
-  const renderName = () => (
-    <View key="name" style={styles.onboardingStepContainer}>
-      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
-        <Text style={styles.onboardingTitle}>What should we call you?</Text>
-      </Animated.View>
-
-      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
-        <BrownComponent
-          type="input"
-          placeholder="Your name"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
-          autoComplete="name"
-          autoFocus
-          maxLength={20}
-        />
-      </Animated.View>
-
-      <Animated.View
-        style={[styles.onboardingButtonContainer, buttonAnimStyle, { marginBottom: -56 }]}
-      >
-        <PrimaryButton
-          title="Continue"
-          onPress={handleNameContinue}
-          disabled={!isValidName}
-        />
-      </Animated.View>
-    </View>
-  );
-
   const handleGenderSelect = (value: Gender) => {
+    analytics.track('Onboarding_GenderScreen_Option_Selected', { gender: value });
     setGender(value);
     setTimeout(() => {
       setCurrentStep('avatar');
@@ -1158,143 +1188,123 @@ export default function OnboardingScreen() {
     );
   };
 
-  const renderPhone = () => (
-    <View key="phone" style={styles.onboardingStepContainer}>
-      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
-        <Text style={styles.onboardingTitle}>Your phone number</Text>
-        <Text style={styles.onboardingSubtitle}>
-          We{"'"}ll send you a verification code
-        </Text>
-      </Animated.View>
+  const renderPhoneOrVerify = () => {
+    const isVerifyMode = showVerifyInput;
+    const formattedPhone = `${selectedCountry?.idd?.root}${selectedCountry?.idd?.suffixes?.[0]} ${phoneNumber}`;
 
-      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
-        <PhoneInput
-          value={phoneNumber}
-          onChangePhoneNumber={handlePhoneChange}
-          selectedCountry={selectedCountry}
-          onChangeSelectedCountry={handleCountryChange}
-          defaultCountry="US"
-          modalType="bottomSheet"
-          initialBottomsheetHeight="90%"
-          maxBottomsheetHeight="95%"
-          minBottomsheetHeight="20%"
-          placeholder="Phone number"
-          phoneInputStyles={{
-            container: styles.phoneInputContainer,
-            flagContainer: styles.phoneInputFlag,
-            input: styles.phoneInputText,
-            caret: styles.phoneInputCaret,
-          }}
-          modalStyles={{
-            backdrop: styles.countryModalBackdrop,
-            content: styles.countryModalContent,
-            dragHandleContainer: styles.countryModalHandleContainer,
-            dragHandleIndicator: styles.countryModalHandleIndicator,
-            container: styles.countryModal,
-            list: styles.countryModalList,
-            searchContainer: styles.countryModalSearchContainer,
-            searchInput: styles.countrySearchInput,
-            countryItem: styles.countryButton,
-            callingCode: styles.countryCallingCode,
-            countryName: styles.countryName,
-          }}
-        />
+    return (
+      <View key="phone-verify" style={styles.onboardingStepContainer}>
+        <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+          <Text style={styles.onboardingTitle}>
+            {isVerifyMode ? 'Enter verification code' : 'Your phone number'}
+          </Text>
+          <Text style={styles.onboardingSubtitle}>
+            {isVerifyMode
+              ? `Sent to ${formattedPhone}`
+              : "We'll send you a verification code"}
+          </Text>
+        </Animated.View>
 
-        {isSendingCode && (
-          <View style={styles.sendingIndicator}>
-            <ActivityIndicator size="small" color="#FFB347" />
-            <Text style={styles.sendingText}>Sending code...</Text>
-          </View>
-        )}
+        <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
+          {isVerifyMode ? (
+            <TextInput
+              ref={verificationInputRef}
+              style={styles.verifyCodeInput}
+              placeholder="Verification code"
+              placeholderTextColor="#A89F91"
+              value={verificationCode}
+              onChangeText={handleCodeChange}
+              keyboardType="number-pad"
+              textContentType="oneTimeCode"
+              autoComplete="sms-otp"
+              maxLength={6}
+              autoFocus
+            />
+          ) : (
+            <PhoneInput
+              value={phoneNumber}
+              onChangePhoneNumber={handlePhoneChange}
+              selectedCountry={selectedCountry}
+              onChangeSelectedCountry={handleCountryChange}
+              defaultCountry="US"
+              modalType="bottomSheet"
+              initialBottomsheetHeight="90%"
+              maxBottomsheetHeight="95%"
+              minBottomsheetHeight="20%"
+              placeholder="Phone number"
+              phoneInputStyles={{
+                container: styles.phoneInputContainer,
+                flagContainer: styles.phoneInputFlag,
+                input: styles.phoneInputText,
+                caret: styles.phoneInputCaret,
+              }}
+              modalStyles={{
+                backdrop: styles.countryModalBackdrop,
+                content: styles.countryModalContent,
+                dragHandleContainer: styles.countryModalHandleContainer,
+                dragHandleIndicator: styles.countryModalHandleIndicator,
+                container: styles.countryModal,
+                list: styles.countryModalList,
+                searchContainer: styles.countryModalSearchContainer,
+                searchInput: styles.countrySearchInput,
+                countryItem: styles.countryButton,
+                callingCode: styles.countryCallingCode,
+                countryName: styles.countryName,
+              }}
+            />
+          )}
 
-        {!isSendingCode && (
-          <PrimaryButton
-            title="Send Code →"
-            onPress={handleSendCode}
-            disabled={!isPhoneValid() || isSendingCode}
-            style={{ marginTop: 24 }}
-          />
-        )}
+          {/* Loading indicator */}
+          {(isSendingCode || isConfirmingCode) && (
+            <View style={styles.sendingIndicator}>
+              <ActivityIndicator size="small" color="#FFB347" />
+              <Text style={styles.sendingText}>
+                {isVerifyMode ? 'Verifying...' : 'Sending code...'}
+              </Text>
+            </View>
+          )}
 
-        {phoneAuthState.error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{phoneAuthState.error}</Text>
-          </View>
-        )}
-      </Animated.View>
-    </View>
-  );
+          {/* Primary button */}
+          {!isSendingCode && !isConfirmingCode && (
+            <PrimaryButton
+              title={isVerifyMode ? 'Verify' : 'Send Code'}
+              onPress={isVerifyMode ? () => handleVerifyCode() : handleSendCode}
+              disabled={isVerifyMode ? !isValidCode : !isPhoneValid()}
+              style={{ marginTop: 24 }}
+            />
+          )}
 
-  const renderVerify = () => (
-    <View key="verify" style={styles.stepContainer}>
-      <Animated.View style={[styles.header, titleAnimStyle]}>
-        <Text style={styles.stepEmoji}>✉️</Text>
-        <Text style={styles.stepTitle}>Enter verification code</Text>
-        <Text style={styles.stepSubtitle}>
-          Sent to {selectedCountry?.idd?.root}{selectedCountry?.idd?.suffixes?.[0]} {phoneNumber}
-        </Text>
-      </Animated.View>
+          {/* Verify mode actions */}
+          {isVerifyMode && (
+            <View style={styles.verifyActions}>
+              <Pressable
+                style={styles.resendButton}
+                onPress={handleResendCode}
+                disabled={isResending}
+              >
+                {isResending ? (
+                  <ActivityIndicator size="small" color="#5D4037" />
+                ) : (
+                  <Text style={styles.resendText}>Resend Code</Text>
+                )}
+              </Pressable>
 
-      <Animated.View style={[styles.formContainer, contentAnimStyle]}>
-        <TextInput
-          ref={verificationInputRef}
-          style={[styles.input, styles.codeInput]}
-          placeholder="000000"
-          placeholderTextColor="#A89F91"
-          value={verificationCode}
-          onChangeText={handleCodeChange}
-          keyboardType="number-pad"
-          textContentType="oneTimeCode"
-          autoComplete="sms-otp"
-          maxLength={6}
-          autoFocus
-        />
+              <Pressable style={styles.backLink} onPress={handleBack}>
+                <Text style={styles.backText}>Change number</Text>
+              </Pressable>
+            </View>
+          )}
 
-        {isConfirmingCode ? (
-          <View style={styles.verifyingIndicator}>
-            <ActivityIndicator size="small" color="#FFB347" />
-            <Text style={styles.sendingText}>Verifying...</Text>
-          </View>
-        ) : (
-          <Pressable
-            style={({ pressed }) => [
-              styles.primaryButton,
-              pressed && styles.buttonPressed,
-              !isValidCode && styles.buttonDisabled,
-            ]}
-            onPress={() => handleVerifyCode()}
-            disabled={!isValidCode || isConfirmingCode}
-          >
-            <Text style={styles.primaryButtonText}>Verify ✓</Text>
-          </Pressable>
-        )}
-
-        <View style={styles.verifyActions}>
-          <Pressable
-            style={styles.resendButton}
-            onPress={handleResendCode}
-            disabled={isResending}
-          >
-            {isResending ? (
-              <ActivityIndicator size="small" color="#5D4037" />
-            ) : (
-              <Text style={styles.resendText}>Resend Code</Text>
-            )}
-          </Pressable>
-
-          <Pressable style={styles.backLink} onPress={handleBack}>
-            <Text style={styles.backText}>← Change number</Text>
-          </Pressable>
-        </View>
-
-        {phoneAuthState.error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{phoneAuthState.error}</Text>
-          </View>
-        )}
-      </Animated.View>
-    </View>
-  );
+          {/* Error display */}
+          {phoneAuthState.error && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{phoneAuthState.error}</Text>
+            </View>
+          )}
+        </Animated.View>
+      </View>
+    );
+  };
 
   const renderNotifications = () => (
     <View key="notifications" style={styles.notificationStepContainer}>
@@ -1357,8 +1367,6 @@ export default function OnboardingScreen() {
     switch (currentStep) {
       case 'welcome':
         return renderWelcome();
-      case 'name':
-        return renderName();
       case 'gender':
         return renderGender();
       case 'avatar':
@@ -1382,9 +1390,7 @@ export default function OnboardingScreen() {
       case 'username':
         return renderUsername();
       case 'phone':
-        return renderPhone();
-      case 'verify':
-        return renderVerify();
+        return renderPhoneOrVerify();
       case 'notifications':
         return renderNotifications();
       default:
@@ -1395,7 +1401,6 @@ export default function OnboardingScreen() {
   // Use cream background for name/age/username steps, sky blue for others
   const isDiscordStep = currentStep === 'discord';
   const isCreamStep = [
-    'name',
     'gender',
     'avatar',
     'age',
@@ -1406,9 +1411,9 @@ export default function OnboardingScreen() {
     'focusFriction',
     'focusFor',
     'goal',
-    'username',
-    'phone',
     'notifications',
+    'phone',
+    'username',
   ].includes(currentStep);
   const containerStyle = isDiscordStep
     ? styles.discordScreenContainer
@@ -1471,7 +1476,7 @@ export default function OnboardingScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       onTouchEnd={handleTripleTap}
     >
-      {currentStep !== 'notifications' && (
+      {currentStep !== 'welcome' && (
         <BackButton onPress={handleBack} style={backButtonStyle} />
       )}
       {/* Background clouds (hidden on name/age steps) */}
@@ -1483,18 +1488,18 @@ export default function OnboardingScreen() {
         </>
       )}
 
-      {/* Progress bar (hidden on welcome, name, age, username steps) */}
-      {currentStep !== 'welcome' && !isCreamStep && (
+      {/* Progress bar (hidden on welcome) */}
+      {currentStep !== 'welcome' && (
         <Animated.View
           entering={FadeIn.duration(300)}
-          style={[styles.progressContainer, { top: insets.top + 16 }]}
+          style={[styles.progressContainer, { top: insets.top + 28 }]}
         >
           <View style={styles.progressTrack}>
-            <Animated.View style={[styles.progressBar, progressStyle]} />
+            <Animated.View style={[styles.progressBar, progressStyle]}>
+              {/* Soft highlight line on upper portion of the progress fill */}
+              <View style={styles.progressHighlight} />
+            </Animated.View>
           </View>
-          <Text style={styles.progressText}>
-            Step {stepIndex} of {steps.length - 1}
-          </Text>
         </Animated.View>
       )}
 
@@ -1563,33 +1568,37 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     position: 'absolute',
-    left: 24,
-    right: 24,
+    left: 72,
+    right: 20,
     zIndex: 100,
-    alignItems: 'center',
+    justifyContent: 'center',
   },
   backButton: {
     position: 'absolute',
-    left: 16,
+    left: 12,
     zIndex: 200,
   },
   progressTrack: {
-    height: 8,
+    height: 12,
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: 4,
+    backgroundColor: '#FFC481',
+    borderRadius: 50,
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#FFB347',
-    borderRadius: 4,
+    backgroundColor: '#FC8A02',
+    borderRadius: 50,
+    overflow: 'hidden',
   },
-  progressText: {
-    marginTop: 8,
-    fontSize: 12,
-    color: '#5D4037',
-    fontWeight: '600',
+  progressHighlight: {
+    position: 'absolute',
+    top: 2,
+    left: 6,
+    right: 6,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.35)',
   },
   content: {
     flex: 1,
@@ -1972,6 +1981,18 @@ const styles = StyleSheet.create({
   },
   phoneInputCaret: {
     color: '#FFB347',
+  },
+  // Verification code input - matches phoneInputContainer styling
+  verifyCodeInput: {
+    backgroundColor: '#FFF8E7',
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: '#DDD5C7',
+    height: 60,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#5D4037',
+    paddingHorizontal: 20,
   },
   // Country modal styles
   countryModal: {
