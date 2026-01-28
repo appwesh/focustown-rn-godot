@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cq05ss0lhnk5r"
-path.s3tc="res://.godot/imported/FocusTown_image.png-0593846c504567bc736a5abac9b0a59f.s3tc.ctex"
-path.etc2="res://.godot/imported/FocusTown_image.png-0593846c504567bc736a5abac9b0a59f.etc2.ctex"
+path.s3tc="res://.godot/imported/FocusTown_Image.png-338774ff2e08ec14f5d676a6c4ca8a08.s3tc.ctex"
+path.etc2="res://.godot/imported/FocusTown_Image.png-338774ff2e08ec14f5d676a6c4ca8a08.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/focusTown/FocusTown_image.png"
-dest_files=["res://.godot/imported/FocusTown_image.png-0593846c504567bc736a5abac9b0a59f.s3tc.ctex", "res://.godot/imported/FocusTown_image.png-0593846c504567bc736a5abac9b0a59f.etc2.ctex"]
+source_file="res://assets/environments/focusTown/FocusTown_Image.png"
+dest_files=["res://.godot/imported/FocusTown_Image.png-338774ff2e08ec14f5d676a6c4ca8a08.s3tc.ctex", "res://.godot/imported/FocusTown_Image.png-338774ff2e08ec14f5d676a6c4ca8a08.etc2.ctex"]
 
 [params]
 
