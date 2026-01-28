@@ -10,6 +10,8 @@ interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   style?: ViewStyle;
+  surfaceColor?: string;
+  borderColor?: string;
 }
 
 const COLORS = {
@@ -87,10 +89,15 @@ export function PrimaryButton({
   variant = 'primary',
   size = 'big',
   style,
+  surfaceColor,
+  borderColor,
 }: ButtonProps) {
   const colorKey = disabled ? 'disabled' : variant;
   const colors = COLORS[colorKey];
   const sizeConfig = SIZES[size];
+  
+  const finalSurfaceColor = surfaceColor ?? colors.surface;
+  const finalBorderColor = borderColor ?? colors.border;
 
   return (
     <View style={[styles.container, style]}>
@@ -98,8 +105,8 @@ export function PrimaryButton({
         style={({ pressed }) => [
           styles.surface,
           { 
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
+            backgroundColor: finalSurfaceColor,
+            borderColor: finalBorderColor,
             paddingVertical: sizeConfig.paddingVertical,
             paddingHorizontal: sizeConfig.paddingHorizontal,
             borderWidth: sizeConfig.borderWidth,

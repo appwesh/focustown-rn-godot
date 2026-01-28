@@ -34,6 +34,8 @@ import type { UserDoc, FriendshipDoc, GroupInviteDoc
 interface DebugModalProps {
   visible: boolean;
   onClose: () => void;
+  onboardingStep?: string | null;
+  onSetOnboardingStep?: (step: string) => void;
 }
 
 // Tab type
@@ -55,7 +57,7 @@ interface FriendshipInfo {
   requesterId: string;
 }
 
-export function DebugModal({ visible, onClose }: DebugModalProps) {
+export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingStep }: DebugModalProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<DebugTab>('state');
   const [loading, setLoading] = useState<string | null>(null);
@@ -704,12 +706,28 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
   const renderNavTab = () => {
     const routes = [
       { label: 'Index', path: '/' },
-      { label: 'Onboarding', path: '/onboarding' },
       { label: 'Home', path: '/home' },
       { label: 'Social', path: '/social' },
       { label: 'Game', path: '/game' },
       { label: 'Profile', path: '/profile' },
       { label: 'Settings', path: '/settings' },
+    ];
+
+    const onboardingSteps = [
+      { label: 'Welcome', value: 'welcome' },
+      { label: 'Name', value: 'name' },
+      { label: 'Age', value: 'age' },
+      { label: 'Study Location', value: 'studyLocation' },
+      { label: 'Social Baseline', value: 'socialBaseline' },
+      { label: 'Study Frequency', value: 'studyFrequency' },
+      { label: 'Session Length', value: 'sessionLength' },
+      { label: 'Focus Friction', value: 'focusFriction' },
+      { label: 'Focus For (23+)', value: 'focusFor' },
+      { label: 'Goal', value: 'goal' },
+      { label: 'Username', value: 'username' },
+      { label: 'Phone', value: 'phone' },
+      { label: 'Verify', value: 'verify' },
+      { label: 'Discord', value: 'discord' },
     ];
 
     return (
@@ -728,6 +746,31 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
             <Text style={styles.btnText}>{route.label}</Text>
           </Pressable>
         ))}
+        
+        {onSetOnboardingStep && (
+          <>
+            <View style={styles.divider} />
+            <Text style={styles.sectionTitle}>📋 Onboarding Steps</Text>
+            <Text style={styles.hintText}>
+              Current: {onboardingStep || 'N/A'}
+            </Text>
+            {onboardingSteps.map((step) => (
+              <Pressable
+                key={step.value}
+                style={[
+                  styles.actionBtn,
+                  onboardingStep === step.value ? styles.successBtn : styles.infoBtn,
+                ]}
+                onPress={() => {
+                  onSetOnboardingStep(step.value);
+                  onClose();
+                }}
+              >
+                <Text style={styles.btnText}>{step.label}</Text>
+              </Pressable>
+            ))}
+          </>
+        )}
       </View>
     );
   };

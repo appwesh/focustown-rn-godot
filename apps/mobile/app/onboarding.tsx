@@ -10,6 +10,8 @@ import {
   Platform,
   Alert,
   ScrollView,
+  ImageBackground,
+  Linking,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -34,6 +36,7 @@ import * as analytics from '@/lib/analytics';
 import { userService } from '@/lib/firebase/user';
 import { toE164, cleanVerificationCode, isValidPhone } from '@/lib/phone';
 import { PrimaryButton, BrownComponent, BackButton } from '@/components/ui';
+import { DebugModal } from '@/components/debug-modal';
 
 type OnboardingStep =
   | 'welcome'
@@ -48,7 +51,8 @@ type OnboardingStep =
   | 'goal'
   | 'username'
   | 'phone'
-  | 'verify';
+  | 'verify'
+  | 'discord';
 
 type StudyLocation = 'home' | 'library' | 'cafe' | 'school';
 type SocialBaseline = 'always' | 'often' | 'sometimes' | 'rarely' | 'never';
@@ -94,7 +98,10 @@ const BASE_STEPS: OnboardingStep[] = [
   'username',
   'phone',
   'verify',
+  'discord',
 ];
+
+const DISCORD_INVITE_URL = 'https://discord.gg/XbmKqmgdCb';
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -145,6 +152,7 @@ export default function OnboardingScreen() {
   const [verificationCode, setVerificationCode] = useState('');
   const [isConfirmingCode, setIsConfirmingCode] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [showDebugModal, setShowDebugModal] = useState(false);
 
   const isAge23Plus =
     ageRange === '23 - 29' || ageRange === '30 - 40' || ageRange === '40+';
@@ -161,6 +169,7 @@ export default function OnboardingScreen() {
   const lastAnimatedStep = useRef<OnboardingStep | null>(null);
   const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const usernameCheckTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tapTimesRef = useRef<number[]>([]);
 
   // Animation values
   const progress = useSharedValue(0);
@@ -301,8 +310,8 @@ export default function OnboardingScreen() {
           phone_number: user.phoneNumber ?? undefined,
         });
 
-        // Go to home
-        router.replace('/home');
+        // Continue to Discord prompt before entering home
+        setCurrentStep('discord');
       }
     };
 
@@ -348,6 +357,18 @@ export default function OnboardingScreen() {
   // ============================================================================
   // Handlers
   // ============================================================================
+  const handleTripleTap = useCallback(() => {
+    const now = Date.now();
+    const recentTaps = tapTimesRef.current.filter((t) => now - t < 500);
+    recentTaps.push(now);
+    tapTimesRef.current = recentTaps;
+
+    if (recentTaps.length >= 3) {
+      setShowDebugModal(true);
+      tapTimesRef.current = [];
+    }
+  }, []);
+
   const updateOnboardingAnswer = <K extends keyof OnboardingAnswers>(
     key: K,
     value: OnboardingAnswers[K]
@@ -427,6 +448,17 @@ export default function OnboardingScreen() {
     setTimeout(() => {
       setCurrentStep('username');
     }, 150);
+  };
+
+  const handleJoinDiscord = () => {
+    Linking.openURL(DISCORD_INVITE_URL).catch((error) => {
+      console.error('[Onboarding] Failed to open Discord invite:', error);
+    });
+    router.replace('/home');
+  };
+
+  const handleSkipDiscord = () => {
+    router.replace('/home');
   };
 
   const sanitizeUsername = (value: string) =>
@@ -978,20 +1010,25 @@ export default function OnboardingScreen() {
   };
 
   const renderPhone = () => (
-    <View key="phone" style={styles.stepContainer}>
-      <Animated.View style={[styles.header, titleAnimStyle]}>
-        <Text style={styles.stepEmoji}>📱</Text>
-        <Text style={styles.stepTitle}>Your phone number</Text>
-        <Text style={styles.stepSubtitle}>We{"'"}ll send you a verification code</Text>
+    <View key="phone" style={styles.onboardingStepContainer}>
+      <Animated.View style={[styles.onboardingHeader, titleAnimStyle]}>
+        <Text style={styles.onboardingTitle}>Your phone number</Text>
+        <Text style={styles.onboardingSubtitle}>
+          We{"'"}ll send you a verification code
+        </Text>
       </Animated.View>
 
-      <Animated.View style={[styles.formContainer, contentAnimStyle]}>
+      <Animated.View style={[styles.onboardingContent, contentAnimStyle]}>
         <PhoneInput
           value={phoneNumber}
           onChangePhoneNumber={handlePhoneChange}
           selectedCountry={selectedCountry}
           onChangeSelectedCountry={handleCountryChange}
           defaultCountry="US"
+          modalType="bottomSheet"
+          initialBottomsheetHeight="90%"
+          maxBottomsheetHeight="95%"
+          minBottomsheetHeight="20%"
           placeholder="Phone number"
           phoneInputStyles={{
             container: styles.phoneInputContainer,
@@ -1000,7 +1037,13 @@ export default function OnboardingScreen() {
             caret: styles.phoneInputCaret,
           }}
           modalStyles={{
+            backdrop: styles.countryModalBackdrop,
+            content: styles.countryModalContent,
+            dragHandleContainer: styles.countryModalHandleContainer,
+            dragHandleIndicator: styles.countryModalHandleIndicator,
             container: styles.countryModal,
+            list: styles.countryModalList,
+            searchContainer: styles.countryModalSearchContainer,
             searchInput: styles.countrySearchInput,
             countryItem: styles.countryButton,
             callingCode: styles.countryCallingCode,
@@ -1016,22 +1059,13 @@ export default function OnboardingScreen() {
         )}
 
         {!isSendingCode && (
-          <Pressable
-            style={({ pressed }) => [
-              styles.primaryButton,
-              pressed && styles.buttonPressed,
-              !isPhoneValid() && styles.buttonDisabled,
-            ]}
+          <PrimaryButton
+            title="Send Code →"
             onPress={handleSendCode}
             disabled={!isPhoneValid() || isSendingCode}
-          >
-            <Text style={styles.primaryButtonText}>Send Code →</Text>
-          </Pressable>
+            style={{ marginTop: 24 }}
+          />
         )}
-
-        <Pressable style={styles.backLink} onPress={handleBack}>
-          <Text style={styles.backText}>← Back</Text>
-        </Pressable>
 
         {phoneAuthState.error && (
           <View style={styles.errorContainer}>
@@ -1147,6 +1181,7 @@ export default function OnboardingScreen() {
   };
 
   // Use cream background for name/age/username steps, sky blue for others
+  const isDiscordStep = currentStep === 'discord';
   const isCreamStep = [
     'name',
     'age',
@@ -1158,15 +1193,68 @@ export default function OnboardingScreen() {
     'focusFor',
     'goal',
     'username',
+    'phone',
   ].includes(currentStep);
-  const containerStyle = isCreamStep ? styles.containerCream : styles.container;
+  const containerStyle = isDiscordStep
+    ? styles.discordScreenContainer
+    : isCreamStep
+    ? styles.containerCream
+    : styles.container;
 
   const backButtonStyle = { ...styles.backButton, top: insets.top + 12 };
+
+  // Discord step renders full-screen without wrapper
+  if (isDiscordStep) {
+    return (
+      <View style={styles.discordScreenContainer} onTouchEnd={handleTripleTap}>
+        <ImageBackground
+          source={require('@/assets/ui/backgrounds/discordBackground.png')}
+          style={styles.discordFullBackground}
+          resizeMode="cover"
+        >
+          <View style={[styles.discordContent, { paddingTop: insets.top + 16 }]}>
+            <Animated.View style={titleAnimStyle}>
+              <Text style={styles.discordTitle}>{"Join the\nCommunity"}</Text>
+            </Animated.View>
+
+            <Animated.View style={[styles.discordBubbleWrapper, contentAnimStyle]}>
+              <View style={styles.discordBubble}>
+                <Text style={styles.discordBubbleText}>
+                  {"\"💗 You're one of the first 1000 users! Give us feedback and shape the future of focustown\""}
+                </Text>
+              </View>
+            </Animated.View>
+          </View>
+
+          <Animated.View style={[styles.discordActions, { paddingBottom: insets.bottom + 24 }, buttonAnimStyle]}>
+            <PrimaryButton
+              title="Join the Discord"
+              onPress={handleJoinDiscord}
+              surfaceColor="#5661EF"
+              borderColor="#2E326A"
+              style={styles.discordButton}
+            />
+            <Pressable style={styles.discordSkip} onPress={handleSkipDiscord}>
+              <Text style={styles.discordSkipText}>Maybe later</Text>
+            </Pressable>
+          </Animated.View>
+        </ImageBackground>
+
+        <DebugModal
+          visible={showDebugModal}
+          onClose={() => setShowDebugModal(false)}
+          onboardingStep={currentStep}
+          onSetOnboardingStep={(step) => setCurrentStep(step as OnboardingStep)}
+        />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
       style={containerStyle}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      onTouchEnd={handleTripleTap}
     >
       <BackButton onPress={handleBack} style={backButtonStyle} />
       {/* Background clouds (hidden on name/age steps) */}
@@ -1209,6 +1297,13 @@ export default function OnboardingScreen() {
       >
         {renderCurrentStep()}
       </View>
+
+      <DebugModal
+        visible={showDebugModal}
+        onClose={() => setShowDebugModal(false)}
+        onboardingStep={currentStep}
+        onSetOnboardingStep={(step) => setCurrentStep(step as OnboardingStep)}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -1221,6 +1316,10 @@ const styles = StyleSheet.create({
   containerCream: {
     flex: 1,
     backgroundColor: '#FAF7F2',
+  },
+  discordScreenContainer: {
+    flex: 1,
+    backgroundColor: '#000',
   },
   cloud: {
     position: 'absolute',
@@ -1281,6 +1380,55 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     flex: 1,
+  },
+  discordFullBackground: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  discordContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  discordBubbleWrapper: {
+    marginTop: 16,
+  },
+  discordTitle: {
+    fontSize: 42,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 4 },
+    textShadowRadius: 8,
+  },
+  discordBubble: {
+    marginTop: 16,
+    backgroundColor: '#FFF8E7',
+    borderRadius: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    maxWidth: '90%',
+  },
+  discordBubbleText: {
+    fontSize: 15,
+    color: '#5D4037',
+    fontWeight: '600',
+  },
+  discordActions: {
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  discordButton: {
+    width: '100%',
+  },
+  discordSkip: {
+    marginTop: 12,
+  },
+  discordSkipText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    fontWeight: '600',
   },
   // Reusable onboarding step styles
   onboardingStepContainer: {
@@ -1546,6 +1694,24 @@ const styles = StyleSheet.create({
   },
   // Country modal styles
   countryModal: {
+    backgroundColor: '#FFF8E7',
+  },
+  countryModalBackdrop: {
+    backgroundColor: 'transparent',
+  },
+  countryModalContent: {
+    backgroundColor: '#FFF8E7',
+  },
+  countryModalHandleContainer: {
+    backgroundColor: '#FFF8E7',
+  },
+  countryModalHandleIndicator: {
+    backgroundColor: '#B89B4C',
+  },
+  countryModalList: {
+    backgroundColor: '#FFF8E7',
+  },
+  countryModalSearchContainer: {
     backgroundColor: '#FFF8E7',
   },
   countrySearchInput: {
