@@ -41,8 +41,14 @@ func get_spot_data(default_building_id: String = "", default_building_name: Stri
 		"rotation": sit_rotation,
 		"building_id": building_id_override if not building_id_override.is_empty() else default_building_id,
 		"building_name": building_name_override if not building_name_override.is_empty() else default_building_name,
-		"node": self
+		"node": self,
+		"has_npc": spawn_npc  # True if this spot is occupied by an NPC
 	}
+
+
+## Check if this spot is available (not occupied by NPC)
+func is_available() -> bool:
+	return not spawn_npc
 
 
 ## Get NPC config if this spot should spawn an NPC

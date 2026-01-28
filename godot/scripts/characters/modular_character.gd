@@ -69,10 +69,10 @@ const CUSTOM_SKINS_PATH := "res://assets/characters/cozylife/custom/"
 ## Custom items that use non-standard paths (textures outside CLOTHES_TEXTURES_PATH)
 ## Maps part name to full texture path (relative to res://)
 const CUSTOM_ITEM_TEXTURES := {
-	"LofiTop": ["Lofi/Textures/Lofi_Top.png"],
-	"LofiPants": ["Lofi/Textures/Lofi_Pants.png"],
-	"Headphone": ["Lofi/Textures/headphone/headphone_Untextured_Checker_BaseColor.png"],
-	"LofiScarf": ["Lofi/Textures/Lofi_Neck1.png"],
+	"LofiTop": ["Lofi/textures/Lofi_Top.png"],
+	"LofiPants": ["Lofi/textures/Lofi_Pants.png"],
+	"Headphone": ["Lofi/textures/headphone/headphone_Untextured_Checker_BaseColor.png"],
+	"LofiScarf": ["Lofi/textures/Lofi_Neck1.png"],
 }
 
 ## Position offsets for specific items (applied during equip)

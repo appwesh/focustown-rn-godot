@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bt1y5qdtd4kag"]
 
 [ext_resource type="Script" uid="uid://cywuuk8iq0vqx" path="res://scripts/cinematics/coastal_cinematic.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://bgdkh0wuq4a16" path="res://scenes/environment/costal_scene/costal_scene_environment.tscn" id="2_environment"]
+[ext_resource type="PackedScene" uid="uid://dqxdbu1mmu1an" path="res://scenes/environment/costal_scene/costal_scene_final.tscn" id="3_jq52c"]
 [ext_resource type="Script" uid="uid://cm2exeyxs2rb8" path="res://scripts/world/cinematic_study_spot.gd" id="3_spots"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
@@ -12,18 +12,13 @@ script = ExtResource("1_script")
 character_spawn_position = Vector3(0, 0, 3)
 character_spawn_rotation = 180.0
 play_entrance_cinematic = true
+spawn_point_marker = NodePath("CinematicMarkers/SpawnPoint")
+cinematic_target_marker = NodePath("CinematicMarkers/CinematicTarget")
+cinematic_camera_path = NodePath("CinematicMarkers/CinematicCamera")
 entrance_start_delay = 0.3
 entrance_end_delay = 0.5
 entrance_walk_speed = 1.0
 entrance_animation_duration = 1.2
-
-[node name="OverviewCamera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.7770471, 0.62944245, 0, -0.62944245, 0.7770471, 1.6453781, 27.391865, 30.461563)
-current = true
-fov = 18.0
-
-[node name="CoastalEnvironment" parent="." instance=ExtResource("2_environment")]
-transform = Transform3D(-5.9604645e-08, 0, 1, 0, 1, 0, -1, 0, -5.9604645e-08, 0, 0, 0)
 
 [node name="GroundCollision" type="StaticBody3D" parent="."]
 
@@ -31,47 +26,132 @@ transform = Transform3D(-5.9604645e-08, 0, 1, 0, 1, 0, -1, 0, -5.9604645e-08, 0,
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
 shape = SubResource("BoxShape3D_floor")
 
+[node name="CinematicMarkers" type="Node3D" parent="."]
+
+[node name="SpawnPoint" type="Marker3D" parent="CinematicMarkers"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.4106221, 0, 7.303261)
+gizmo_extents = 0.5
+
+[node name="CinematicTarget" type="Marker3D" parent="CinematicMarkers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4106221, 0, 4.156999)
+gizmo_extents = 0.5
+
+[node name="CinematicCamera" type="Camera3D" parent="CinematicMarkers"]
+transform = Transform3D(0.18738134, 0.17057239, -0.9673641, 0, 0.9848077, 0.17364818, 0.9822872, -0.03253843, 0.1845346, -2.7537007, 2.2584023, 4.2870827)
+fov = 50.0
+
 [node name="StudySpots" type="Node3D" parent="."]
 
 [node name="CafeChair_01" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1733403, 0, -1.5690789)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5692258, 0, -2.2021556)
 gizmo_extents = 0.3
 script = ExtResource("3_spots")
 spot_name = "CafeChair_01"
-sit_rotation = 90.0
 spawn_npc = true
 
 [node name="CafeChair_02" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.94405127, 0, -1.5469025)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24531603, 0, -2.2529159)
 gizmo_extents = 0.3
 script = ExtResource("3_spots")
 spot_name = "CafeChair_02"
 spawn_npc = true
 
 [node name="CafeChair_03" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.224309, 0, -1.4393566)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2360191, 0, -2.181762)
 gizmo_extents = 0.3
 script = ExtResource("3_spots")
 spot_name = "CafeChair_03"
-sit_rotation = -90.0
 
 [node name="CafeChair_04" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3655252, 0, -1.4621371)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0598288, 0, -2.1463146)
 gizmo_extents = 0.3
 script = ExtResource("3_spots")
 spot_name = "CafeChair_04"
-sit_rotation = -90.0
 spawn_npc = true
 
 [node name="CafeChair_05" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.197164, 0, -0.7312023)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.61488485, 0, -0.09797424)
 gizmo_extents = 0.3
 script = ExtResource("3_spots")
 spot_name = "CafeChair_05"
+sit_rotation = 180.0
 
 [node name="CafeChair_06" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9462614, 0, -0.69185257)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24024868, 0, -0.07318109)
 gizmo_extents = 0.3
 script = ExtResource("3_spots")
 spot_name = "CafeChair_06"
 sit_rotation = 180.0
+
+[node name="CafeChair_09" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5692258, 0, 1.1549373)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_01"
+spawn_npc = true
+
+[node name="CafeChair_10" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24531603, 0, 1.104177)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_02"
+spawn_npc = true
+
+[node name="CafeChair_11" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.61488485, 0, 3.2591186)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_05"
+sit_rotation = 180.0
+
+[node name="CafeChair_12" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24024868, 0, 3.2839117)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_06"
+sit_rotation = 180.0
+
+[node name="CafeChair_13" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.23424, 0, 1.1549373)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_01"
+spawn_npc = true
+
+[node name="CafeChair_14" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.048782, 0, 1.104177)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_02"
+spawn_npc = true
+
+[node name="CafeChair_15" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.188581, 0, 3.2591186)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_05"
+sit_rotation = 180.0
+
+[node name="CafeChair_16" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0437145, 0, 3.2839117)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_06"
+sit_rotation = 180.0
+
+[node name="CafeChair_07" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2106738, 0, -0.09797424)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_05"
+sit_rotation = 180.0
+
+[node name="CafeChair_08" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0658073, 0, -0.07318109)
+gizmo_extents = 0.3
+script = ExtResource("3_spots")
+spot_name = "CafeChair_06"
+sit_rotation = 180.0
+
+[node name="CostalSceneMaster" parent="." instance=ExtResource("3_jq52c")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.008111715, -0.004740715, -0.0009794235)

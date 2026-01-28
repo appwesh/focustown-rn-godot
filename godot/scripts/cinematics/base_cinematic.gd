@@ -30,11 +30,17 @@ signal entrance_cinematic_finished
 @export_group("Entrance Cinematic")
 ## Enable the entrance cinematic when scene starts
 @export var play_entrance_cinematic: bool = false
-## Position where character enters (e.g., doorway)
+## Path to Marker3D for where character enters (overrides entrance_position if set)
+@export_node_path("Marker3D") var spawn_point_marker: NodePath
+## Path to Marker3D for where character walks to during cinematic (overrides entrance_destination if set)
+@export_node_path("Marker3D") var cinematic_target_marker: NodePath
+## Path to Camera3D used during entrance cinematic (place in scene to preview framing)
+@export_node_path("Camera3D") var cinematic_camera_path: NodePath
+## Position where character enters (e.g., doorway) - used if spawn_point_marker not set
 @export var entrance_position: Vector3 = Vector3(0, 0, 8)
 ## Rotation when entering (facing into the scene)
 @export var entrance_rotation: float = 180.0
-## Position to walk to after entering
+## Position to walk to after entering - used if cinematic_target_marker not set
 @export var entrance_destination: Vector3 = Vector3(0, 0, 3)
 ## Delay before starting the walk (lets camera settle)
 @export var entrance_start_delay: float = 0.5
@@ -42,7 +48,7 @@ signal entrance_cinematic_finished
 @export var entrance_end_delay: float = 0.8
 ## Walk speed during entrance (can be slower for cinematic effect)
 @export var entrance_walk_speed: float = 1.8
-## Fixed entrance camera position (on the left side, looking at player)
+## Fixed entrance camera position - used if cinematic_camera_marker not set
 @export var entrance_camera_position: Vector3 = Vector3(-3, 1.5, 5)
 ## Animation to play after arriving (before overview)
 @export var entrance_arrival_animation: String = "BoredIdle_01"
@@ -144,6 +150,9 @@ var _is_player_seated: bool = false
 ## Track spawned NPC characters
 var _npc_characters: Array[CinematicCharacter] = []
 
+## NPCs currently hidden (for setup camera obstruction)
+var _hidden_npcs: Array[CinematicCharacter] = []
+
 ## Pre-fetched unique NPC skins for current spawn batch
 var _npc_skins_batch: Array[Dictionary] = []
 var _npc_skin_index: int = 0
@@ -200,10 +209,13 @@ func _get_default_study_spots() -> Array[Dictionary]:
 
 func _ready() -> void:
 	_character_scene = preload("res://scenes/characters/cinematic_character.tscn")
-	
+
+	# Resolve marker positions (override export Vector3 values with marker node positions)
+	_resolve_marker_positions()
+
 	# Ensure we have an overview camera (create if needed)
 	_ensure_overview_camera()
-	
+
 	if auto_start:
 		if play_entrance_cinematic:
 			# Spawn at entrance for cinematic
@@ -244,6 +256,31 @@ func _ready() -> void:
 	# Start entrance cinematic if enabled (deferred to allow scene to fully load)
 	if play_entrance_cinematic and _character:
 		call_deferred("_start_entrance_cinematic")
+
+
+func _resolve_marker_positions() -> void:
+	## Override entrance cinematic Vector3 values with Marker3D node positions when set
+	if not spawn_point_marker.is_empty():
+		var marker := get_node_or_null(spawn_point_marker) as Marker3D
+		if marker:
+			entrance_position = marker.global_position
+			entrance_rotation = marker.rotation_degrees.y
+			print("[%sCinematic] Spawn point from marker: %s (rot: %.1f)" % [_get_scene_name(), entrance_position, entrance_rotation])
+	if not cinematic_target_marker.is_empty():
+		var marker := get_node_or_null(cinematic_target_marker) as Marker3D
+		if marker:
+			entrance_destination = marker.global_position
+			# When cinematic is disabled, spawn at the walk-to destination instead
+			if not play_entrance_cinematic:
+				character_spawn_position = marker.global_position
+			print("[%sCinematic] Cinematic target from marker: %s" % [_get_scene_name(), entrance_destination])
+	if not cinematic_camera_path.is_empty():
+		var cam := get_node_or_null(cinematic_camera_path) as Camera3D
+		if cam:
+			_entrance_camera = cam
+			_entrance_camera.current = false
+			entrance_camera_position = cam.global_position
+			print("[%sCinematic] Cinematic camera from scene: %s" % [_get_scene_name(), entrance_camera_position])
 
 
 func _ensure_overview_camera() -> void:
@@ -545,6 +582,46 @@ func _on_camera_changed(camera_name: String) -> void:
 	# Update raycast camera to the active one
 	if camera_rig:
 		raycast_camera = camera_rig.get_active_camera()
+	
+	# Manage NPC visibility for setup camera
+	if camera_name == "setup":
+		_hide_obstructing_npcs()
+	else:
+		_restore_hidden_npcs()
+
+
+func _hide_obstructing_npcs() -> void:
+	## Hide NPCs that might obstruct the setup camera view
+	if not _character:
+		return
+	
+	var player_pos := _character.global_position
+	var player_rotation := _character.rotation.y
+	var forward_dir := Vector3(sin(player_rotation), 0, cos(player_rotation))
+	var setup_dist: float = camera_rig.setup_distance if camera_rig else 2.5
+	
+	for npc in _npc_characters:
+		var npc_pos := npc.global_position
+		var to_npc := npc_pos - player_pos
+		to_npc.y = 0  # Flatten to XZ plane
+		
+		var distance := to_npc.length()
+		# Check if NPC is between player and camera (within detection range)
+		if distance < setup_dist + 1.0 and distance > 0.5:
+			to_npc = to_npc.normalized()
+			var dot := forward_dir.dot(to_npc)
+			if dot > 0.5:  # In front of player (~60 degree cone)
+				npc.set_character_visible(false)
+				_hidden_npcs.append(npc)
+				print("[%sCinematic] Hiding NPC: %s (in front of setup camera)" % [_get_scene_name(), npc.name])
+
+
+func _restore_hidden_npcs() -> void:
+	## Restore visibility of all hidden NPCs
+	for npc in _hidden_npcs:
+		npc.set_character_visible(true)
+		print("[%sCinematic] Restoring NPC: %s" % [_get_scene_name(), npc.name])
+	_hidden_npcs.clear()
 
 
 # =============================================================================
@@ -565,17 +642,17 @@ func _start_entrance_cinematic():
 	_original_move_speed = _character.move_speed
 	_character.move_speed = entrance_walk_speed
 	
-	# Create fixed entrance camera on the left side
-	_entrance_camera = Camera3D.new()
-	_entrance_camera.name = "EntranceCamera"
-	_entrance_camera.fov = 50.0
-	add_child(_entrance_camera)
-	
-	# Position camera and look at the destination point (where player will walk to)
-	_entrance_camera.global_position = entrance_camera_position
-	_entrance_camera.look_at(entrance_destination + Vector3.UP * 1.0)  # Look at chest height
+	# Use scene camera if resolved, otherwise create one dynamically
+	if not _entrance_camera:
+		_entrance_camera = Camera3D.new()
+		_entrance_camera.name = "EntranceCamera"
+		_entrance_camera.fov = 50.0
+		add_child(_entrance_camera)
+		_entrance_camera.global_position = entrance_camera_position
+		_entrance_camera.look_at(entrance_destination + Vector3.UP * 1.0)
+
 	_entrance_camera.current = true
-	
+
 	# Small delay to let everything settle
 	await get_tree().create_timer(entrance_start_delay).timeout
 	
@@ -594,10 +671,9 @@ func _start_entrance_cinematic():
 	# Small pause before overview
 	await get_tree().create_timer(entrance_end_delay).timeout
 	
-	# Clean up entrance camera
+	# Deactivate entrance camera (don't free it if it's a scene node)
 	if _entrance_camera:
-		_entrance_camera.queue_free()
-		_entrance_camera = null
+		_entrance_camera.current = false
 	
 	# Switch to overview camera
 	if camera_rig:
@@ -705,24 +781,56 @@ func cycle_camera() -> void:
 func _setup_study_spots() -> void:
 	## Setup study spots (chairs) where player can sit and start a focus session
 	## First checks for CinematicStudySpot child nodes, then falls back to code-defined spots
+	## Only creates clickable areas for spots NOT occupied by NPCs
 	
 	# Try to find CinematicStudySpot nodes in the scene
 	var spot_nodes := _find_study_spot_nodes()
+	var available_count := 0
 	
 	if spot_nodes.size() > 0:
 		# Use node-based study spots
 		print("[%sCinematic] Found %d CinematicStudySpot nodes" % [_get_scene_name(), spot_nodes.size()])
 		for spot_node in spot_nodes:
 			var spot_data := spot_node.get_spot_data(_get_building_id(), _get_building_name())
+			
+			# Check if NPC is at this position (either from spawn_npc flag or npc_configs)
+			var has_npc_flag: bool = spot_data.get("has_npc", false)
+			var is_occupied: bool = has_npc_flag or _is_position_occupied_by_npc(spot_data.get("position", Vector3.ZERO))
+			spot_data["has_npc"] = is_occupied
+			
 			_study_spots.append(spot_data)
-			_create_study_spot_area(spot_data)
+			# Only create clickable area for spots without NPCs
+			if not is_occupied:
+				_create_study_spot_area(spot_data)
+				available_count += 1
+			else:
+				print("[%sCinematic] Skipping spot %s (occupied by NPC)" % [_get_scene_name(), spot_data.get("name", "Unknown")])
 	else:
 		# Fall back to code-defined spots
 		_study_spots = _get_default_study_spots()
 		for spot in _study_spots:
-			_create_study_spot_area(spot)
+			var has_npc_flag: bool = spot.get("has_npc", false)
+			var is_occupied: bool = has_npc_flag or _is_position_occupied_by_npc(spot.get("position", Vector3.ZERO))
+			spot["has_npc"] = is_occupied
+			if not is_occupied:
+				_create_study_spot_area(spot)
+				available_count += 1
 	
-	print("[%sCinematic] Setup %d study spots" % [_get_scene_name(), _study_spots.size()])
+	print("[%sCinematic] Setup %d study spots (%d available for player)" % [_get_scene_name(), _study_spots.size(), available_count])
+
+
+func _is_position_occupied_by_npc(pos: Vector3) -> bool:
+	## Check if any spawned NPC is at or near this position
+	var threshold := 0.5  # Distance threshold to consider "same position"
+	for npc in _npc_characters:
+		var npc_pos := npc.global_position
+		# Compare XZ positions (ignore Y height differences)
+		var distance := Vector2(pos.x - npc_pos.x, pos.z - npc_pos.z).length()
+		if distance < threshold:
+			print("[%sCinematic] Position (%.2f, %.2f) occupied by NPC %s at (%.2f, %.2f)" % [
+				_get_scene_name(), pos.x, pos.z, npc.name, npc_pos.x, npc_pos.z])
+			return true
+	return false
 
 
 func _find_study_spot_nodes() -> Array[CinematicStudySpot]:
@@ -738,6 +846,28 @@ func _find_study_spot_nodes_recursive(node: Node, spots: Array[CinematicStudySpo
 		if child is CinematicStudySpot:
 			spots.append(child)
 		_find_study_spot_nodes_recursive(child, spots)
+
+
+## Get all study spots (includes both available and NPC-occupied)
+func get_all_study_spots() -> Array[Dictionary]:
+	return _study_spots
+
+
+## Get only available study spots (not occupied by NPCs)
+func get_available_study_spots() -> Array[Dictionary]:
+	var available: Array[Dictionary] = []
+	for spot in _study_spots:
+		if not spot.get("has_npc", false):
+			available.append(spot)
+	return available
+
+
+## Check if a specific spot is available
+func is_spot_available(spot_name: String) -> bool:
+	for spot in _study_spots:
+		if spot.get("name", "") == spot_name:
+			return not spot.get("has_npc", false)
+	return false
 
 
 func _create_study_spot_area(spot: Dictionary) -> void:
@@ -897,6 +1027,9 @@ func end_focus_session() -> void:
 	if _current_spot_node:
 		_current_spot_node.queue_free()
 		_current_spot_node = null
+	
+	# Restore any hidden NPCs (safety measure, also handled by camera change)
+	_restore_hidden_npcs()
 	
 	# Switch camera back to overview
 	if camera_rig:
