@@ -9,4 +9,5 @@ export { Collapsible } from './collapsible';
 export { BrownComponent } from './brown-component';
 export { TimerOverlay } from './timer-overlay';
 export { TimerSlider } from './timer-slider';
+export { BottomPanel } from './bottom-panel';
 
