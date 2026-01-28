@@ -44,7 +44,7 @@
           "data": [
             {
               "scheme": "https",
-              "host": "YOUR_ONELINK.onelink.me",
+              "host": "focustown.app",
               "pathPrefix": "/YOUR_TEMPLATE_ID"
             }
           ],
