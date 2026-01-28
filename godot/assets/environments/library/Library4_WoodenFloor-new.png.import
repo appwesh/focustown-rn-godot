@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c3q64kihs2p0w"
-path="res://.godot/imported/Library4_WoodenFloor-new.png-6b63a164c8d065be39ac4c109abca613.ctex"
+path="res://.godot/imported/Library4_WoodenFloor-new.png-c94810fcd0cd92b703c5f564f7e30650.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/environments/library/Library4_WoodenFloor-new.png"
-dest_files=["res://.godot/imported/Library4_WoodenFloor-new.png-6b63a164c8d065be39ac4c109abca613.ctex"]
+source_file="res://assets/environments/Library/Library4_WoodenFloor-new.png"
+dest_files=["res://.godot/imported/Library4_WoodenFloor-new.png-c94810fcd0cd92b703c5f564f7e30650.ctex"]
 
 [params]
 

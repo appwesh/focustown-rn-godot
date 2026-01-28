@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b3utl0mrf8ui" path="res://assets/shared/tree-oak.glb" id="2_peehc"]
 [ext_resource type="Script" uid="uid://c3charpreset" path="res://scripts/characters/character_preset.gd" id="3_w5xe0"]
 [ext_resource type="PackedScene" uid="uid://dxxhp4hn3sdan" path="res://assets/environments/cafe/cafe.glb" id="5_cevti"]
-[ext_resource type="ArrayMesh" uid="uid://blgn2e2maoh24" path="res://assets/environments/costalScene/models/Bush.res" id="20_2tpqf"]
+[ext_resource type="ArrayMesh" uid="uid://bno25a36mqxek" path="res://assets/environments/costalScene/models/Bush.res" id="20_2tpqf"]
 
 [sub_resource type="Sky" id="Sky_eat8h"]
 

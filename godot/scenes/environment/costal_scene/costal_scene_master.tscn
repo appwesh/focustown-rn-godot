@@ -14,10 +14,10 @@
 [ext_resource type="ArrayMesh" uid="uid://wrbe0uyhu5sl" path="res://assets/shared/tree-oak.res" id="25_u7boq"]
 [ext_resource type="Material" uid="uid://dltsg5mvc2eyt" path="res://assets/environments/costalScene/materials/Floor2.tres" id="32_kdh6r"]
 [ext_resource type="PackedScene" uid="uid://d0wq1gwx46fat" path="res://assets/environments/costalScene/costal-cafe.glb" id="35_3f66y"]
-[ext_resource type="ArrayMesh" uid="uid://blgn2e2maoh24" path="res://assets/environments/costalScene/models/Bush.res" id="36_wj3lm"]
-[ext_resource type="ArrayMesh" uid="uid://5ydbcynoii74" path="res://assets/shared/orange.res" id="40_t6cff"]
+[ext_resource type="ArrayMesh" uid="uid://bno25a36mqxek" path="res://assets/environments/costalScene/models/Bush.res" id="36_wj3lm"]
+[ext_resource type="ArrayMesh" uid="uid://kgasbr2f3fy2" path="res://assets/shared/orange.res" id="40_t6cff"]
 [ext_resource type="PackedScene" uid="uid://c1b1gw1rn0ip1" path="res://assets/shared/house_2.glb" id="45_5rkys"]
-[ext_resource type="ArrayMesh" uid="uid://crmla3bgj7ih8" path="res://assets/environments/costalScene/models/cashmachine.res" id="45_k400v"]
+[ext_resource type="ArrayMesh" uid="uid://b2j63vbsgt3b" path="res://assets/environments/costalScene/models/cashmachine.res" id="45_k400v"]
 [ext_resource type="PackedScene" uid="uid://cv4u23qwdrwjm" path="res://assets/shared/house_1.glb" id="46_wj3lm"]
 
 [sub_resource type="Resource" id="Resource_c4pcc"]
@@ -604,7 +604,7 @@ shader_parameter/distort1Speed = Vector2(-0.1, 0)
 shader_parameter/DistortTexture1 = SubResource("NoiseTexture2D_2pykp")
 shader_parameter/Distort1Strength = 0.0070000003325
 shader_parameter/OceanTexture = ExtResource("3_pjyq3")
-shader_parameter/FadeMin = 75.0
+shader_parameter/FadeMin = 55.0
 shader_parameter/FadeMax = 15.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_5rkys"]
@@ -680,6 +680,15 @@ far = 1000.0
 
 [node name="costal-cafe" parent="." instance=ExtResource("35_3f66y")]
 transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, 0, 0, 0)
+
+[node name="Leaf-1_002" parent="costal-cafe" index="33"]
+transform = Transform3D(-0.88418067, 0, -0.7716493, 0, 1.1735494, 0, 0.7716493, 0, -0.88418067, -2.477217, 0.47046265, -4.6038237)
+
+[node name="Leaf-1_003" parent="costal-cafe" index="34"]
+transform = Transform3D(-0.86726457, 0, -0.00060718163, 0, 0.86726475, 0, 0.00060718163, 0, -0.86726457, -2.477217, 0.6749744, -4.6038237)
+
+[node name="Leaf-1_005" parent="costal-cafe" index="59"]
+transform = Transform3D(1.1337147, 0, 0.30316547, 0, 1.1735494, 0, -0.30316547, 0, 1.1337147, -4.543466, 0.47046265, 10.369772)
 
 [node name="stylized bush_016" type="MeshInstance3D" parent="costal-cafe"]
 transform = Transform3D(1.279515, 0, -2.0824215, 0, 2.3, 0, 1.9112407, 0, 1.3941151, -0.7885486, -0.068148375, -6.8302135)
