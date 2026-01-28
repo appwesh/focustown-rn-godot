@@ -73,9 +73,24 @@ interact={
 
 pointing/emulate_touch_from_mouse=true
 
+[physics]
+
+common/physics_ticks_per_second=30
+3d/physics_engine="GodotPhysics3D"
+3d/solver/solver_iterations=4
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 limits/opengl/max_lights_per_object=8
+anti_aliasing/quality/msaa_3d=0
+anti_aliasing/quality/screen_space_aa=0
+lights_and_shadows/directional_shadow/size=1024
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=0
+lights_and_shadows/positional_shadow/soft_shadow_filter_quality=0
+environment/ssao/quality=0
+environment/ssil/quality=0
+environment/glow/upscale_mode=0
+global_illumination/gi/use_half_resolution=true
