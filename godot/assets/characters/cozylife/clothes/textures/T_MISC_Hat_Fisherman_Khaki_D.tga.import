@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_MISC_Hat_Fisherman_Khaki_D.tga-d033d599d9f3
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

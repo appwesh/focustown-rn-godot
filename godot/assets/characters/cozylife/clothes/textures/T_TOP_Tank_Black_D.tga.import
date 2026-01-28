@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_TOP_Tank_Black_D.tga-7171a53ca7ab4060672c42
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

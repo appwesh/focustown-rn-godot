@@ -13,8 +13,6 @@ class_name BaseCinematic
 ## - _get_default_study_spots() - scene-specific chair positions
 ## - _register_with_rnbridge() - register with RNBridge
 
-signal cinematic_started
-signal cinematic_finished
 signal character_spawned(character: CinematicCharacter)
 signal tap_detected(world_position: Vector3)
 signal session_triggered(spot_position: Vector3)
@@ -477,8 +475,8 @@ func _spawn_single_npc(config: Dictionary) -> CinematicCharacter:
 	var pos: Vector3 = config.get("position", Vector3.ZERO)
 	var rot: float = config.get("rotation", 0.0)
 	var anim: String = config.get("animation", idle_animation)
-	var is_seated: bool = anim.to_lower().contains("sitting")
-	
+	var npc_is_seated: bool = anim.to_lower().contains("sitting")
+
 	var npc := _character_scene.instantiate() as CinematicCharacter
 	var npc_index := _npc_characters.size() + 1
 	npc.name = "NPC_%d" % npc_index if preset_name.is_empty() else "NPC_" + preset_name.capitalize()
@@ -496,7 +494,7 @@ func _spawn_single_npc(config: Dictionary) -> CinematicCharacter:
 	_apply_npc_preset_deferred(npc, preset_name)
 	
 	# Add study bubble for seated NPCs
-	if is_seated:
+	if npc_is_seated:
 		_add_study_bubble_deferred(npc)
 	
 	return npc
@@ -714,11 +712,11 @@ func is_entrance_cinematic_playing() -> bool:
 
 
 ## Set visibility of all NPC study bubbles with animation
-func _set_study_bubbles_visible(is_visible: bool) -> void:
+func _set_study_bubbles_visible(should_show: bool) -> void:
 	for npc in _npc_characters:
 		var bubble := npc.get_node_or_null("StudyBubble") as NPCStudyBubble
 		if bubble:
-			if is_visible:
+			if should_show:
 				bubble.animate_show()
 			else:
 				bubble.animate_hide()
@@ -1260,28 +1258,28 @@ func _show_click_indicator(pos: Vector3) -> void:
 # =============================================================================
 
 ## Spawn a character with the configured preset
-func spawn_character(preset_name: String = "", position: Vector3 = Vector3.INF, rotation_deg: float = INF) -> CinematicCharacter:
+func spawn_character(preset_name: String = "", spawn_pos: Vector3 = Vector3.INF, rotation_deg: float = INF) -> CinematicCharacter:
 	# Use configured values if not overridden
 	if preset_name.is_empty():
 		preset_name = character_preset_name
-	if position == Vector3.INF:
-		position = character_spawn_position
+	if spawn_pos == Vector3.INF:
+		spawn_pos = character_spawn_position
 	if rotation_deg == INF:
 		rotation_deg = character_spawn_rotation
-	
+
 	# Remove existing character if any
 	if _character:
 		_character.queue_free()
 		_character = null
-	
+
 	# Create new character
 	_character = _character_scene.instantiate() as CinematicCharacter
 	_character.name = "Character_" + preset_name.capitalize()
 	_character.default_animation = idle_animation
 	_character.auto_play = true
-	
+
 	# Position character
-	_character.position = position
+	_character.position = spawn_pos
 	_character.rotation_degrees.y = rotation_deg
 	
 	add_child(_character)

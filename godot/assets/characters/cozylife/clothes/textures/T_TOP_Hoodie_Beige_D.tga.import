@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_TOP_Hoodie_Beige_D.tga-c243ae1f1b6ba6c8c177
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_MISC_Hat_PartyHat_Blue_D.tga-59b9d7b9a4d0ab
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

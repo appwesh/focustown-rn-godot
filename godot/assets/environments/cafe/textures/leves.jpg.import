@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/leves.jpg-b363f89e9e3b58c4926bacc15b344453.ct
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
