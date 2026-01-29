@@ -287,6 +287,8 @@ const calculateChartData = (
 const BUILDING_IMAGES: Record<string, any> = {
   'cafe': require('@/assets/ui/cafeCabin.png'),
   'library': require('@/assets/ui/cafeLibrary.png'),
+  'coastal': require('@/assets/ui/cafeEurope.png'),
+  'indoor_cafe': require('@/assets/ui/cafeCabin.png'),
   'europe': require('@/assets/ui/cafeEurope.png'),
   'ghibli': require('@/assets/ui/cafeGhibli.png'),
   'japan': require('@/assets/ui/cafeJapan.png'),
@@ -540,7 +542,15 @@ export default function ProfileScreen() {
           <BackButton onPress={() => router.back()} />
           <Text style={styles.headerTitle}>Profile</Text>
         </View>
-        <BeanCounter size="small" />
+        <View style={styles.headerRight}>
+          <BeanCounter size="small" />
+          <Pressable
+            style={({ pressed }) => [styles.settingsButton, pressed && styles.settingsButtonPressed]}
+            onPress={() => router.push('/settings')}
+          >
+            <Image source={require('@/assets/ui/settings.png')} style={styles.settingsIcon} />
+          </Pressable>
+        </View>
       </View>
       
       <ScrollView 
@@ -956,6 +966,30 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '700',
     color: '#5D4037',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFF8E7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#F5D98C',
+  },
+  settingsButtonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.95 }],
+  },
+  settingsIcon: {
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
   },
   
   scrollView: {

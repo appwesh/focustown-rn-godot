@@ -14,6 +14,7 @@ import {
 } from "@react-native-firebase/auth";
 import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { userService } from "./user";
+import { useSoundStore } from "@/lib/sound";
 import { cleanupSocialStore } from "../social";
 import type { AuthState, UserDoc, PhoneAuthState } from "./types";
 
@@ -96,11 +97,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           firebaseUser.uid,
           (doc) => {
             setUserDoc(doc);
+            if (doc) {
+              const soundStore = useSoundStore.getState();
+              soundStore.setSoundEffectsEnabled(doc.preference?.soundEffectsEnabled ?? true);
+              soundStore.setMusicEnabled(doc.preference?.musicEnabled ?? true);
+            }
             setIsLoading(false);
           }
         );
       } else {
         setUserDoc(null);
+        const soundStore = useSoundStore.getState();
+        soundStore.setSoundEffectsEnabled(true);
+        soundStore.setMusicEnabled(true);
         setIsLoading(false);
       }
     });

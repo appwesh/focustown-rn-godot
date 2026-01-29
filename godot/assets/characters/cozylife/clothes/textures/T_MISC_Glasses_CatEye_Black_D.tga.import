@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_MISC_Glasses_CatEye_Black_D.tga-2f7edd1ba5f
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

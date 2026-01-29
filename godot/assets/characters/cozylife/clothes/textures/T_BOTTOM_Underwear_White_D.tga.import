@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_BOTTOM_Underwear_White_D.tga-629082a4342b60
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

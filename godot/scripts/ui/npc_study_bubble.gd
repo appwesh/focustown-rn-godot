@@ -53,7 +53,7 @@ func _setup_ui() -> void:
 	_viewport = SubViewport.new()
 	_viewport.size = Vector2i(260, 110)
 	_viewport.transparent_bg = true
-	_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	_viewport.gui_disable_input = true
 	add_child(_viewport)
 	
@@ -130,6 +130,10 @@ func _randomize_display() -> void:
 
 
 func _update_display() -> void:
+	# Trigger a single viewport re-render since we use UPDATE_ONCE
+	if _viewport:
+		_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	
 	if _timer_label:
 		var total_minutes := _total_seconds / 60
 		var hours := total_minutes / 60

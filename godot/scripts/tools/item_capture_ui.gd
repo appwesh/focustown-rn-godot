@@ -33,10 +33,10 @@ const PART_NAMES := {
 }
 
 const CUSTOM_ITEM_TEXTURES := {
-	"LofiTop": ["Lofi/Textures/Lofi_Top.png"],
-	"LofiPants": ["Lofi/Textures/Lofi_Pants.png"],
-	"Headphone": ["Lofi/Textures/headphone/headphone_Untextured_Checker_BaseColor.png"],
-	"LofiScarf": ["Lofi/Textures/Lofi_Neck1.png"],
+	"LofiTop": ["Lofi/textures/Lofi_Top.png"],
+	"LofiPants": ["Lofi/textures/Lofi_Pants.png"],
+	"Headphone": ["Lofi/textures/headphone/headphone_Untextured_Checker_BaseColor.png"],
+	"LofiScarf": ["Lofi/textures/Lofi_Neck1.png"],
 }
 
 const TEXTURE_VARIANTS := {

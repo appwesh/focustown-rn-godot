@@ -58,6 +58,12 @@ export interface UserDoc {
   location: string | null; // e.g., "Villanova University"
   onboarding: OnboardingAnswers | null;
 
+  // Preferences
+  preference?: {
+    soundEffectsEnabled?: boolean;
+    musicEnabled?: boolean;
+  };
+
   // Character customization
   characterSkin: CharacterSkin | null;
 

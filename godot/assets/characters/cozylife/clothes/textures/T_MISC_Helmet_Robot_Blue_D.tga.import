@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/T_MISC_Helmet_Robot_Blue_D.tga-cfe30e4303bc3d
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

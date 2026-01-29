@@ -17,6 +17,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSessionStore } from '@/lib/session';
 import { PrimaryButton } from '@/components/ui/button';
+import { useAmbienceStore } from '@/lib/sound';
+
 
 interface SessionAbandonedModalProps {
   visible: boolean;
@@ -28,11 +30,13 @@ export function SessionAbandonedModal({ visible, onTripleTap }: SessionAbandoned
   const router = useRouter();
   const goHomeFromAbandoned = useSessionStore((s) => s.goHomeFromAbandoned);
   const showBreakSetup = useSessionStore((s) => s.showBreakSetup);
+  const stopNonMusic = useAmbienceStore((s) => s.stopNonMusic);
 
   const handleGoHome = useCallback(() => {
+    stopNonMusic();
     goHomeFromAbandoned();
     router.dismissTo('/home');
-  }, [goHomeFromAbandoned, router]);
+  }, [stopNonMusic, goHomeFromAbandoned, router]);
 
   const handleContinue = useCallback(() => {
     // Clear the abandoned state, then go to break setup (like success modal)

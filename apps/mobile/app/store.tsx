@@ -8,6 +8,12 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -315,8 +321,8 @@ const DEFAULT_CHARACTER: CharacterSkin = {
   NeckVariant: 0,
 };
 
-// Refresh cost in beans
-const REFRESH_COST = 30;
+// Refresh cost in beans (doubles each time, resets daily)
+const REFRESH_BASE_COST = 15;
 
 // Simple seeded random number generator
 const seededRandom = (seed: number): (() => number) => {
@@ -394,6 +400,53 @@ export default function StoreScreen() {
   const [refreshSeed, setRefreshSeed] = useState<number | null>(null);
   const [seedInitialized, setSeedInitialized] = useState(false);
   
+  // Buy bar animation
+  const buyBarTranslateY = useSharedValue(150);
+  const [buyBarVisible, setBuyBarVisible] = useState(false);
+  const [buyBarItem, setBuyBarItem] = useState<AnyStoreItem | null>(null);
+  const shouldShowBuyBar = !!selectedItem && !ownedItems.includes(selectedItem.id);
+  const buyBarDisplayItem = buyBarItem ?? selectedItem;
+  
+  // Update displayed item immediately when selected item changes (no animation)
+  useEffect(() => {
+    if (shouldShowBuyBar && selectedItem) {
+      setBuyBarItem(selectedItem);
+    }
+  }, [shouldShowBuyBar, selectedItem]);
+  
+  // Animate buy bar in/out
+  useEffect(() => {
+    if (shouldShowBuyBar) {
+      if (!buyBarVisible) {
+        // Show and slide up
+        setBuyBarVisible(true);
+        buyBarTranslateY.value = 150;
+        buyBarTranslateY.value = withTiming(0, {
+          duration: 300,
+          easing: Easing.out(Easing.cubic),
+        });
+      }
+      return;
+    }
+    
+    if (buyBarVisible) {
+      // Slide down then hide
+      buyBarTranslateY.value = withTiming(150, {
+        duration: 250,
+        easing: Easing.in(Easing.cubic),
+      });
+      const timer = setTimeout(() => {
+        setBuyBarVisible(false);
+        setBuyBarItem(null);
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldShowBuyBar, buyBarVisible]);
+  
+  const buyBarAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: buyBarTranslateY.value }],
+  }));
+
   // Load saved character, owned items, and daily refresh seed from Firestore on mount
   useEffect(() => {
     if (!userDoc) return;
@@ -674,12 +727,20 @@ export default function StoreScreen() {
 
   // Check if we can afford the selected item
   const canAfford = selectedItem ? (userDoc?.totalCoins ?? 0) >= selectedItem.price : false;
+  const canAffordBuyBarItem = buyBarDisplayItem
+    ? (userDoc?.totalCoins ?? 0) >= buyBarDisplayItem.price
+    : false;
 
+  const refreshCost = refreshSeed === null
+    ? 0
+    : REFRESH_BASE_COST * Math.pow(2, refreshSeed);
+  
   // Check if user can afford refresh
-  const canAffordRefresh = (userDoc?.totalCoins ?? 0) >= REFRESH_COST;
+  const canAffordRefresh = refreshSeed !== null && (userDoc?.totalCoins ?? 0) >= refreshCost;
 
   // Check if selected item is wishlisted
   const isSelectedWishlisted = selectedItem ? wishlistItemId === selectedItem.id : false;
+  const isBuyBarWishlisted = buyBarDisplayItem ? wishlistItemId === buyBarDisplayItem.id : false;
 
   // Handle refresh purchase
   const handleRefresh = useCallback(async () => {
@@ -689,7 +750,7 @@ export default function StoreScreen() {
     
     try {
       // Deduct beans for refresh
-      await userService.purchaseItem(user.uid, `refresh_${Date.now()}`, REFRESH_COST);
+      await userService.purchaseItem(user.uid, `refresh_${Date.now()}`, refreshCost);
       // Save new seed to Firestore (persists across sessions)
       await userService.updateDailyRefreshSeed(user.uid, newSeed);
       // Update owned items snapshot for filtering
@@ -705,7 +766,7 @@ export default function StoreScreen() {
     } catch (error) {
       console.error('[Store] Refresh failed:', error);
     }
-  }, [user, canAffordRefresh, ownedItems, refreshSeed]);
+  }, [user, canAffordRefresh, ownedItems, refreshSeed, refreshCost]);
 
   // Handle wishlist toggle
   const handleWishlist = useCallback(async () => {
@@ -842,10 +903,7 @@ export default function StoreScreen() {
           />
           
           {/* Bean Display */}
-          <BeanCounter
-            size="small"
-            onPress={() => router.push('/settings')}
-          />
+          <BeanCounter size="small" />
         </View>
       </View>
 
@@ -858,7 +916,7 @@ export default function StoreScreen() {
           <GodotGame style={styles.godotView} pckUrl={PCK_URL} />
           <SceneTransition 
             visible={sceneTransitioning} 
-            backgroundColor="#C5E8F7"
+            backgroundColor="#ffefd6"
             fadeDuration={400}
           />
         </LinearGradient>
@@ -901,6 +959,21 @@ export default function StoreScreen() {
               </View>
             )}
           </View>
+              <Pressable
+                onPress={handleRefresh}
+                disabled={!canAffordRefresh}
+                style={[
+                  styles.refreshButton,
+                  !canAffordRefresh && styles.refreshButtonDisabled,
+                ]}
+              >
+                <Text style={styles.refreshButtonText}>Refresh</Text>
+                <Text style={styles.refreshButtonPrice}>{refreshCost}</Text>
+                <Image source={require('@/assets/ui/bean.png')} style={styles.refreshBeanIcon} />
+              </Pressable>
+            </View>
+          )}
+        </View>
 
           {/* Items Grid */}
           <ScrollView 
@@ -1013,18 +1086,26 @@ export default function StoreScreen() {
             <PrimaryButton 
               title={`Buy ${selectedItem.price}`}
               onPress={handlePurchase}
-              size="small"
-              variant="primary"
-            />
+              disabled={!selectedItem}
+              style={[
+                styles.buyButton,
+                !selectedItem && styles.buyButtonDisabled,
+              ]}
+            >
+              <Text style={styles.buyButtonText}>Buy</Text>
+              <Text style={styles.buyButtonText}>{buyBarDisplayItem.price}</Text>
+              <Image source={require('@/assets/ui/bean.png')} style={styles.buyBeanIcon} />
+            </Pressable>
           ) : (
             <PrimaryButton 
               title={isSelectedWishlisted ? 'Wishlisted' : 'Wishlist'}
               onPress={handleWishlist}
               size="small"
-              variant={isSelectedWishlisted ? 'secondary' : 'muted'}
+              variant={isBuyBarWishlisted ? 'secondary' : 'muted'}
+              disabled={!selectedItem}
             />
           )}
-        </View>
+        </Animated.View>
       )}
     </View>
   );

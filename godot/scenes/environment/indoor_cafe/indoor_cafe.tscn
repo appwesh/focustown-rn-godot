@@ -1,0 +1,374 @@
+[gd_scene load_steps=15 format=3 uid="uid://clexbd78x14ah"]
+
+[ext_resource type="PackedScene" uid="uid://crhc76uj2vnw2" path="res://scenes/characters/cinematic_character.tscn" id="2_bpjeq"]
+[ext_resource type="PackedScene" uid="uid://b3utl0mrf8ui" path="res://assets/shared/tree-oak.glb" id="2_peehc"]
+[ext_resource type="Script" uid="uid://c3charpreset" path="res://scripts/characters/character_preset.gd" id="3_w5xe0"]
+[ext_resource type="PackedScene" uid="uid://dxxhp4hn3sdan" path="res://assets/environments/cafe/cafe.glb" id="5_cevti"]
+[ext_resource type="ArrayMesh" uid="uid://bno25a36mqxek" path="res://assets/environments/costalScene/models/Bush.res" id="20_2tpqf"]
+
+[sub_resource type="Sky" id="Sky_eat8h"]
+
+[sub_resource type="Environment" id="Environment_peehc"]
+background_energy_multiplier = 0.0
+sky = SubResource("Sky_eat8h")
+ambient_light_source = 2
+ambient_light_color = Color(0.7350558, 0.6200164, 0.5539225, 1)
+ambient_light_energy = 0.89
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.31
+glow_bloom = 0.22
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.23715368, 0.30156255, 0.35115212, 1)
+fog_light_energy = 1.16
+fog_density = 0.305
+fog_sky_affect = 0.0
+fog_height = 2.0
+fog_height_density = -0.5
+fog_depth_curve = 0.4352755
+fog_depth_begin = 0.0
+fog_depth_end = 505.1
+volumetric_fog_density = 0.5514
+volumetric_fog_emission = Color(0.24790192, 0.40506464, 0.78814626, 1)
+volumetric_fog_emission_energy = 350.24
+volumetric_fog_gi_inject = 2.11
+volumetric_fog_anisotropy = -0.9
+volumetric_fog_length = 0.01
+volumetric_fog_detail_spread = 0.7578582
+volumetric_fog_ambient_inject = 9.2
+adjustment_enabled = true
+adjustment_contrast = 1.05
+adjustment_saturation = 1.04
+
+[sub_resource type="Resource" id="Resource_w5xe0"]
+script = ExtResource("3_w5xe0")
+skin_tone = 9
+face = 14
+hair = 3
+bottom = 6
+metadata/_custom_type_script = "uid://c3charpreset"
+
+[sub_resource type="Resource" id="Resource_tidwg"]
+script = ExtResource("3_w5xe0")
+skin_tone = 2
+face = 3
+eye_color = 5
+hair = 7
+hair_color = 5
+top = 6
+bottom = 2
+shoes = 5
+glasses = 5
+metadata/_custom_type_script = "uid://c3charpreset"
+
+[sub_resource type="Resource" id="Resource_el2lr"]
+script = ExtResource("3_w5xe0")
+skin_tone = 5
+face = 3
+eye_color = 1
+hair_color = 6
+top = 2
+shoes = 4
+glasses = 3
+metadata/_custom_type_script = "uid://c3charpreset"
+
+[sub_resource type="Resource" id="Resource_imc3a"]
+script = ExtResource("3_w5xe0")
+skin_tone = 1
+face = 2
+eye_color = 3
+hair = 6
+hair_color = 2
+top = 6
+bottom = 5
+shoes = 3
+hat = 3
+metadata/_custom_type_script = "uid://c3charpreset"
+
+[sub_resource type="Resource" id="Resource_r1k85"]
+script = ExtResource("3_w5xe0")
+skin_tone = 5
+face = 3
+eye_color = 1
+hair = 3
+hair_color = 6
+top = 6
+bottom = 2
+shoes = 4
+metadata/_custom_type_script = "uid://c3charpreset"
+
+[sub_resource type="Resource" id="Resource_bw4dr"]
+script = ExtResource("3_w5xe0")
+skin_tone = 1
+face = 2
+eye_color = 3
+hair = 4
+hair_color = 2
+top = 3
+bottom = 2
+shoes = 3
+metadata/_custom_type_script = "uid://c3charpreset"
+
+[sub_resource type="Resource" id="Resource_pe6oi"]
+script = ExtResource("3_w5xe0")
+skin_tone = 4
+face = 5
+eye_color = 5
+hair = 4
+hair_color = 5
+top = 3
+bottom = 2
+shoes = 5
+glasses = 1
+metadata/_custom_type_script = "uid://c3charpreset"
+
+[node name="Cafe" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_peehc")
+
+[node name="Characters" type="Node3D" parent="."]
+
+[node name="CinematicCharacter" parent="Characters" instance=ExtResource("2_bpjeq")]
+transform = Transform3D(-0.742245, 0, 0.6701288, 0, 1, 0, -0.6701288, 0, -0.742245, -5.643175, 0, -13.948803)
+initial_preset = SubResource("Resource_w5xe0")
+default_animation = "BoredIdle_02"
+
+[node name="CinematicCharacter2" parent="Characters" instance=ExtResource("2_bpjeq")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.825141, 0.12386644, -9.870294)
+initial_preset = SubResource("Resource_tidwg")
+default_animation = "Idle_Sitting_01"
+
+[node name="CinematicCharacter4" parent="Characters" instance=ExtResource("2_bpjeq")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -4.9234476, 0.12386644, -9.841488)
+initial_preset = SubResource("Resource_el2lr")
+default_animation = "Idle_Sitting_01"
+
+[node name="CinematicCharacter5" parent="Characters" instance=ExtResource("2_bpjeq")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5225554, 0.12386644, -9.843231)
+initial_preset = SubResource("Resource_imc3a")
+default_animation = "Idle_Sitting_01"
+
+[node name="CinematicCharacter6" parent="Characters" instance=ExtResource("2_bpjeq")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -4.9234476, 0.12386644, -7.0770407)
+initial_preset = SubResource("Resource_r1k85")
+default_animation = "Idle_Sitting_01"
+
+[node name="CinematicCharacter7" parent="Characters" instance=ExtResource("2_bpjeq")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5225554, 0.12386644, -7.0889626)
+initial_preset = SubResource("Resource_bw4dr")
+default_animation = "Idle_Sitting_01"
+
+[node name="CinematicCharacter3" parent="Characters" instance=ExtResource("2_bpjeq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.204768, 0.20165133, -15.180084)
+initial_preset = SubResource("Resource_pe6oi")
+default_animation = "Idle_Sitting_01"
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="CeilingLigths" type="Node3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013583183, -0.008878231, -0.007125616)
+
+[node name="CeilingLight_01" type="OmniLight3D" parent="Lights/CeilingLigths"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.011788, 4.0260234, -8.530569)
+light_color = Color(0.74674517, 0.68739957, 0.64742863, 1)
+light_energy = 0.396
+omni_range = 10.768
+omni_attenuation = -0.143
+
+[node name="CeilingLight_02" type="OmniLight3D" parent="Lights/CeilingLigths"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -5.3674455, 4.0068865, -10.794323)
+light_color = Color(0.7933676, 0.67781705, 0.5344989, 1)
+light_energy = 1.463
+light_indirect_energy = 1.381
+omni_range = 8.161
+omni_attenuation = -0.143
+
+[node name="CeilingLight_03" type="OmniLight3D" parent="Lights/CeilingLigths"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.41725, 3.6608362, -8.165216)
+visible = false
+light_color = Color(0.817356, 0.67149174, 0.48089707, 1)
+light_energy = 0.252
+omni_range = 16.0
+omni_attenuation = -0.143
+
+[node name="CeilingLight_04" type="OmniLight3D" parent="Lights/CeilingLigths"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7.9159265, 4.0530176, -15.088066)
+light_color = Color(0.8695891, 0.64229584, 0.49510664, 1)
+light_energy = 1.728
+omni_range = 3.154
+omni_attenuation = 0.524
+
+[node name="Node3D" type="Node3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1261253, 1.4156951, -10.68306)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.4014444, 4.928073, -6.1898584)
+light_color = Color(0.76988226, 0.82669765, 0.8130877, 1)
+light_energy = 2.588
+shadow_enabled = true
+shadow_opacity = 0.72
+spot_range = 11.442
+spot_attenuation = 1.03
+spot_angle = 41.21
+
+[node name="SpotLight3D5" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -8.4628935, 5.176056, -7.993769)
+light_color = Color(0.76988226, 0.82669765, 0.8130877, 1)
+light_energy = 1.255
+shadow_enabled = true
+shadow_opacity = 0.72
+spot_range = 11.442
+spot_attenuation = 1.03
+spot_angle = 41.21
+
+[node name="SpotLight3D4" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -10.102623, 4.928073, -13.750191)
+light_color = Color(0.76988226, 0.82669765, 0.8130877, 1)
+light_energy = 2.588
+shadow_enabled = true
+shadow_opacity = 0.72
+spot_range = 11.442
+spot_attenuation = 1.03
+spot_angle = 41.21
+
+[node name="SpotLight3D2" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.2759175, 4.928073, -14.767876)
+light_color = Color(0.76988226, 0.82669765, 0.8130877, 1)
+light_energy = 2.588
+shadow_enabled = true
+shadow_opacity = 0.72
+spot_range = 11.442
+spot_attenuation = 1.03
+spot_angle = 51.501816
+
+[node name="TreesAndBushes" type="Node3D" parent="."]
+
+[node name="tree-oak" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.4489986, 0, 0, 0, 0.4489986, 0, 0, 0, 0.4489986, -0.53307223, -0.04526949, -15.780027)
+
+[node name="tree-oak7" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.26394477, 0, 0.53882575, 0, 0.6000001, 0, -0.53882575, 0, 0.26394477, -2.3403444, -0.045269012, -17.942835)
+
+[node name="tree-oak8" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.32579696, 0, 0.6650929, 0, 0.7406027, 0, -0.6650929, 0, 0.32579696, 1.8584952, -0.045269012, -17.994333)
+
+[node name="tree-oak9" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.32579696, 0, 0.6650929, 0, 0.7406027, 0, -0.6650929, 0, 0.32579696, 3.4450326, -0.045269012, -9.886284)
+
+[node name="tree-oak11" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.32579696, 0, 0.6650929, 0, 0.7406027, 0, -0.6650929, 0, 0.32579696, 2.04595, -0.045269012, -1.0559473)
+
+[node name="tree-oak21" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.32579696, 0, 0.6650929, 0, 0.7406027, 0, -0.6650929, 0, 0.32579696, 5.1032004, -0.045269012, 11.643833)
+
+[node name="tree-oak12" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.32579696, 0, 0.6650929, 0, 0.7406027, 0, -0.6650929, 0, 0.32579696, -6.7007217, -0.045269012, 2.1519768)
+
+[node name="tree-oak14" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.32579696, 0, 0.6650929, 0, 0.7406027, 0, -0.6650929, 0, 0.32579696, -11.425506, -0.045269966, 0.5514629)
+
+[node name="tree-oak15" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.43990794, 0, 0.89804286, 0, 1, 0, -0.89804286, 0, 0.43990794, 11.334781, -0.045269966, 3.2245154)
+
+[node name="tree-oak18" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.8760374, 0, -0.4822431, 0, 1, 0, 0.4822431, 0, 0.8760374, 11.334781, -0.045269966, -18.030058)
+
+[node name="tree-oak16" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.95887417, 0, 0.28383142, 0, 1, 0, -0.28383142, 0, -0.95887417, 12.808126, -0.9177923, -9.052563)
+
+[node name="tree-oak22" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.7670993, 0, 0.2270652, 0, 0.8, 0, -0.2270652, 0, -0.7670993, 8.915145, -0.9177923, -3.8354123)
+
+[node name="tree-oak17" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.43990794, 0, 0.89804286, 0, 1, 0, -0.89804286, 0, 0.43990794, -3.5542068, -0.045269966, 8.274734)
+
+[node name="tree-oak13" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.32579696, 0, 0.6650929, 0, 0.7406027, 0, -0.6650929, 0, 0.32579696, -1.4541702, -0.045269012, 2.9520485)
+
+[node name="tree-oak10" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(0.32579696, 0, 0.6650929, 0, 0.7406027, 0, -0.6650929, 0, 0.32579696, 5.9285393, 0.008608341, -14.591222)
+
+[node name="tree-oak2" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.16226234, 0, -0.4197272, 0, 0.45, 0, 0.4197272, 0, -0.16226234, -0.9010266, -0.040279627, -12.274088)
+
+[node name="tree-oak4" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.34444684, 0, -0.06209989, 0, 0.35, 0, 0.06209989, 0, -0.34444684, -8.843154, -0.081943154, -1.1866233)
+
+[node name="tree-oak5" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.3434701, 0, -0.06729274, 0, 0.35, 0, 0.06729274, 0, -0.3434701, -4.4025917, -0.0819422, -0.8611748)
+
+[node name="tree-oak3" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.12620404, 0, -0.3264545, 0, 0.35, 0, 0.3264545, 0, -0.12620404, -1.6598086, -0.07483852, -4.253378)
+
+[node name="tree-oak19" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.12620404, 0, -0.3264545, 0, 0.35, 0, 0.3264545, 0, -0.12620404, 4.5073028, -0.074837565, 7.0340405)
+
+[node name="tree-oak20" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.12620404, 0, -0.3264545, 0, 0.35, 0, 0.3264545, 0, -0.12620404, 4.775426, -0.074837565, -4.654893)
+
+[node name="tree-oak6" parent="TreesAndBushes" instance=ExtResource("2_peehc")]
+transform = Transform3D(-0.5060618, 0, -0.076028734, 0, 0.511741, 0, 0.076028734, 0, -0.5060618, -0.33864546, -0.4320469, -8.268213)
+
+[node name="Bush" type="MeshInstance3D" parent="TreesAndBushes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8916035, 0, -6.168302)
+mesh = ExtResource("20_2tpqf")
+skeleton = NodePath("")
+
+[node name="Bush7" type="MeshInstance3D" parent="TreesAndBushes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2481873, 0, -7.6947923)
+mesh = ExtResource("20_2tpqf")
+skeleton = NodePath("")
+
+[node name="Bush2" type="MeshInstance3D" parent="TreesAndBushes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3987131, 0, -10.173349)
+mesh = ExtResource("20_2tpqf")
+skeleton = NodePath("")
+
+[node name="Bush3" type="MeshInstance3D" parent="TreesAndBushes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9445581, 0, -15.173349)
+mesh = ExtResource("20_2tpqf")
+skeleton = NodePath("")
+
+[node name="Bush4" type="MeshInstance3D" parent="TreesAndBushes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0443215, 0, -1.226579)
+mesh = ExtResource("20_2tpqf")
+skeleton = NodePath("")
+
+[node name="Bush8" type="MeshInstance3D" parent="TreesAndBushes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5513952, 0, -3.9306204)
+mesh = ExtResource("20_2tpqf")
+skeleton = NodePath("")
+
+[node name="Bush5" type="MeshInstance3D" parent="TreesAndBushes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.820142, 0, -0.88753486)
+mesh = ExtResource("20_2tpqf")
+skeleton = NodePath("")
+
+[node name="Bush6" type="MeshInstance3D" parent="TreesAndBushes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.577602, 0, -1.649699)
+mesh = ExtResource("20_2tpqf")
+skeleton = NodePath("")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.53420717, 0.27899107, 0.7979891, -0.83098435, -3.632348e-08, 0.5562955, 0.15520154, -0.9602936, 0.2318372, 13.203803, 15.750857, -2.622426)
+light_color = Color(0.8289088, 0.8157036, 0.8214682, 1)
+light_energy = 0.305
+shadow_enabled = true
+shadow_normal_bias = 4.14
+directional_shadow_split_1 = 0.13
+sky_mode = 1
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.7088966, 2.843872, -9.762173)
+size = Vector3(7.604645, 6.0046387, 12.962479)
+ambient_mode = 0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.72475564, 0.689006, 0, -0.689006, 0.72475564, -7.6881366, 5.260418, -3.8059433)
+fov = 95.45262
+near = 0.1
+far = 1000.0
+
+[node name="cafe2" parent="." instance=ExtResource("5_cevti")]

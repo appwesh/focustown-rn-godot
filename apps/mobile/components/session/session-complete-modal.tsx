@@ -26,14 +26,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useAudioPlayer } from 'expo-audio';
 import { useSessionStore, formatDuration } from '@/lib/session';
 import { PrimaryButton } from '@/components/ui/button';
+import { useSuccessSound, useAmbienceStore } from '@/lib/sound';
 import * as Bridge from '@/lib/godot/bridge';
 
 const beanIcon = require('@/assets/ui/bean.png');
 const clockIcon = require('@/assets/ui/clock.png');
-const successSound = require('@/assets/audio/success.mp3');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CONFETTI_COLORS = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#DDA0DD'];
 
@@ -172,18 +171,20 @@ function FlyingBean({ delay, startX, startY, targetX, targetY, onComplete }: Fly
 export function SessionCompleteModal({ visible, onTripleTap }: SessionCompleteModalProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { playSuccessSound } = useSuccessSound();
   const completedSession = useSessionStore((s) => s.completedSession);
   const goHome = useSessionStore((s) => s.goHome);
   const showBreakSetup = useSessionStore((s) => s.showBreakSetup);
+  const stopNonMusic = useAmbienceStore((s) => s.stopNonMusic);
   const [showFlyingBeans, setShowFlyingBeans] = useState(false);
   const [beanIconPosition, setBeanIconPosition] = useState<{ x: number; y: number } | null>(null);
   const beanIconRef = useRef<View>(null);
-  const successPlayer = useAudioPlayer(successSound);
 
   const handleGoHome = useCallback(() => {
+    stopNonMusic();
     goHome();
     router.dismissTo('/home');
-  }, [goHome, router]);
+  }, [stopNonMusic, goHome, router]);
 
   // Measure bean icon position when modal becomes visible
   const measureBeanIcon = useCallback(() => {
@@ -206,16 +207,15 @@ export function SessionCompleteModal({ visible, onTripleTap }: SessionCompleteMo
       // Trigger celebration animation in Godot (fist pump)
       Bridge.playCelebrationAnimation();
       
-      // Play success sound
-      successPlayer.seekTo(0);
-      successPlayer.play();
+      // Play success sound (respects global sound settings)
+      playSuccessSound();
       
       return () => clearTimeout(timer);
     } else {
       setShowFlyingBeans(false);
       setBeanIconPosition(null);
     }
-  }, [visible, completedSession, measureBeanIcon, successPlayer]);
+  }, [visible, completedSession, measureBeanIcon, playSuccessSound]);
 
   // Pre-compute random values for confetti pieces (memoized to prevent re-generation on re-renders)
   const confettiPieces = useMemo(() => 

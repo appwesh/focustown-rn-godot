@@ -53,6 +53,10 @@ export const userService = {
       birthday: null,
       location: null,
       onboarding: null,
+      preference: {
+        soundEffectsEnabled: true,
+        musicEnabled: true,
+      },
       characterSkin: null,
       ownedItems: [],
       wishlistItem: null,
@@ -71,6 +75,28 @@ export const userService = {
 
     await setDoc(docRef, newUser);
     return newUser;
+  },
+
+  /**
+   * Update user's settings (sound, music, etc.).
+   */
+  async updateSettings(
+    uid: string,
+    updates: Pick<NonNullable<UserDoc["preference"]>, "soundEffectsEnabled" | "musicEnabled">
+  ): Promise<void> {
+    const docRef = doc(usersCollection, uid);
+    const preferenceUpdates: Record<string, boolean> = {};
+    if (typeof updates.soundEffectsEnabled === "boolean") {
+      preferenceUpdates["preference.soundEffectsEnabled"] = updates.soundEffectsEnabled;
+    }
+    if (typeof updates.musicEnabled === "boolean") {
+      preferenceUpdates["preference.musicEnabled"] = updates.musicEnabled;
+    }
+
+    await updateDoc(docRef, {
+      ...preferenceUpdates,
+      lastActiveAt: Date.now(),
+    });
   },
 
   /**
