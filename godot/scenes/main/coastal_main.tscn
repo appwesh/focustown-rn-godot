@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://bt1y5qdtd4kag"]
+[gd_scene load_steps=6 format=3 uid="uid://bt1y5qdtd4kag"]
 
 [ext_resource type="Script" uid="uid://cywuuk8iq0vqx" path="res://scripts/cinematics/coastal_cinematic.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://dqxdbu1mmu1an" path="res://scenes/environment/costal_scene/costal_scene_final.tscn" id="3_jq52c"]
 [ext_resource type="Script" uid="uid://cm2exeyxs2rb8" path="res://scripts/world/cinematic_study_spot.gd" id="3_spots"]
+[ext_resource type="Script" path="res://scripts/world/npc_spawn_randomizer.gd" id="4_randomizer"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(100, 0.1, 100)
@@ -39,6 +40,12 @@ gizmo_extents = 0.5
 [node name="CinematicCamera" type="Camera3D" parent="CinematicMarkers"]
 transform = Transform3D(0.18738134, 0.17057239, -0.9673641, 0, 0.9848077, 0.17364818, 0.9822872, -0.03253843, 0.1845346, -2.7537007, 2.2584023, 4.2870827)
 fov = 50.0
+
+[node name="NPCSpawnRandomizer" type="Node" parent="."]
+script = ExtResource("4_randomizer")
+min_npcs = 6
+max_npcs = 10
+reserved_spot_names = Array[String](["CafeChair_11", "CafeChair_12"])
 
 [node name="StudySpots" type="Node3D" parent="."]
 

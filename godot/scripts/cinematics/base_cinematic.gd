@@ -597,17 +597,17 @@ func _hide_obstructing_npcs() -> void:
 	## Hide NPCs that might obstruct the setup camera view
 	if not _character:
 		return
-	
+
 	var player_pos := _character.global_position
 	var player_rotation := _character.rotation.y
 	var forward_dir := Vector3(sin(player_rotation), 0, cos(player_rotation))
 	var setup_dist: float = camera_rig.setup_distance if camera_rig else 2.5
-	
+
 	for npc in _npc_characters:
 		var npc_pos := npc.global_position
 		var to_npc := npc_pos - player_pos
 		to_npc.y = 0  # Flatten to XZ plane
-		
+
 		var distance := to_npc.length()
 		# Check if NPC is between player and camera (within detection range)
 		if distance < setup_dist + 1.0 and distance > 0.5:
@@ -615,6 +615,10 @@ func _hide_obstructing_npcs() -> void:
 			var dot := forward_dir.dot(to_npc)
 			if dot > 0.5:  # In front of player (~60 degree cone)
 				npc.set_character_visible(false)
+				# Also hide the NPC's study bubble
+				var bubble := npc.get_node_or_null("StudyBubble") as NPCStudyBubble
+				if bubble:
+					bubble.visible = false
 				_hidden_npcs.append(npc)
 				print("[%sCinematic] Hiding NPC: %s (in front of setup camera)" % [_get_scene_name(), npc.name])
 
@@ -623,6 +627,10 @@ func _restore_hidden_npcs() -> void:
 	## Restore visibility of all hidden NPCs
 	for npc in _hidden_npcs:
 		npc.set_character_visible(true)
+		# Also restore the NPC's study bubble (only if in a focus session)
+		var bubble := npc.get_node_or_null("StudyBubble") as NPCStudyBubble
+		if bubble:
+			bubble.visible = FocusSessionManager.is_focusing()
 		print("[%sCinematic] Restoring NPC: %s" % [_get_scene_name(), npc.name])
 	_hidden_npcs.clear()
 
@@ -902,8 +910,8 @@ func _create_study_spot_area(spot: Dictionary) -> void:
 
 func _on_study_spot_input(_camera: Camera3D, event: InputEvent, _position: Vector3, _normal: Vector3, _shape_idx: int, _area: Area3D, spot: Dictionary) -> void:
 	## Handle tap/click on a study spot
-	## Blocked when player is seated
-	if _is_player_seated:
+	## Blocked when player is seated or during entrance cinematic
+	if _is_player_seated or _entrance_cinematic_playing:
 		return
 	
 	if event is InputEventMouseButton:
@@ -918,9 +926,9 @@ func _on_study_spot_input(_camera: Camera3D, event: InputEvent, _position: Vecto
 
 func _on_study_spot_tapped(spot: Dictionary) -> void:
 	## Player tapped on a study spot - walk to it
-	if _is_player_seated:
+	if _is_player_seated or _entrance_cinematic_playing:
 		return
-	
+
 	if not _character:
 		return
 	
@@ -1085,19 +1093,6 @@ func _input(event: InputEvent) -> void:
 	
 	# Block all navigation when player is seated
 	if _is_player_seated:
-		# Any tap/click triggers confirm end popup
-		if event is InputEventMouseButton:
-			var mouse_event := event as InputEventMouseButton
-			if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
-				print("[%sCinematic] Tap while seated - showing confirm popup" % _get_scene_name())
-				RNBridge.on_session_tap_outside()
-				get_viewport().set_input_as_handled()
-		elif event is InputEventScreenTouch:
-			var touch_event := event as InputEventScreenTouch
-			if touch_event.pressed:
-				print("[%sCinematic] Touch while seated - showing confirm popup" % _get_scene_name())
-				RNBridge.on_session_tap_outside()
-				get_viewport().set_input_as_handled()
 		return
 	
 	# Handle keyboard shortcuts

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cb5cm52cu4gby"
-path.s3tc="res://.godot/imported/Library4_Gold.png-3f49a4aab665310eb24ca6b962535755.s3tc.ctex"
-path.etc2="res://.godot/imported/Library4_Gold.png-3f49a4aab665310eb24ca6b962535755.etc2.ctex"
+path.s3tc="res://.godot/imported/Library4_Gold.png-eb2bd73935df8e3dbb863d314e1ff970.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_Gold.png-eb2bd73935df8e3dbb863d314e1ff970.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/Library/Library4_Gold.png"
-dest_files=["res://.godot/imported/Library4_Gold.png-3f49a4aab665310eb24ca6b962535755.s3tc.ctex", "res://.godot/imported/Library4_Gold.png-3f49a4aab665310eb24ca6b962535755.etc2.ctex"]
+source_file="res://assets/environments/library/Library4_Gold.png"
+dest_files=["res://.godot/imported/Library4_Gold.png-eb2bd73935df8e3dbb863d314e1ff970.s3tc.ctex", "res://.godot/imported/Library4_Gold.png-eb2bd73935df8e3dbb863d314e1ff970.etc2.ctex"]
 
 [params]
 

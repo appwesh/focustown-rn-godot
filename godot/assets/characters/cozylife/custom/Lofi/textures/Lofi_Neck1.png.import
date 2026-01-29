@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cnme4teqpojhy"
-path="res://.godot/imported/Lofi_Neck1.png-87bb6f111c4efc5f02b2b71eff19bd57.ctex"
+path="res://.godot/imported/Lofi_Neck1.png-ec37345c8edccafbb87bb7e2a9440916.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/cozylife/custom/Lofi/Textures/Lofi_Neck1.png"
-dest_files=["res://.godot/imported/Lofi_Neck1.png-87bb6f111c4efc5f02b2b71eff19bd57.ctex"]
+source_file="res://assets/characters/cozylife/custom/Lofi/textures/Lofi_Neck1.png"
+dest_files=["res://.godot/imported/Lofi_Neck1.png-ec37345c8edccafbb87bb7e2a9440916.ctex"]
 
 [params]
 

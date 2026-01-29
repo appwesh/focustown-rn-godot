@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://bwjcvplhi7dc4"]
+[gd_scene load_steps=6 format=3 uid="uid://bwjcvplhi7dc4"]
 
 [ext_resource type="Script" uid="uid://bkqe7wxdol6eh" path="res://scripts/cinematics/indoor_cafe_cinematic.gd" id="1_3vigk"]
 [ext_resource type="Script" uid="uid://cm2exeyxs2rb8" path="res://scripts/world/cinematic_study_spot.gd" id="2_hww0w"]
 [ext_resource type="PackedScene" uid="uid://cnthjqyccaj2x" path="res://scenes/environment/indoor_cafe/indoor_cafe_environement.tscn" id="3_2r2ed"]
+[ext_resource type="Script" path="res://scripts/world/npc_spawn_randomizer.gd" id="4_randomizer"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(100, 0.1, 100)
@@ -30,7 +31,7 @@ shape = SubResource("BoxShape3D_floor")
 [node name="CinematicMarkers" type="Node3D" parent="."]
 
 [node name="SpawnPoint" type="Marker3D" parent="CinematicMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.746668, 0, -5.4727755)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.746668, 0, -3.4727755)
 gizmo_extents = 0.5
 
 [node name="CinematicTarget" type="Marker3D" parent="CinematicMarkers"]
@@ -38,62 +39,174 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2123976, 0, -6.297203)
 gizmo_extents = 0.5
 
 [node name="CinematicCamera" type="Camera3D" parent="CinematicMarkers"]
-transform = Transform3D(-0.46977383, 0.43994462, -0.76535046, 1.3259379e-08, 0.8669709, 0.49835885, 0.8827868, 0.23411593, -0.40728024, -10.453962, 3.3171768, -7.018036)
+transform = Transform3D(-0.46977383, 0.43994462, -0.76535046, 1.3259379e-08, 0.8669709, 0.49835885, 0.8827868, 0.23411593, -0.40728024, -10.453962, 2.5752354, -8.940002)
 fov = 50.0
+
+[node name="NPCSpawnRandomizer" type="Node" parent="."]
+script = ExtResource("4_randomizer")
+min_npcs = 6
+max_npcs = 10
+reserved_spot_names = Array[String](["CafeTable_02_Seat1"])
 
 [node name="StudySpots" type="Node3D" parent="."]
 
 [node name="CafeTable_01_Seat1" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8, 0, -9.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.510444, 0, -12.729979)
 gizmo_extents = 0.3
 script = ExtResource("2_hww0w")
 spot_name = "CafeTable_01_Seat1"
-sit_rotation = -90.0
+sit_rotation = 90.0
 spawn_npc = true
 
 [node name="CafeTable_01_Seat2" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.9, 0, -9.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.7186637, 0, -12.771024)
 gizmo_extents = 0.3
 script = ExtResource("2_hww0w")
 spot_name = "CafeTable_01_Seat2"
 sit_rotation = -90.0
 spawn_npc = true
 
-[node name="CafeTable_01_Seat3" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0, -9.8)
-gizmo_extents = 0.3
-script = ExtResource("2_hww0w")
-spot_name = "CafeTable_01_Seat3"
-sit_rotation = 90.0
-
 [node name="CafeTable_02_Seat1" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8, 0, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.6572943, 0, -12.844105)
 gizmo_extents = 0.3
 script = ExtResource("2_hww0w")
 spot_name = "CafeTable_02_Seat1"
-sit_rotation = -90.0
+sit_rotation = 90.0
 
 [node name="CafeTable_02_Seat2" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.9, 0, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.780289, 0, -12.8)
 gizmo_extents = 0.3
 script = ExtResource("2_hww0w")
 spot_name = "CafeTable_02_Seat2"
 sit_rotation = -90.0
 spawn_npc = true
 
-[node name="CafeTable_02_Seat3" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 0, -7)
+[node name="CafeTable_03_Seat1" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.510444, 0, -10.456624)
 gizmo_extents = 0.3
 script = ExtResource("2_hww0w")
-spot_name = "CafeTable_02_Seat3"
+spot_name = "CafeTable_01_Seat1"
 sit_rotation = 90.0
 spawn_npc = true
 
-[node name="CounterSeat_01" type="Marker3D" parent="StudySpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.2, 0, -15.2)
+[node name="CafeTable_03_Seat2" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, -0.00013962634, 0, 1, 0, 0.00013962634, 0, 1, -7.7186637, 0, -10.409439)
 gizmo_extents = 0.3
 script = ExtResource("2_hww0w")
-spot_name = "CounterSeat_01"
-sit_rotation = 180.0
+spot_name = "CafeTable_01_Seat2"
+sit_rotation = -90.0
+spawn_npc = true
+
+[node name="CafeTable_03_Seat3" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.510444, 0, -9.865128)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat1"
+sit_rotation = 90.0
+spawn_npc = true
+
+[node name="CafeTable_03_Seat4" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, -0.00013962634, 0, 1, 0, 0.00013962634, 0, 1, -7.7186637, 0, -9.839126)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat2"
+sit_rotation = -90.0
+spawn_npc = true
+
+[node name="CafeTable_04_Seat1" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.577156, 0, -10.42132)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat1"
+sit_rotation = 90.0
+spawn_npc = true
+
+[node name="CafeTable_04_Seat2" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, -0.00013962634, 0, 1, 0, 0.00013962634, 0, 1, -4.87717, 0, -10.409439)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat2"
+sit_rotation = -90.0
+spawn_npc = true
+
+[node name="CafeTable_04_Seat3" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.577157, 0, -9.8086405)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat1"
+sit_rotation = 90.0
+spawn_npc = true
+
+[node name="CafeTable_04_Seat4" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, -0.00013962634, 0, 1, 0, 0.00013962634, 0, 1, -4.898353, 0, -9.810882)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat2"
+sit_rotation = -90.0
+spawn_npc = true
+
+[node name="CafeTable_05_Seat1" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.510444, 0, -7.6180835)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat1"
+sit_rotation = 90.0
+spawn_npc = true
+
+[node name="CafeTable_05_Seat2" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, -0.00013962634, 0, 1, 0, 0.00013962634, 0, 1, -7.7186637, 0, -7.634447)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat2"
+sit_rotation = -90.0
+spawn_npc = true
+
+[node name="CafeTable_05_Seat3" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.510444, 0, -7.040709)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat1"
+sit_rotation = 90.0
+spawn_npc = true
+
+[node name="CafeTable_05_Seat4" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, -0.00013962634, 0, 1, 0, 0.00013962634, 0, 1, -7.7186637, 0, -7.0288286)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat2"
+sit_rotation = -90.0
+spawn_npc = true
+
+[node name="CafeTable_06_Seat1" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.619523, 0, -7.6180835)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat1"
+sit_rotation = 90.0
+spawn_npc = true
+
+[node name="CafeTable_06_Seat2" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, -0.00013962634, 0, 1, 0, 0.00013962634, 0, 1, -4.891292, 0, -7.606203)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat2"
+sit_rotation = -90.0
+spawn_npc = true
+
+[node name="CafeTable_06_Seat3" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.598339, 0, -7.019526)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat1"
+sit_rotation = 90.0
+spawn_npc = true
+
+[node name="CafeTable_06_Seat4" type="Marker3D" parent="StudySpots"]
+transform = Transform3D(1, 0, -0.00013962634, 0, 1, 0, 0.00013962634, 0, 1, -4.884231, 0, -7.064134)
+gizmo_extents = 0.3
+script = ExtResource("2_hww0w")
+spot_name = "CafeTable_01_Seat2"
+sit_rotation = -90.0
+spawn_npc = true
 
 [node name="Cafe" parent="." instance=ExtResource("3_2r2ed")]

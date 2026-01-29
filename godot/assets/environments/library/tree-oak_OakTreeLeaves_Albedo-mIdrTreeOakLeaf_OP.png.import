@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d2k740kqbqm8p"
-path.s3tc="res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-4d5bd8fc7536eeeb19a1d839fbc78d05.s3tc.ctex"
-path.etc2="res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-4d5bd8fc7536eeeb19a1d839fbc78d05.etc2.ctex"
+path.s3tc="res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-c5b9f32ef00bd34b99d7094bfdf542e3.s3tc.ctex"
+path.etc2="res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-c5b9f32ef00bd34b99d7094bfdf542e3.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -15,8 +15,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/environments/Library/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png"
-dest_files=["res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-4d5bd8fc7536eeeb19a1d839fbc78d05.s3tc.ctex", "res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-4d5bd8fc7536eeeb19a1d839fbc78d05.etc2.ctex"]
+source_file="res://assets/environments/library/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png"
+dest_files=["res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-c5b9f32ef00bd34b99d7094bfdf542e3.s3tc.ctex", "res://.godot/imported/tree-oak_OakTreeLeaves_Albedo-mIdrTreeOakLeaf_OP.png-c5b9f32ef00bd34b99d7094bfdf542e3.etc2.ctex"]
 
 [params]
 

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cuj7xaa5mctcv"
-path.s3tc="res://.godot/imported/Library4_wood13_diffuse.jpg-37a64b7a43177e3e301dfda60093abf0.s3tc.ctex"
-path.etc2="res://.godot/imported/Library4_wood13_diffuse.jpg-37a64b7a43177e3e301dfda60093abf0.etc2.ctex"
+path.s3tc="res://.godot/imported/Library4_wood13_diffuse.jpg-442e0a3a6fb39cde6535f9a0d7f92b71.s3tc.ctex"
+path.etc2="res://.godot/imported/Library4_wood13_diffuse.jpg-442e0a3a6fb39cde6535f9a0d7f92b71.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/environments/Library/Library4_wood13_diffuse.jpg"
-dest_files=["res://.godot/imported/Library4_wood13_diffuse.jpg-37a64b7a43177e3e301dfda60093abf0.s3tc.ctex", "res://.godot/imported/Library4_wood13_diffuse.jpg-37a64b7a43177e3e301dfda60093abf0.etc2.ctex"]
+source_file="res://assets/environments/library/Library4_wood13_diffuse.jpg"
+dest_files=["res://.godot/imported/Library4_wood13_diffuse.jpg-442e0a3a6fb39cde6535f9a0d7f92b71.s3tc.ctex", "res://.godot/imported/Library4_wood13_diffuse.jpg-442e0a3a6fb39cde6535f9a0d7f92b71.etc2.ctex"]
 
 [params]
 
