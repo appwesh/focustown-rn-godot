@@ -1,11 +1,38 @@
-[gd_scene load_steps=37 format=3 uid="uid://ch0m8ej28g6xh"]
+[gd_scene load_steps=64 format=3 uid="uid://ch0m8ej28g6xh"]
 
 [ext_resource type="PackedScene" uid="uid://cajjmv150ohfb" path="res://scenes/characters/capybara.tscn" id="2_h4wr1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/capybara_intro.tscn" id="3_5thrm"]
 [ext_resource type="Script" uid="uid://1ryy1ebelhmo" path="res://scenes/environment/focus_town/scene_manager.gd" id="4_yu58e"]
+[ext_resource type="Material" uid="uid://v6hxmuxwhjir" path="res://assets/environments/focusTown/materials/Casa_2.tres" id="8_40e3h"]
+[ext_resource type="Material" uid="uid://dphougl24sh45" path="res://assets/environments/focusTown/materials/House1.tres" id="8_ygsfa"]
+[ext_resource type="Material" uid="uid://b07866g8polfl" path="res://assets/environments/focusTown/materials/ClockHouseMat.tres" id="9_ykk4n"]
+[ext_resource type="Material" uid="uid://c7i1qfhguwie0" path="res://assets/environments/focusTown/materials/Advertisment.tres" id="10_lpexf"]
+[ext_resource type="Material" uid="uid://bxmvdeb3betgp" path="res://assets/environments/focusTown/materials/Chair.tres" id="11_2bejp"]
+[ext_resource type="Material" uid="uid://cxctknruw3c5c" path="res://assets/environments/focusTown/materials/Table.tres" id="12_ygsfa"]
+[ext_resource type="Material" uid="uid://ers7twnabfm1" path="res://assets/environments/focusTown/materials/Book.tres" id="13_2bejp"]
+[ext_resource type="Material" uid="uid://d0l06c5kcia7q" path="res://assets/environments/focusTown/materials/Parasol.001.tres" id="13_ovbwm"]
+[ext_resource type="Material" uid="uid://dxw47mbybhd8j" path="res://assets/environments/focusTown/materials/Letrero_2.tres" id="14_5y0y7"]
+[ext_resource type="Material" uid="uid://s2mg16fuv7v" path="res://assets/environments/focusTown/materials/faro.001.tres" id="14_ykk4n"]
+[ext_resource type="Material" uid="uid://dgranvfjmnxwm" path="res://assets/environments/focusTown/materials/OrangeHouseMat.tres" id="15_b1cwd"]
+[ext_resource type="Material" uid="uid://cgda2l2gpa8tp" path="res://assets/environments/focusTown/materials/vines Texture.tres" id="16_j6sxw"]
+[ext_resource type="Material" uid="uid://ioghmhfnj045" path="res://assets/environments/focusTown/materials/vine_leafs.tres" id="17_ysl0u"]
+[ext_resource type="Material" uid="uid://cafk5ug6bwxlp" path="res://assets/environments/focusTown/materials/M_Stone03.tres" id="18_q81xj"]
+[ext_resource type="Material" uid="uid://buo66seccvo0i" path="res://assets/shared/materials/Flower1.tres" id="19_vv8x6"]
+[ext_resource type="Material" uid="uid://c2pf60a2ckrje" path="res://assets/environments/focusTown/materials/mPlant.001.tres" id="20_ao74i"]
+[ext_resource type="Material" uid="uid://cp3qqoph4l7a4" path="res://assets/environments/focusTown/materials/Tree bottom.tres" id="21_gmhv4"]
+[ext_resource type="Material" uid="uid://byfohbqhkhnd5" path="res://assets/environments/focusTown/materials/Plant1-1.tres" id="21_lpexf"]
+[ext_resource type="Material" uid="uid://ny5ltmva1pfd" path="res://assets/environments/focusTown/materials/oak_tree.tres" id="22_h08kg"]
+[ext_resource type="Material" uid="uid://dbvf71k30g3b0" path="res://assets/environments/focusTown/materials/Plant3.tres" id="23_6n4h2"]
+[ext_resource type="Material" uid="uid://bqyciygqcd7xx" path="res://assets/environments/focusTown/materials/stylized_bush.tres" id="24_yv6vr"]
+[ext_resource type="Material" uid="uid://ddqrjx17meniq" path="res://assets/environments/focusTown/materials/Fence.tres" id="25_d12rv"]
+[ext_resource type="Material" uid="uid://bd8pbjvrt60np" path="res://assets/environments/focusTown/materials/FloorMatNew.tres" id="26_kmb06"]
 [ext_resource type="PackedScene" uid="uid://crhc76uj2vnw2" path="res://scenes/characters/cinematic_character.tscn" id="27_7tmt4"]
+[ext_resource type="Material" uid="uid://dkurniy21aysx" path="res://assets/shared/materials/Flower2.tres" id="27_d57or"]
+[ext_resource type="Material" uid="uid://bwpxh8v13xeh4" path="res://assets/environments/focusTown/materials/BookStore.tres" id="28_f8vp0"]
 [ext_resource type="Script" uid="uid://c3charpreset" path="res://scripts/characters/character_preset.gd" id="28_hl0wh"]
 [ext_resource type="Texture2D" uid="uid://duks2owpci2ub" path="res://assets/environments/focusTown/textures/FocusTown_image.png" id="29_jq1wy"]
+[ext_resource type="Material" uid="uid://bggcthbdqg0y1" path="res://assets/environments/focusTown/materials/LeafCafe.tres" id="29_khhkr"]
+[ext_resource type="Material" uid="uid://bp3uj8coey2cc" path="res://assets/environments/focusTown/materials/Restaurant.tres" id="30_0kxfq"]
 [ext_resource type="PackedScene" uid="uid://13nam1hmskme" path="res://assets/environments/focusTown/FocusTown.glb" id="37_b1cwd"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lywiv"]
@@ -1000,6 +1027,394 @@ ambient_color = Color(0.385, 0.49233332, 0.5, 1)
 ambient_color_energy = 0.63
 
 [node name="FocusTown" parent="." instance=ExtResource("37_b1cwd")]
+
+[node name="Casa_1" parent="FocusTown" index="0"]
+surface_material_override/0 = ExtResource("8_ygsfa")
+
+[node name="Casa_2" parent="FocusTown" index="1"]
+surface_material_override/0 = ExtResource("8_40e3h")
+
+[node name="ClockHouse_Low" parent="FocusTown" index="2"]
+material_override = ExtResource("9_ykk4n")
+
+[node name="Cube_001" parent="FocusTown" index="3"]
+surface_material_override/0 = ExtResource("10_lpexf")
+
+[node name="Cube_003" parent="FocusTown" index="4"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_004" parent="FocusTown" index="5"]
+surface_material_override/0 = ExtResource("12_ygsfa")
+
+[node name="Cube_009" parent="FocusTown" index="6"]
+surface_material_override/0 = ExtResource("12_ygsfa")
+
+[node name="Cube_013" parent="FocusTown" index="7"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_014" parent="FocusTown" index="8"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_015" parent="FocusTown" index="9"]
+surface_material_override/0 = ExtResource("12_ygsfa")
+
+[node name="Cube_016" parent="FocusTown" index="10"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_017" parent="FocusTown" index="11"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_018" parent="FocusTown" index="12"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_019" parent="FocusTown" index="13"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_020" parent="FocusTown" index="14"]
+surface_material_override/0 = ExtResource("13_2bejp")
+
+[node name="Cube_021" parent="FocusTown" index="15"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_034" parent="FocusTown" index="17"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_035" parent="FocusTown" index="18"]
+surface_material_override/0 = ExtResource("12_ygsfa")
+
+[node name="Cube_036" parent="FocusTown" index="19"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_037" parent="FocusTown" index="20"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cube_038" parent="FocusTown" index="21"]
+surface_material_override/0 = ExtResource("11_2bejp")
+
+[node name="Cylinder_001" parent="FocusTown" index="22"]
+surface_material_override/0 = ExtResource("13_ovbwm")
+
+[node name="Cylinder_002" parent="FocusTown" index="23"]
+surface_material_override/0 = ExtResource("13_ovbwm")
+
+[node name="faro_001" parent="FocusTown" index="24"]
+surface_material_override/0 = ExtResource("14_ykk4n")
+
+[node name="faro_002" parent="FocusTown" index="25"]
+surface_material_override/0 = ExtResource("14_ykk4n")
+
+[node name="Letrero_2" parent="FocusTown" index="27"]
+surface_material_override/0 = ExtResource("14_5y0y7")
+
+[node name="RedHouse_Low" parent="FocusTown" index="28"]
+surface_material_override/0 = ExtResource("15_b1cwd")
+
+[node name="Climbing Vine Geometry Node_001" parent="FocusTown/Climbing Vine - Leaf 12" index="0"]
+surface_material_override/0 = ExtResource("16_j6sxw")
+surface_material_override/1 = ExtResource("17_ysl0u")
+
+[node name="SM_Rock03" parent="FocusTown" index="30"]
+surface_material_override/0 = ExtResource("18_q81xj")
+
+[node name="AnaLeafGreen10_small_001" parent="FocusTown" index="31"]
+surface_material_override/0 = ExtResource("19_vv8x6")
+
+[node name="AnaLeafGreen10_small_003" parent="FocusTown" index="32"]
+surface_material_override/0 = ExtResource("19_vv8x6")
+
+[node name="AnaLeafGreen10_small_004" parent="FocusTown" index="33"]
+surface_material_override/0 = ExtResource("19_vv8x6")
+
+[node name="AnaLeafGreen10_small_006" parent="FocusTown" index="34"]
+surface_material_override/0 = ExtResource("19_vv8x6")
+
+[node name="AnaLeafGreen10_small_008" parent="FocusTown" index="36"]
+surface_material_override/0 = ExtResource("19_vv8x6")
+
+[node name="Plant1_002" parent="FocusTown" index="37"]
+surface_material_override/0 = ExtResource("21_lpexf")
+
+[node name="Plant1_003" parent="FocusTown" index="38"]
+transform = Transform3D(0.05513853, 0, 0, 0, -1.9719076e-08, -0.05513853, 0, 0.05513853, -1.9719076e-08, 3.3873806, 0.16710524, -10.443142)
+surface_material_override/0 = ExtResource("21_lpexf")
+
+[node name="Oak" parent="FocusTown" index="40"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="pCylinder353__mPlant_001" parent="FocusTown/Armature_005/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("20_ao74i")
+
+[node name="flowerpot__mBody_001" parent="FocusTown/Armature_005/Skeleton3D" index="1"]
+surface_material_override/0 = ExtResource("23_6n4h2")
+
+[node name="Flower1" parent="FocusTown" index="43"]
+surface_material_override/0 = ExtResource("19_vv8x6")
+
+[node name="Plant1" parent="FocusTown/Plant2/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("21_lpexf")
+
+[node name="Plant3_001" parent="FocusTown" index="45"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9883792, 0.2624874, -10.4151945)
+surface_material_override/0 = ExtResource("23_6n4h2")
+surface_material_override/1 = ExtResource("20_ao74i")
+
+[node name="stylized bush" parent="FocusTown" index="46"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="stylized bush_001" parent="FocusTown" index="47"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="stylized bush_002" parent="FocusTown" index="48"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="stylized bush_003" parent="FocusTown" index="49"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="Cube_005" parent="FocusTown" index="50"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_006" parent="FocusTown" index="51"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_007" parent="FocusTown" index="52"]
+transform = Transform3D(0.00017500245, -0.002142983, 0.050399125, 1.6237234e-06, 0.23096375, 0.00046762513, -0.050401285, -1.2273532e-10, 0.00017500998, -3.4507086, 0.43377027, -17.07009)
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_008" parent="FocusTown" index="53"]
+transform = Transform3D(0.00017500245, -0.002142983, 0.050399125, 1.6237234e-06, 0.23096375, 0.00046762513, -0.050401285, -1.2273532e-10, 0.00017500998, -2.4607224, 0.44295582, -17.066656)
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_022" parent="FocusTown" index="54"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_023" parent="FocusTown" index="55"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_024" parent="FocusTown" index="56"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_025" parent="FocusTown" index="57"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="FloorNew" parent="FocusTown" index="58"]
+surface_material_override/0 = ExtResource("26_kmb06")
+
+[node name="FloorNew_001" parent="FocusTown" index="59"]
+surface_material_override/0 = ExtResource("26_kmb06")
+
+[node name="Oak_001" parent="FocusTown" index="60"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="UnpotedFlower" parent="FocusTown" index="61"]
+surface_material_override/0 = ExtResource("27_d57or")
+
+[node name="UnpotedFlower_001" parent="FocusTown" index="62"]
+surface_material_override/0 = ExtResource("27_d57or")
+
+[node name="UnpotedFlower_002" parent="FocusTown" index="63"]
+surface_material_override/0 = ExtResource("27_d57or")
+
+[node name="UnpotedFlower_003" parent="FocusTown" index="64"]
+surface_material_override/0 = ExtResource("27_d57or")
+
+[node name="Oak_002" parent="FocusTown" index="65"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_003" parent="FocusTown" index="66"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_004" parent="FocusTown" index="67"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_005" parent="FocusTown" index="68"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_006" parent="FocusTown" index="69"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_007" parent="FocusTown" index="70"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_008" parent="FocusTown" index="71"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_009" parent="FocusTown" index="72"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_010" parent="FocusTown" index="73"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_011" parent="FocusTown" index="74"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_012" parent="FocusTown" index="75"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_013" parent="FocusTown" index="76"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_014" parent="FocusTown" index="77"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_015" parent="FocusTown" index="78"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_016" parent="FocusTown" index="79"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_017" parent="FocusTown" index="80"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="stylized bush_005" parent="FocusTown" index="82"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="stylized bush_006" parent="FocusTown" index="83"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="stylized bush_007" parent="FocusTown" index="84"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="stylized bush_008" parent="FocusTown" index="85"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="Plant3_002" parent="FocusTown" index="86"]
+surface_material_override/0 = ExtResource("23_6n4h2")
+surface_material_override/1 = ExtResource("20_ao74i")
+
+[node name="Plant3_003" parent="FocusTown" index="87"]
+surface_material_override/0 = ExtResource("23_6n4h2")
+surface_material_override/1 = ExtResource("20_ao74i")
+
+[node name="SM_Rock03_001" parent="FocusTown" index="88"]
+surface_material_override/0 = ExtResource("18_q81xj")
+
+[node name="Plant3_004" parent="FocusTown" index="91"]
+surface_material_override/0 = ExtResource("23_6n4h2")
+surface_material_override/1 = ExtResource("20_ao74i")
+
+[node name="UnpotedFlower_004" parent="FocusTown" index="92"]
+surface_material_override/0 = ExtResource("27_d57or")
+
+[node name="Cube_010" parent="FocusTown" index="93"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_011" parent="FocusTown" index="94"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_012" parent="FocusTown" index="95"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_026" parent="FocusTown" index="96"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_027" parent="FocusTown" index="97"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_029" parent="FocusTown" index="98"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_030" parent="FocusTown" index="99"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_031" parent="FocusTown" index="100"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_032" parent="FocusTown" index="101"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_040" parent="FocusTown" index="102"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_042" parent="FocusTown" index="103"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_043" parent="FocusTown" index="104"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_044" parent="FocusTown" index="105"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_045" parent="FocusTown" index="106"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_046" parent="FocusTown" index="107"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_047" parent="FocusTown" index="108"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_048" parent="FocusTown" index="109"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_049" parent="FocusTown" index="110"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_050" parent="FocusTown" index="111"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Cube_051" parent="FocusTown" index="112"]
+surface_material_override/0 = ExtResource("25_d12rv")
+
+[node name="Plant3_005" parent="FocusTown" index="113"]
+surface_material_override/0 = ExtResource("23_6n4h2")
+surface_material_override/1 = ExtResource("21_lpexf")
+
+[node name="BookShop" parent="FocusTown" index="114"]
+surface_material_override/0 = ExtResource("28_f8vp0")
+
+[node name="LeafCafe" parent="FocusTown" index="115"]
+surface_material_override/0 = ExtResource("29_khhkr")
+
+[node name="stylized bush_004" parent="FocusTown" index="116"]
+surface_material_override/0 = ExtResource("24_yv6vr")
+
+[node name="Oak_018" parent="FocusTown" index="117"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Oak_019" parent="FocusTown" index="118"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="UnpotedFlower_006" parent="FocusTown" index="119"]
+surface_material_override/0 = ExtResource("27_d57or")
+
+[node name="UnpotedFlower_007" parent="FocusTown" index="120"]
+surface_material_override/0 = ExtResource("27_d57or")
+
+[node name="UnpotedFlower_008" parent="FocusTown" index="121"]
+surface_material_override/0 = ExtResource("27_d57or")
+
+[node name="FloorNew_003" parent="FocusTown" index="122"]
+surface_material_override/0 = ExtResource("26_kmb06")
+
+[node name="FloorNew_004" parent="FocusTown" index="123"]
+surface_material_override/0 = ExtResource("26_kmb06")
+
+[node name="Oak_020" parent="FocusTown" index="124"]
+surface_material_override/0 = ExtResource("21_gmhv4")
+surface_material_override/1 = ExtResource("22_h08kg")
+
+[node name="Restaurant" parent="FocusTown" index="125"]
+surface_material_override/0 = ExtResource("30_0kxfq")
 
 [connection signal="pressed" from="CapyBaraIntro/TextureButton" to="SceneManager" method="_on_texture_button_pressed"]
 
