@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSessionStore, formatTime, formatMinutesDisplay } from '@/lib/session';
-import { Button, TimerOverlay, TimerSlider } from '@/components/ui';
+import { PrimaryButton, TimerOverlay, TimerSlider } from '@/components/ui';
 
 const palmTreeIcon = require('@/assets/ui/palmtree.png');
 
@@ -80,7 +80,7 @@ export function BreakTimerModal({ visible, onTripleTap }: BreakTimerModalProps) 
             {/* Buttons */}
             <View style={styles.buttonsContainer}>
               {/* Start Another Session Button */}
-              <Button
+              <PrimaryButton
                 title="Start another session"
                 onPress={startAnotherSession}
                 variant="muted"
@@ -88,7 +88,7 @@ export function BreakTimerModal({ visible, onTripleTap }: BreakTimerModalProps) 
               />
 
               {/* Start Break Button */}
-              <Button
+              <PrimaryButton
                 title="Start Break"
                 size="medium"
                 variant="break"

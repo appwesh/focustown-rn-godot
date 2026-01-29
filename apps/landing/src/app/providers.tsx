@@ -9,7 +9,7 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
     posthog.init("phc_MPDGIu0PTimyqBsnEpCl105Jdeknaql8AV9OWGMLKrW", {
       api_host: "https://us.i.posthog.com",
       person_profiles: "identified_only",
-      capture_pageview: false, // We'll capture manually for Next.js
+      capture_pageview: false,
       capture_pageleave: true,
     });
   }, []);

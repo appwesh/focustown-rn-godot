@@ -53,3 +53,4 @@ Join our community of developers creating universal apps.
 ### dummy commands
 npx expo prebuild --clean --platform ios
 npx expo run ios --device
+

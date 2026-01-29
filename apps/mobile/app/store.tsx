@@ -23,7 +23,7 @@ import { isGodotReady, changeScene, setUserCharacter, setShowcaseCameraZoom, typ
 import { useAuth, userService } from '@/lib/firebase';
 import { PCK_URL } from '@/constants/game';
 import { getItemThumbnail } from '@/assets/thumbnails';
-import { BackButton, BeanCounter, Button } from '@/components/ui';
+import { BackButton, BeanCounter, PrimaryButton, BottomPanel } from '@/components/ui';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLUMNS = 2;
@@ -896,7 +896,7 @@ export default function StoreScreen() {
         
         <View style={styles.headerRight}>
           {/* Customize Character Button */}
-          <Button 
+          <PrimaryButton 
             title="edit character"
             onPress={() => router.push('/character')}
             size="tiny"
@@ -923,45 +923,42 @@ export default function StoreScreen() {
       </View>
 
       {/* Store Panel */}
-      <View style={styles.storePanel}>
-        {/* Category Tabs */}
-        <View style={styles.tabsContainer}>
-          {(['Daily Finds', 'Seasonal', 'Owned'] as StoreTab[]).map((tab) => (
-            <Pressable
-              key={tab}
-              style={[
-                styles.tab,
-                activeTab === tab && styles.tabActive,
-              ]}
-              onPress={() => {
-                setActiveTab(tab);
-                setSelectedItem(null);
-                if (isGodotReady()) {
-                  setUserCharacter(character);
-                  setShowcaseCameraZoom('default');
-                }
-              }}
-            >
-              <Text style={[
-                styles.tabText,
-                activeTab === tab && styles.tabTextActive,
-              ]}>
-                {tab}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-
-        {/* Section Header */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{headerTitle}</Text>
-          {activeTab === 'Daily Finds' && (
-            <View style={styles.dailyFindsInfo}>
-              <View style={styles.refreshBadge}>
-                <Text style={styles.refreshText}>
-                  Items refresh in {formatTimeRemaining(timeRemaining)}
-                </Text>
+      <BottomPanel
+        tabs={[
+          { key: 'Daily Finds' as StoreTab, label: 'Daily Finds' },
+          { key: 'Seasonal' as StoreTab, label: 'Seasonal' },
+          { key: 'Owned' as StoreTab, label: 'Owned' },
+        ]}
+        activeTab={activeTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          setSelectedItem(null);
+          if (isGodotReady()) {
+            setUserCharacter(character);
+            setShowcaseCameraZoom('default');
+          }
+        }}
+      >
+          {/* Section Header */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{headerTitle}</Text>
+            {activeTab === 'Daily Finds' && (
+              <View style={styles.dailyFindsInfo}>
+                <View style={styles.refreshBadge}>
+                  <Text style={styles.refreshText}>
+                    Items refresh in {formatTimeRemaining(timeRemaining)}
+                  </Text>
+                </View>
+                <PrimaryButton
+                  title={`Refresh ${REFRESH_COST}`}
+                  onPress={handleRefresh}
+                  disabled={!canAffordRefresh}
+                  size="tiny"
+                  variant="primary"
+                />
               </View>
+            )}
+          </View>
               <Pressable
                 onPress={handleRefresh}
                 disabled={!canAffordRefresh}
@@ -978,8 +975,8 @@ export default function StoreScreen() {
           )}
         </View>
 
-        {/* Items Grid */}
-        <ScrollView 
+          {/* Items Grid */}
+          <ScrollView 
           style={styles.itemsScroll}
           contentContainerStyle={[
             styles.itemsGrid,
@@ -1054,14 +1051,14 @@ export default function StoreScreen() {
                       </View>
                     ) : activeTab === 'Owned' ? (
                       isItemEquipped(item) ? (
-                        <Button 
+                        <PrimaryButton 
                           title="Remove"
                           onPress={() => handleRemove(item)}
                           size="tiny"
                           variant="danger"
                         />
                       ) : (
-                        <Button 
+                        <PrimaryButton 
                           title="Equip"
                           onPress={() => handleEquip(item)}
                           size="tiny"
@@ -1078,15 +1075,16 @@ export default function StoreScreen() {
               );
             })
           )}
-        </ScrollView>
-      </View>
+          </ScrollView>
+      </BottomPanel>
 
       {/* Bottom Buy Bar - shows when item selected and not owned */}
-      {buyBarVisible && buyBarDisplayItem && (
-        <Animated.View style={[styles.buyBar, { marginBottom: insets.bottom + 12 }, buyBarAnimatedStyle]}>
-          <Text style={styles.buyBarItemName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{buyBarDisplayItem.name}</Text>
-          {canAffordBuyBarItem ? (
-            <Pressable
+      {selectedItem && !ownedItems.includes(selectedItem.id) && (
+        <View style={[styles.buyBar, { marginBottom: insets.bottom + 12 }]}>
+          <Text style={styles.buyBarItemName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{selectedItem.name}</Text>
+          {canAfford ? (
+            <PrimaryButton 
+              title={`Buy ${selectedItem.price}`}
               onPress={handlePurchase}
               disabled={!selectedItem}
               style={[
@@ -1099,8 +1097,8 @@ export default function StoreScreen() {
               <Image source={require('@/assets/ui/bean.png')} style={styles.buyBeanIcon} />
             </Pressable>
           ) : (
-            <Button 
-              title={isBuyBarWishlisted ? 'Wishlisted' : 'Wishlist'}
+            <PrimaryButton 
+              title={isSelectedWishlisted ? 'Wishlisted' : 'Wishlist'}
               onPress={handleWishlist}
               size="small"
               variant={isBuyBarWishlisted ? 'secondary' : 'muted'}
@@ -1179,45 +1177,6 @@ const styles = StyleSheet.create({
   },
   godotView: {
     flex: 1,
-  },
-  storePanel: {
-    flex: 1,
-    backgroundColor: '#FFF9F0',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    marginTop: -24,
-    paddingTop: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 24,
-    marginTop: 12,
-    marginBottom: 8,
-    backgroundColor: '#F5EFE6',
-    borderRadius: 24,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 20,
-    alignItems: 'center',
-  },
-  tabActive: {
-    backgroundColor: '#E8DDD0',
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#A89880',
-  },
-  tabTextActive: {
-    color: '#5A4A3A',
   },
   sectionHeader: {
     paddingHorizontal: 16,

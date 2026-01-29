@@ -22,7 +22,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button } from './button';
+import { PrimaryButton } from './button';
 
 type ButtonVariant = 'primary' | 'secondary' | 'muted' | 'disabled' | 'break' | 'danger';
 
@@ -87,7 +87,7 @@ export function TimerOverlay({
         </View>
 
         {/* Action Button */}
-        <Button
+        <PrimaryButton
           title={buttonTitle}
           onPress={onButtonPress}
           size="small"

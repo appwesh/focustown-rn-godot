@@ -13,6 +13,7 @@ import { clearPckCache } from './godot-view';
 import { useSocialStore } from '@/lib/social';
 import { useSessionStore } from '@/lib/session';
 import { useAuth, db, friendsService } from '@/lib/firebase';
+import { useRouter } from 'expo-router';
 import {
   collection,
   doc,
@@ -33,10 +34,12 @@ import type { UserDoc, FriendshipDoc, GroupInviteDoc
 interface DebugModalProps {
   visible: boolean;
   onClose: () => void;
+  onboardingStep?: string | null;
+  onSetOnboardingStep?: (step: string) => void;
 }
 
 // Tab type
-type DebugTab = 'state' | 'session' | 'users' | 'friends' | 'lobby' | 'cache';
+type DebugTab = 'state' | 'session' | 'users' | 'friends' | 'lobby' | 'cache' | 'nav';
 
 // Test user for debug
 interface TestUser {
@@ -54,7 +57,8 @@ interface FriendshipInfo {
   requesterId: string;
 }
 
-export function DebugModal({ visible, onClose }: DebugModalProps) {
+export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingStep }: DebugModalProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<DebugTab>('state');
   const [loading, setLoading] = useState<string | null>(null);
   
@@ -78,7 +82,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
   }
   const [groupInvites, setGroupInvites] = useState<GroupInviteInfo[]>([]);
   
-  const { user, userDoc, recordSession } = useAuth();
+  const { user, userDoc, recordSession, signOut } = useAuth();
   
   // Social store state
   const friends = useSocialStore((s) => s.friends);
@@ -406,6 +410,8 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
         return renderLobbyTab();
       case 'cache':
         return renderCacheTab();
+      case 'nav':
+        return renderNavTab();
     }
   };
 
@@ -496,7 +502,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
       
       <View style={styles.divider} />
       
-      <Text style={styles.sectionTitle}>👤 Current User</Text>
+      <Text style={styles.sectionTitle}>👤 Current User ({user ? 'signed in' : 'not signed in'})</Text>
       <Text style={styles.infoText}>UID: {user?.uid?.slice(0, 12)}...</Text>
       <Text style={styles.infoText}>Name: {userDoc?.displayName || 'none'}</Text>
       <Text style={styles.infoText}>Username: @{userDoc?.username || 'none'}</Text>
@@ -695,6 +701,82 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
       )}
     </View>
   );
+
+  // NAV TAB
+  const renderNavTab = () => {
+    const routes = [
+      { label: 'Index', path: '/' },
+      { label: 'Home', path: '/home' },
+      { label: 'Social', path: '/social' },
+      { label: 'Game', path: '/game' },
+      { label: 'Profile', path: '/profile' },
+      { label: 'Settings', path: '/settings' },
+    ];
+
+    const onboardingSteps = [
+      { label: 'Welcome', value: 'welcome' },
+      { label: 'Name', value: 'name' },
+      { label: 'Gender', value: 'gender' },
+      { label: 'Avatar', value: 'avatar' },
+      { label: 'Age', value: 'age' },
+      { label: 'Study Location', value: 'studyLocation' },
+      { label: 'Social Baseline', value: 'socialBaseline' },
+      { label: 'Study Frequency', value: 'studyFrequency' },
+      { label: 'Session Length', value: 'sessionLength' },
+      { label: 'Focus Friction', value: 'focusFriction' },
+      { label: 'Focus For (23+)', value: 'focusFor' },
+      { label: 'Goal', value: 'goal' },
+      { label: 'Username', value: 'username' },
+      { label: 'Phone', value: 'phone' },
+      { label: 'Verify', value: 'verify' },
+      { label: 'Notifications', value: 'notifications' },
+      { label: 'Discord', value: 'discord' },
+    ];
+
+    return (
+      <View style={styles.tabContent}>
+        <Text style={styles.sectionTitle}>🧭 Navigate</Text>
+        <Text style={styles.hintText}>Jump to any screen</Text>
+        {routes.map((route) => (
+          <Pressable
+            key={route.path}
+            style={[styles.actionBtn, styles.infoBtn]}
+            onPress={() => {
+              onClose();
+              router.push(route.path);
+            }}
+          >
+            <Text style={styles.btnText}>{route.label}</Text>
+          </Pressable>
+        ))}
+        
+        <View style={styles.divider} />
+        <Text style={styles.sectionTitle}>📋 Onboarding Steps</Text>
+        <Text style={styles.hintText}>
+          {onSetOnboardingStep ? `Current: ${onboardingStep || 'N/A'}` : 'Navigate to onboarding screen'}
+        </Text>
+        {onboardingSteps.map((step) => (
+          <Pressable
+            key={step.value}
+            style={[
+              styles.actionBtn,
+              onboardingStep === step.value ? styles.successBtn : styles.infoBtn,
+            ]}
+            onPress={() => {
+              if (onSetOnboardingStep) {
+                onSetOnboardingStep(step.value);
+              } else {
+                router.push('/onboarding');
+              }
+              onClose();
+            }}
+          >
+            <Text style={styles.btnText}>{step.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+    );
+  };
 
   // LOBBY TAB
   const renderLobbyTab = () => {
@@ -949,6 +1031,29 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
     );
   };
 
+  // Handle sign out
+  const handleSignOut = async () => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          setLoading('signOut');
+          try {
+            await signOut();
+            onClose();
+            router.replace('/');
+          } catch (error) {
+            Alert.alert('Error', 'Failed to sign out');
+          } finally {
+            setLoading(null);
+          }
+        },
+      },
+    ]);
+  };
+
   // CACHE TAB
   const renderCacheTab = () => (
     <View style={styles.tabContent}>
@@ -963,6 +1068,22 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
       >
         <Text style={styles.btnText}>
           {loading === 'cache' ? 'Clearing...' : '🗑 Clear PCK Cache'}
+        </Text>
+      </Pressable>
+
+      <View style={styles.divider} />
+
+      <Text style={styles.sectionTitle}>🚪 Account</Text>
+      <Text style={styles.infoText}>
+        Sign out of your account and return to the login screen.
+      </Text>
+      <Pressable
+        style={[styles.actionBtn, styles.dangerBtn]}
+        onPress={handleSignOut}
+        disabled={loading === 'signOut'}
+      >
+        <Text style={styles.btnText}>
+          {loading === 'signOut' ? 'Signing out...' : '🚪 Sign Out'}
         </Text>
       </Pressable>
     </View>
@@ -983,7 +1104,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
 
               {/* Tabs */}
               <View style={styles.tabs}>
-                {(['state', 'session', 'users', 'friends', 'lobby', 'cache'] as DebugTab[]).map((tab) => (
+                {(['state', 'session', 'users', 'friends', 'lobby', 'cache', 'nav'] as DebugTab[]).map((tab) => (
               <Pressable
                     key={tab}
                     style={[styles.tab, activeTab === tab && styles.tabActive]}
@@ -996,6 +1117,7 @@ export function DebugModal({ visible, onClose }: DebugModalProps) {
                       {tab === 'friends' && '🤝'}
                       {tab === 'lobby' && '🏠'}
                       {tab === 'cache' && '💾'}
+                      {tab === 'nav' && '🧭'}
                 </Text>
               </Pressable>
                 ))}
@@ -1025,13 +1147,13 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'stretch',
   },
   container: {
-    width: '92%',
-    maxWidth: 400,
-    maxHeight: '85%',
+    width: '100%',
+    maxWidth: 500,
+    maxHeight: '90%',
   },
   modal: {
     backgroundColor: '#FFF8E7',

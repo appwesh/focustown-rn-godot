@@ -5,20 +5,13 @@ interface BackButtonProps {
   style?: ViewStyle;
 }
 
-const BORDER_WIDTH = 3;
-const BORDER_BOTTOM_WIDTH = 7;
-const PRESSED_MARGIN_TOP = 4;
-
 export function BackButton({ onPress, style }: BackButtonProps) {
   return (
     <View style={[styles.container, style]}>
       <Pressable
         style={({ pressed }) => [
           styles.surface,
-          {
-            borderBottomWidth: pressed ? BORDER_WIDTH : BORDER_BOTTOM_WIDTH,
-            marginTop: pressed ? PRESSED_MARGIN_TOP : 0,
-          },
+          pressed && styles.pressed,
         ]}
         onPress={onPress}
       >
@@ -34,15 +27,17 @@ const styles = StyleSheet.create({
   },
   surface: {
     backgroundColor: '#FFF8E7',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    borderWidth: BORDER_WIDTH,
+    paddingVertical: 6,
+    paddingHorizontal: 9,
+    borderRadius: 15,
+    borderWidth: 2,
     borderColor: '#83715B',
-    borderBottomWidth: BORDER_BOTTOM_WIDTH,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   arrow: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: '900',
     color: '#9A835A',
   },

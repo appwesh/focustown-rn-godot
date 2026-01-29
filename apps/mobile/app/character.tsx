@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GodotGame } from '@/components/godot-view';
 import { SceneTransition } from '@/components/scene-transition';
 import { isGodotReady, changeScene, setUserCharacter, setShowcaseCameraZoom, type CharacterSkin, type CameraZoomTarget } from '@/lib/godot';
-import { BackButton } from '@/components/ui';
+import { BackButton, BottomPanel } from '@/components/ui';
 import { useAuth, userService } from '@/lib/firebase';
 import { PCK_URL } from '@/constants/game';
 
@@ -378,29 +378,22 @@ export default function CharacterScreen() {
       </View>
 
       {/* Customization Panel */}
-      <View style={styles.customizationPanel}>
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
-          {(['Skin tone', 'Face', 'Hair'] as TabType[]).map((tab) => (
-            <Pressable
-              key={tab}
-              style={[styles.tab, activeTab === tab && styles.tabActive]}
-              onPress={() => handleTabChange(tab)}
-            >
-              <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-                {tab}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-
+      <BottomPanel
+        tabs={[
+          { key: 'Skin tone' as TabType, label: 'Skin tone' },
+          { key: 'Face' as TabType, label: 'Face' },
+          { key: 'Hair' as TabType, label: 'Hair' },
+        ]}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+      >
         {/* Content */}
         <ScrollView style={styles.contentScroll} showsVerticalScrollIndicator={false}>
           {activeTab === 'Skin tone' && renderSkinToneGrid()}
           {activeTab === 'Face' && renderFaceTab()}
           {activeTab === 'Hair' && renderHairTab()}
         </ScrollView>
-      </View>
+      </BottomPanel>
     </View>
   );
 }
@@ -441,43 +434,6 @@ const styles = StyleSheet.create({
   },
   godotView: {
     flex: 1,
-  },
-  customizationPanel: {
-    flex: 1,
-    backgroundColor: '#FFF9F0',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    marginTop: -24,
-    paddingTop: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 24,
-    backgroundColor: '#F5EFE6',
-    borderRadius: 24,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 20,
-    alignItems: 'center',
-  },
-  tabActive: {
-    backgroundColor: '#E8DDD0',
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#A89880',
-  },
-  tabTextActive: {
-    color: '#5A4A3A',
   },
   contentScroll: {
     flex: 1,

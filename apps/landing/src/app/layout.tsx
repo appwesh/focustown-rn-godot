@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { PHProvider } from "./providers";
 import { PostHogPageView } from "./posthog-pageview";
@@ -11,7 +12,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://focustown.com"),
+  metadataBase: new URL("https://focustown.app"),
   title: "FocusTown - Study with Friends",
   description: "Focusing feels better with friends. Study live with homies around the world.",
   icons: {
@@ -51,6 +52,7 @@ export default function RootLayout({
           <PostHogPageView />
           {children}
         </PHProvider>
+        <Analytics />
       </body>
     </html>
   );

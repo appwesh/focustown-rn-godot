@@ -27,8 +27,8 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSessionStore, formatDuration } from '@/lib/session';
+import { PrimaryButton } from '@/components/ui/button';
 import { useSuccessSound, useAmbienceStore } from '@/lib/sound';
-import { Button } from '@/components/ui/button';
 import * as Bridge from '@/lib/godot/bridge';
 
 const beanIcon = require('@/assets/ui/bean.png');
@@ -302,14 +302,14 @@ export function SessionCompleteModal({ visible, onTripleTap }: SessionCompleteMo
 
           {/* Buttons */}
           <View style={styles.buttonContainer}>
-            <Button
+            <PrimaryButton
               title="Leave Cafe"
               size="medium"
               onPress={handleGoHome}
               variant="muted"
               style={styles.button}
             />
-            <Button
+            <PrimaryButton
               title="Start Another"
               size="medium"
               onPress={showBreakSetup}

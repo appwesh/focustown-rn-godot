@@ -16,8 +16,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSessionStore } from '@/lib/session';
+import { PrimaryButton } from '@/components/ui/button';
 import { useAmbienceStore } from '@/lib/sound';
-import { Button } from '@/components/ui/button';
+
 
 interface SessionAbandonedModalProps {
   visible: boolean;
@@ -62,14 +63,14 @@ export function SessionAbandonedModal({ visible, onTripleTap }: SessionAbandoned
 
           {/* Buttons */}
           <View style={styles.buttonColumn}>
-            <Button
+            <PrimaryButton
               title="Leave Cafe"
               onPress={handleGoHome}
               variant="muted"
               size="medium"
               style={styles.button}
             />
-            <Button
+            <PrimaryButton
               title="Start Another"
               onPress={handleContinue}
               size="medium"

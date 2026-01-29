@@ -19,7 +19,7 @@ import { useAuth, groupsService, userService } from '@/lib/firebase';
 import { useSocialStore, type LobbySlot } from '@/lib/social';
 import { useButtonSound, useAmbienceEngine, useAmbienceStore, useSoundStore } from '@/lib/sound';
 import { MUSIC_TRACKS_BY_BUILDING_ID } from '@/lib/sound/tracks';
-import { BeanCounter, Button } from '@/components/ui';
+import { BeanCounter, PrimaryButton } from '@/components/ui';
 import { FriendPickerModal, InviteReceivedModal, LobbyDurationModal } from '@/components/social';
 import { DebugModal } from '@/components/debug-modal';
 import { GodotGame } from '@/components/godot-view';
@@ -677,7 +677,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Go to Cafe Button */}
-        <Button
+        <PrimaryButton
           title={buttonText}
           onPress={handleGoToCafe}
           disabled={buttonDisabled}
