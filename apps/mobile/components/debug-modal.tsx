@@ -388,6 +388,32 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
     }
   };
 
+  // Unlock all cafes by setting user progress to meet all requirements
+  const handleUnlockAllCafes = async () => {
+    if (!user) {
+      Alert.alert('Error', 'Must be signed in');
+      return;
+    }
+
+    setLoading('unlockCafes');
+    try {
+      // Set values high enough to unlock all cafes:
+      // - sessionsCompleted: 10 (for europe-cafe)
+      // - totalFocusTime: 10800 seconds / 180 min (for ghibli-cafe)
+      // - currentStreak: 7 (for japan-cafe)
+      await updateDoc(doc(db, 'users', user.uid), {
+        sessionsCompleted: 15,
+        totalFocusTime: 12000, // 200 minutes in seconds
+        currentStreak: 10,
+      });
+      Alert.alert('Success', 'All cafes unlocked! Pull down to refresh.');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to unlock cafes');
+    } finally {
+      setLoading(null);
+    }
+  };
+
   // Get username by uid
   const getUsername = useCallback((uid: string) => {
     if (uid === user?.uid) return `@${userDoc?.username || 'you'} (you)`;
@@ -1068,6 +1094,22 @@ export function DebugModal({ visible, onClose, onboardingStep, onSetOnboardingSt
       >
         <Text style={styles.btnText}>
           {loading === 'cache' ? 'Clearing...' : '🗑 Clear PCK Cache'}
+        </Text>
+      </Pressable>
+
+      <View style={styles.divider} />
+
+      <Text style={styles.sectionTitle}>☕ Cafes</Text>
+      <Text style={styles.infoText}>
+        Unlock all cafes by setting progress to meet requirements.
+      </Text>
+      <Pressable
+        style={[styles.actionBtn, styles.successBtn]}
+        onPress={handleUnlockAllCafes}
+        disabled={loading === 'unlockCafes'}
+      >
+        <Text style={styles.btnText}>
+          {loading === 'unlockCafes' ? 'Unlocking...' : '🔓 Unlock All Cafes'}
         </Text>
       </Pressable>
 
