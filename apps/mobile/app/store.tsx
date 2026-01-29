@@ -950,7 +950,7 @@ export default function StoreScreen() {
                   </Text>
                 </View>
                 <PrimaryButton
-                  title={`Refresh ${REFRESH_COST}`}
+                  title={`Refresh ${refreshCost}`}
                   onPress={handleRefresh}
                   disabled={!canAffordRefresh}
                   size="tiny"
@@ -959,21 +959,6 @@ export default function StoreScreen() {
               </View>
             )}
           </View>
-              <Pressable
-                onPress={handleRefresh}
-                disabled={!canAffordRefresh}
-                style={[
-                  styles.refreshButton,
-                  !canAffordRefresh && styles.refreshButtonDisabled,
-                ]}
-              >
-                <Text style={styles.refreshButtonText}>Refresh</Text>
-                <Text style={styles.refreshButtonPrice}>{refreshCost}</Text>
-                <Image source={require('@/assets/ui/bean.png')} style={styles.refreshBeanIcon} />
-              </Pressable>
-            </View>
-          )}
-        </View>
 
           {/* Items Grid */}
           <ScrollView 
@@ -1079,30 +1064,21 @@ export default function StoreScreen() {
       </BottomPanel>
 
       {/* Bottom Buy Bar - shows when item selected and not owned */}
-      {selectedItem && !ownedItems.includes(selectedItem.id) && (
-        <View style={[styles.buyBar, { marginBottom: insets.bottom + 12 }]}>
-          <Text style={styles.buyBarItemName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{selectedItem.name}</Text>
-          {canAfford ? (
+      {buyBarVisible && buyBarDisplayItem && (
+        <Animated.View style={[styles.buyBar, { marginBottom: insets.bottom + 12 }, buyBarAnimatedStyle]}>
+          <Text style={styles.buyBarItemName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{buyBarDisplayItem.name}</Text>
+          {canAffordBuyBarItem ? (
             <PrimaryButton 
-              title={`Buy ${selectedItem.price}`}
+              title={`Buy ${buyBarDisplayItem.price}`}
               onPress={handlePurchase}
-              disabled={!selectedItem}
-              style={[
-                styles.buyButton,
-                !selectedItem && styles.buyButtonDisabled,
-              ]}
-            >
-              <Text style={styles.buyButtonText}>Buy</Text>
-              <Text style={styles.buyButtonText}>{buyBarDisplayItem.price}</Text>
-              <Image source={require('@/assets/ui/bean.png')} style={styles.buyBeanIcon} />
-            </Pressable>
+              size="small"
+            />
           ) : (
             <PrimaryButton 
-              title={isSelectedWishlisted ? 'Wishlisted' : 'Wishlist'}
+              title={isBuyBarWishlisted ? 'Wishlisted' : 'Wishlist'}
               onPress={handleWishlist}
               size="small"
               variant={isBuyBarWishlisted ? 'secondary' : 'muted'}
-              disabled={!selectedItem}
             />
           )}
         </Animated.View>

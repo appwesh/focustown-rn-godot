@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     borderRadius: 32,
     marginBottom: 2,
-    marginRight: 5
   },
   innerPanel: {
     flex: 1,

@@ -172,19 +172,20 @@ export default function GameScreen() {
       // Apply saved character appearance after scene loads
       setTimeout(() => {
         if (cancelled) return;
-        
+
         if (userDoc?.characterSkin) {
           setUserCharacter(userDoc.characterSkin);
           console.log('[Game] Applied saved character skin');
         }
-        
-        // Hide transition after scene loads
+
+        // Fade out transition overlay after assets are loaded
+        // This happens before the entrance cinematic starts walking
         setTimeout(() => {
           if (!cancelled) {
             setSceneTransitioning(false);
           }
-        }, 100);
-      }, 300);
+        }, 200);
+      }, 400);
     };
     
     // Start scene change after brief delay

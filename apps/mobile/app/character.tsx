@@ -20,8 +20,9 @@ import { PCK_URL } from '@/constants/game';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLUMNS = 3;
-const SWATCH_SIZE = (SCREEN_WIDTH - 80) / GRID_COLUMNS;
-const CARD_SIZE = (SCREEN_WIDTH - 80) / GRID_COLUMNS;
+// Account for: paddingHorizontal 24*2=48, gap 16*2=32, BottomPanel margins ~16
+const SWATCH_SIZE = (SCREEN_WIDTH - 96) / GRID_COLUMNS;
+const CARD_SIZE = (SCREEN_WIDTH - 96) / GRID_COLUMNS;
 
 // Tab type
 type TabType = 'Skin tone' | 'Face' | 'Hair';
