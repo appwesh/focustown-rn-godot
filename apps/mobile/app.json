@@ -14,7 +14,7 @@
       "appleTeamId": "VY92D2R4AT",
       "googleServicesFile": "./GoogleService-Info.plist",
       "associatedDomains": [
-        "applinks:YOUR_ONELINK.onelink.me"
+        "applinks:focustown.app"
       ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
